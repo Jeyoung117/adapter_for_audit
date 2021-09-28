@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.sslab.adapter</groupId>
+    <artifactId>adapter_module</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+        <repositories>
+            <repository>
+                <id>central</id>
+                <name>Central Repository</name>
+                <url>https://repo.maven.apache.org/maven2</url>
+            </repository>
+
+<!--            <repository>-->
+<!--                <id>clojars</id>-->
+<!--                <url>http://clojars.org/repo</url>-->
+<!--            </repository>-->
+
+<!--            <repository>-->
+<!--                <snapshots/>-->
+<!--                <id>snapshots</id>-->
+<!--                <name>libs-snapshot</name>-->
+<!--                <url>https://oss.jfrog.org/artifactory/libs-snapshot</url>-->
+<!--            </repository>-->
+
+            <repository>
+                <id>corfu-mvn-repo</id>
+                <name>corfu</name>
+                <url>https://raw.github.com/CorfuDB/Corfu-Repos/mvn-repo</url>
+                <snapshots>
+                    <enabled>true</enabled>
+                    <updatePolicy>always</updatePolicy>
+                </snapshots>
+             </repository>
+
+            <repository>
+                <id>snapshots-repo</id>
+                <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                <releases>
+                    <enabled>false</enabled>
+                </releases>
+                <snapshots>
+                    <enabled>true</enabled>
+                </snapshots>
+            </repository>
+<!--            <repository>-->
+<!--                <id>local-repo</id>-->
+<!--                <name>local repository</name>-->
+<!--                <url>file:///home/hwang/.m2/repository/</url>-->
+<!--            </repository>-->
+        </repositories>
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Logging -->
+        <logback.version>1.0.13</logback.version>
+        <slf4j.version>1.7.5</slf4j.version>
+
+    </properties>
+        <dependencies>
+            <dependency>
+                <groupId>org.hyperledger.fabric-sdk-java</groupId>
+                <artifactId>fabric-sdk-java</artifactId>
+                <version>2.1.0</version>
+            </dependency>
+
+<!--            <dependency>-->
+<!--                <groupId>io.cucumber</groupId>-->
+<!--                <artifactId>cucumber-java8</artifactId>-->
+<!--                <version>5.7.0</version>-->
+<!--                <scope>test</scope>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>io.cucumber</groupId>-->
+<!--                <artifactId>cucumber-junit</artifactId>-->
+<!--                <version>5.7.0</version>-->
+<!--                <scope>test</scope>-->
+<!--            </dependency>-->
+            <dependency>
+                <groupId>com.cloudant</groupId>
+                <artifactId>cloudant-client</artifactId>
+                <version>2.19.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.corfudb</groupId>
+                <artifactId>runtime</artifactId>
+                <version>0.3.1-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.5</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.corfudb</groupId>
+                <artifactId>annotations</artifactId>
+                <version>0.3.1-SNAPSHOT</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>3.6.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.fusesource.jansi</groupId>
+                <artifactId>jansi</artifactId>
+                <version>1.11</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.offbytwo</groupId>
+                <artifactId>docopt</artifactId>
+                <version>0.6.0.20150202</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.12</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>1.2.3</version>
+            </dependency>
+
+                    <dependency>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                        <version>1.2.3</version>
+                        <scope>test</scope>
+                    </dependency>
+
+            <dependency>
+                <groupId>com.owlike</groupId>
+                <artifactId>genson</artifactId>
+                <version>1.6</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-netty-shaded</artifactId>
+                <version>1.23.0</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-protobuf</artifactId>
+                <version>1.23.0</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-stub</artifactId>
+                <version>1.23.0</version>
+            </dependency>
+        </dependencies>
+
+
+    <build>
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>1.6.2</version>
+            </extension>
+        </extensions>
+
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <shadedClassifierName>shaded</shadedClassifierName>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>target/generated-sources</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.xolstice.maven.plugins</groupId>
+                <artifactId>protobuf-maven-plugin</artifactId>
+                <version>0.5.1</version>
+                <configuration>
+                    <protocArtifact>com.google.protobuf:protoc:3.5.1-1:exe:${os.detected.classifier}</protocArtifact>
+                    <pluginId>grpc-java</pluginId>
+                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.14.0:exe:${os.detected.classifier}</pluginArtifact>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>compile-custom</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+    </build>
+</project>
+
