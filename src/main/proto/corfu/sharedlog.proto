@@ -19,42 +19,42 @@ package protos;
 import "peer/proposal_response.proto";
 import "peer/proposal.proto";
 
-message ReqCheck {
-    string channelID = 1;
-    string chaincodeID = 2;
-    bytes key = 3;
-}
-
-message ResCheck {
-    uint64 checkresult = 1;
-}
-
-message ObjectRequest {
-    string objectname = 1;
-    string keyvalue = 2;
-}
-
-message ReqAppend {
-    string ChannelID = 1;
-    string chaincodeID = 2;
+//message ReqCheck {
+//    string channelID = 1;
+//    string chaincodeID = 2;
+//    bytes key = 3;
+//}
+//
+//message ResCheck {
+//    uint64 checkresult = 1;
+//}
+//
+//message ObjectRequest {
+//    string objectname = 1;
+//    string keyvalue = 2;
+//}
+//
+//message ReqAppend {
+//    string ChannelID = 1;
+//    string chaincodeID = 2;
+////    string objectname = 3;
+//    bytes txContext = 3;
+//    bytes payload = 4;
+//    bytes writeset = 5;
+//    bytes readset = 6;
+//}
+//
+//
+//message SuccessResponse {
+//    string SuccessMessage = 1;
+//}
+//
+////for test in vCorfu environment
+//message ReqGet {
+//    string ChannelID = 1;
+//    string chaincodeID = 2;
 //    string objectname = 3;
-    bytes txContext = 3;
-    bytes payload = 4;
-    bytes writeset = 5;
-    bytes readset = 6;
-}
-
-
-message SuccessResponse {
-    string SuccessMessage = 1;
-}
-
-//for test in vCorfu environment
-message ReqGet {
-    string ChannelID = 1;
-    string chaincodeID = 2;
-    string objectname = 3;
-}
+//}
 
 service CorfuConnect {
     rpc processProposal(SignedProposal) returns (ProposalResponse);

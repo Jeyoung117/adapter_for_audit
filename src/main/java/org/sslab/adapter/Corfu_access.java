@@ -10,6 +10,7 @@ import org.corfudb.runtime.object.transactions.Transaction;
 import org.corfudb.runtime.object.transactions.TransactionType;
 import org.corfudb.runtime.view.AddressSpaceView;
 import org.corfudb.runtime.view.stream.IStreamView;
+import org.hyperledger.fabric.protos.corfu.CorfuChaincodeShim;
 import org.hyperledger.fabric.protos.peer.*;
 
 import java.util.HashMap;
@@ -33,7 +34,7 @@ public class Corfu_access {
         runtimes = new HashMap<UUID, CorfuRuntime>();
 //        runtime = new CorfuRuntime(runtimeAddr[0]).connect();
         lastReadAddrs = new HashMap<String, Long>();
-        System.out.println("Init AdapterModuleService");
+//        System.out.println("Init AdapterModuleService");
         tokenMap = new HashMap<String, Token>();
     }
 
@@ -48,28 +49,32 @@ public class Corfu_access {
     private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
 
 
-    public void getStringState(String objectKey, String channelID, String chaincodeID) {
+    public byte[] getStringState(String objectKey, String channelID, String chaincodeID) {
         Token current_token = runtime.getSequencerView().query().getToken();
         long blockNum = current_token.getSequence();
 
+        System.out.println("channelID:" + channelID);
+        System.out.println("chaincodeID:" + chaincodeID);
+
+
         Map<String, byte[]> map = runtime.getObjectsView()
                 .build()
-                .setStreamName(channelID + chaincodeID + objectKey)     // stream ID
+                .setStreamName(channelID + chaincodeID)     // stream ID
                 .setTypeToken(new TypeToken<CorfuTable<String, byte[]>>() {
                 })
                 .open();
 
 //        ByteString data = ByteString.copyFrom(map.get(objectKey));
-        byte[] temp = map.get(objectKey);
-        if (temp == null) {
-
-            System.out.println("[peer-interface] {getState} success");
-
+        byte[] value = map.get(objectKey);
+        if (value == null) {
+            System.out.println("[corfu-access-interface] {getState} null!!!!");
+            return value;
         } else {
 //            System.out.println(temp);
-            ByteString tempbs = ByteString.copyFrom(temp);
+            ByteString tempbs = ByteString.copyFrom(value);
 
-            System.out.println("[peer-interface] {getState} success");
+            System.out.println("[corfu-access-interface] {getState} success");
+            return value;
         }
     }
 
