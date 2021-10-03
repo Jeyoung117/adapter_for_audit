@@ -125,8 +125,11 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
         InvocationStubImpl invocationStub = new InvocationStubImpl(ChaincodeMessageFactory.newGetStateEventMessage(txParams.channelID, txParams.txID, "", "CAR9"));
         Context context = new Context(invocationStub);
 //        Car car = fabcar.queryCar(context, chaincodeInput.getArgs(1).toString());
-        Car car = fabcar.queryCar(context, "CAR9");
-        System.out.println(car);
+        Car car1 = fabcar.queryCar(context, "CAR9");
+        System.out.println(car1);
+        fabcar.changeCarOwner(context,"CAR9", "newowner1");
+        Car car2 = fabcar.queryCar(context, "CAR9");
+        System.out.println(car2);
 
 
     }

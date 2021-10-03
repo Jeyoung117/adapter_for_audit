@@ -203,6 +203,7 @@ org/hyperledger/fabric/protos/peer/ChaincodeGrpc.class
 org/hyperledger/fabric/protos/corfu/CorfuChaincodeShim$CorfuQueryStateClose$Builder.class
 org/hyperledger/fabric/protos/common/Common.class
 org/hyperledger/fabric/protos/orderer/Kafka$KafkaMessageRegular$Class.class
+org/hyperledger/fabric/protos/corfu/CorfuAccessConnectGrpc$CorfuAccessConnectBaseDescriptorSupplier.class
 org/hyperledger/fabric/protos/peer/lifecycle/ChaincodeDefinition$ChaincodeEndorsementInfo.class
 org/hyperledger/fabric/protos/idemix/Idemix$Credential.class
 org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$QueryInstalledChaincodesResult$ReferencesOrBuilder.class
@@ -295,6 +296,7 @@ org/hyperledger/fabric/protos/peer/ChaincodeGrpc$ChaincodeFutureStub.class
 org/hyperledger/fabric/protos/peer/Chaincode$ChaincodeDeploymentSpecOrBuilder.class
 org/hyperledger/fabric/protos/orderer/ClusterOuterClass$StepRequest$1.class
 org/hyperledger/fabric/protos/corfu/CorfuChaincodeGrpc$CorfuChaincodeImplBase.class
+org/hyperledger/fabric/protos/corfu/CorfuAccessConnectGrpc$CorfuAccessConnectImplBase.class
 org/hyperledger/fabric/protos/peer/ChaincodeShim$DelState$1.class
 org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$ChaincodeSource$TypeCase.class
 org/hyperledger/fabric/protos/peer/ChaincodeEventPackage$1.class
@@ -329,6 +331,7 @@ org/hyperledger/fabric/protos/common/MspPrincipal$MSPRole$MSPRoleType$1.class
 org/hyperledger/fabric/protos/gossip/Message$PeerIdentity$Builder.class
 org/hyperledger/fabric/protos/peer/Configuration$AnchorPeer$Builder.class
 org/hyperledger/fabric/protos/ledger/rwset/Rwset$CollectionHashedReadWriteSet$Builder.class
+org/hyperledger/fabric/protos/corfu/CorfuChaincodeShim$CorfuGetStateResponseOrBuilder.class
 org/hyperledger/fabric/protos/discovery/Protocol$ChaincodeCall$1.class
 org/hyperledger/fabric/protos/discovery/Protocol$ConfigQuery.class
 org/hyperledger/fabric/protos/peer/Collection$StaticCollectionConfig.class
@@ -374,6 +377,7 @@ org/hyperledger/fabric/protos/gossip/Message$StateInfoSnapshotOrBuilder.class
 org/hyperledger/fabric/protos/peer/Configuration$ACLs.class
 org/hyperledger/fabric/protos/gossip/Message$MembershipResponseOrBuilder.class
 org/hyperledger/fabric/protos/peer/ChaincodeShim$QueryResponseOrBuilder.class
+org/hyperledger/fabric/protos/corfu/CorfuChaincodeShim$CorfuGetStateResponse$Builder.class
 org/hyperledger/fabric/protos/transientstore/Transientstore.class
 org/hyperledger/fabric/protos/gossip/Message$PvtDataPayloadOrBuilder.class
 org/hyperledger/fabric/protos/ledger/rwset/kvrwset/KvRwset$RangeQueryInfo.class
@@ -503,6 +507,7 @@ org/hyperledger/fabric/protos/discovery/Protocol$QueryResultOrBuilder.class
 org/hyperledger/fabric/protos/common/Configuration$BlockDataHashingStructure$Builder.class
 org/hyperledger/fabric/protos/common/Configtx$ConfigGroup$Builder.class
 org/hyperledger/fabric/protos/discovery/Protocol$AuthInfo$1.class
+org/hyperledger/fabric/protos/corfu/CorfuChaincodeShim$CorfuGetStateResponse.class
 org/hyperledger/fabric/protos/common/Common$ChannelHeader$1.class
 org/hyperledger/fabric/protos/orderer/Ab$SeekPosition$Builder.class
 org/hyperledger/fabric/protos/corfu/CorfuConnectGrpc$CorfuConnectFutureStub.class
@@ -576,6 +581,7 @@ org/hyperledger/fabric/protos/ledger/rwset/Rwset$TxReadWriteSet$DataModel.class
 org/hyperledger/fabric/protos/gossip/Message$PullMsgType.class
 org/hyperledger/fabric/protos/idemix/Idemix$IssuerKeyOrBuilder.class
 org/hyperledger/fabric/protos/peer/ChaincodeShim$DelStateOrBuilder.class
+org/hyperledger/fabric/protos/corfu/CorfuAccessConnectGrpc$MethodHandlers.class
 org/hyperledger/fabric/protos/peer/EventsPackage$1.class
 org/hyperledger/fabric/protos/common/Ledger.class
 org/hyperledger/fabric/protos/ledger/queryresult/KvQueryResult$KVOrBuilder.class
@@ -688,6 +694,7 @@ org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$QueryInstalledChaincodesR
 org/sslab/adapter/AdapterServer.class
 org/hyperledger/fabric/protos/peer/TransactionPackage$TransactionAction$1.class
 org/hyperledger/fabric/protos/common/Common$BlockHeader.class
+org/hyperledger/fabric/protos/corfu/CorfuAccessConnectGrpc$CorfuAccessConnectBlockingStub.class
 org/hyperledger/fabric/protos/peer/ProposalPackage$SignedProposal$Builder.class
 org/hyperledger/fabric/protos/common/Ledger$1.class
 org/hyperledger/fabric/protos/gossip/Message$PvtDataPayload$Builder.class
@@ -723,6 +730,7 @@ org/hyperledger/fabric/protos/corfu/CorfuChaincodeShim$CorfuGetStateByRangeOrBui
 org/hyperledger/fabric/protos/discovery/Protocol$LocalPeerQuery$Builder.class
 org/hyperledger/fabric/protos/common/Configuration$Capability.class
 org/hyperledger/fabric/protos/corfu/CorfuChaincodeGrpc$MethodHandlers.class
+org/hyperledger/fabric/protos/corfu/CorfuAccessConnectGrpc$CorfuAccessConnectMethodDescriptorSupplier.class
 org/hyperledger/fabric/protos/peer/Query$ChaincodeInfoOrBuilder.class
 org/hyperledger/fabric/protos/peer/lifecycle/Db.class
 org/hyperledger/fabric/protos/gossip/Message$MembershipRequest.class
@@ -768,6 +776,7 @@ org/hyperledger/fabric/protos/common/Configuration$CapabilitiesOrBuilder.class
 org/hyperledger/fabric/protos/orderer/Configuration$KafkaBrokers.class
 org/sslab/adapter/chaincode/fabcar/Car.class
 org/hyperledger/fabric/protos/idemix/Idemix$IssuerPublicKey$1.class
+org/hyperledger/fabric/protos/corfu/CorfuAccessConnectGrpc$CorfuAccessConnectFutureStub.class
 org/hyperledger/fabric/protos/peer/TransactionPackage$MetaDataKeys.class
 org/hyperledger/fabric/protos/orderer/ClusterOuterClass$StepRequestOrBuilder.class
 org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$CheckCommitReadinessArgs$1.class
@@ -802,6 +811,7 @@ org/hyperledger/fabric/protos/corfu/CorfuChaincodeSupportGrpc$CorfuChaincodeSupp
 org/hyperledger/fabric/protos/corfu/CorfuChaincodeShim$CorfuQueryStateClose$1.class
 org/hyperledger/fabric/protos/peer/Collection$CollectionPolicyConfig.class
 org/hyperledger/fabric/protos/ledger/rwset/kvrwset/KvRwset$HashedRWSet$Builder.class
+org/hyperledger/fabric/protos/corfu/CorfuAccessConnectGrpc$CorfuAccessConnectStub.class
 org/hyperledger/fabric/protos/ledger/queryresult/KvQueryResult$KeyModification$1.class
 org/hyperledger/fabric/protos/common/Configuration$Capability$Builder.class
 org/hyperledger/fabric/protos/peer/lifecycle/ChaincodeDefinition$ChaincodeEndorsementInfo$1.class
@@ -989,6 +999,7 @@ org/hyperledger/fabric/protos/peer/EndorserGrpc$EndorserFileDescriptorSupplier.c
 org/hyperledger/fabric/protos/gossip/Message$MembershipRequestOrBuilder.class
 org/hyperledger/fabric/protos/common/Configuration$OrdererAddresses$1.class
 org/hyperledger/fabric/protos/peer/ChaincodeShim.class
+org/hyperledger/fabric/protos/corfu/CorfuAccessConnectGrpc.class
 org/hyperledger/fabric/protos/orderer/ClusterOuterClass$StepResponseOrBuilder.class
 org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$QueryInstalledChaincodesResult$References$1.class
 org/hyperledger/fabric/protos/orderer/Ab$DeliverResponse$TypeCase.class
@@ -1015,6 +1026,7 @@ org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$CommitChaincodeDefinition
 org/hyperledger/fabric/protos/corfu/CorfuChaincodeShim$CorfuGetHistoryForKey$1.class
 org/hyperledger/fabric/protos/corfu/CorfuChaincodeShim$CorfuChaincodeMessage$Type$1.class
 org/hyperledger/fabric/protos/common/Common$MetadataOrBuilder.class
+org/hyperledger/fabric/protos/corfu/CorfuAccessConnectGrpc$1.class
 org/hyperledger/fabric/protos/peer/ChaincodeShim$GetStateMetadata$1.class
 org/hyperledger/fabric/protos/discovery/Protocol$Endpoint$1.class
 org/hyperledger/fabric/protos/orderer/Ab$SeekPosition.class
@@ -1194,6 +1206,7 @@ org/hyperledger/fabric/protos/peer/Query$ChannelInfo.class
 org/hyperledger/fabric/protos/peer/Chaincode$ChaincodeInput.class
 org/hyperledger/fabric/protos/msp/MspConfigPackage$IdemixMSPSignerConfigOrBuilder.class
 org/hyperledger/fabric/protos/transientstore/Transientstore$TxPvtReadWriteSetWithConfigInfo$Builder.class
+org/hyperledger/fabric/protos/corfu/CorfuChaincodeShim$CorfuPutStateResponseOrBuilder.class
 org/hyperledger/fabric/protos/peer/ProposalResponsePackage$Response$1.class
 org/hyperledger/fabric/protos/common/Policies$ApplicationPolicy$Builder.class
 org/hyperledger/fabric/protos/common/Configtx$Config$1.class
@@ -1245,11 +1258,13 @@ org/hyperledger/fabric/protos/gossip/Message$PeerIdentity$1.class
 org/hyperledger/fabric/protos/peer/EndorserGrpc$1.class
 org/hyperledger/fabric/protos/corfu/CorfuChaincodeShim$CorfuQueryResultBytesOrBuilder.class
 org/hyperledger/fabric/protos/peer/Resources$ChaincodeValidation$Builder.class
+org/hyperledger/fabric/protos/corfu/CorfuChaincodeShim$CorfuGetStateResponse$1.class
 org/hyperledger/fabric/protos/discovery/Protocol$Request$1.class
 org/hyperledger/fabric/protos/peer/EndorserGrpc$EndorserMethodDescriptorSupplier.class
 org/hyperledger/fabric/protos/discovery/Protocol$ConfigQuery$Builder.class
 org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$CheckCommitReadinessResult$1.class
 org/hyperledger/fabric/protos/common/Policies$Policy$PolicyType.class
+org/hyperledger/fabric/protos/corfu/CorfuChaincodeShim$CorfuPutStateResponse.class
 org/hyperledger/fabric/protos/ledger/rwset/kvrwset/KvRwset$RangeQueryInfo$Builder.class
 org/hyperledger/fabric/protos/peer/lifecycle/Db$1.class
 org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$CommitChaincodeDefinitionResultOrBuilder.class
@@ -1357,6 +1372,7 @@ org/hyperledger/fabric/protos/gossip/GossipGrpc$GossipFileDescriptorSupplier.cla
 org/hyperledger/fabric/protos/discovery/Protocol$QueryResult$1.class
 org/hyperledger/fabric/protos/peer/lifecycle/Db$StateData$Builder.class
 org/hyperledger/fabric/protos/peer/Chaincode$ChaincodeData$1.class
+org/hyperledger/fabric/protos/corfu/CorfuAccessConnectGrpc$CorfuAccessConnectFileDescriptorSupplier.class
 org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$GetInstalledChaincodePackageArgs$Builder.class
 org/hyperledger/fabric/protos/peer/ChaincodeShim$ChaincodeMessage.class
 org/hyperledger/fabric/protos/orderer/etcdraft/Metadata$BlockMetadata$Builder.class
@@ -1391,6 +1407,7 @@ org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$CommitChaincodeDefinition
 org/hyperledger/fabric/protos/gossip/Message$StateInfoPullRequest.class
 org/hyperledger/fabric/protos/peer/ProposalResponsePackage$1.class
 org/hyperledger/fabric/protos/peer/Peer.class
+org/hyperledger/fabric/protos/corfu/CorfuChaincodeShim$CorfuPutStateResponse$Builder.class
 org/hyperledger/fabric/protos/peer/ChaincodeSupportGrpc$ChaincodeSupportBaseDescriptorSupplier.class
 org/hyperledger/fabric/protos/corfu/CorfuChaincodeShim$CorfuGetState.class
 org/hyperledger/fabric/protos/peer/ChaincodeSupportGrpc$ChaincodeSupportBlockingStub.class
@@ -1426,6 +1443,7 @@ org/hyperledger/fabric/protos/peer/TransactionPackage$ChaincodeEndorsedAction.cl
 org/hyperledger/fabric/protos/peer/Resources$ChaincodeEndorsement$Builder.class
 org/hyperledger/fabric/protos/peer/Query$ChannelInfoOrBuilder.class
 org/hyperledger/fabric/protos/peer/ChaincodeGrpc$ChaincodeFileDescriptorSupplier.class
+org/hyperledger/fabric/protos/corfu/CorfuChaincodeShim$CorfuPutStateResponse$1.class
 org/hyperledger/fabric/protos/common/MspPrincipal$OrganizationUnit.class
 org/hyperledger/fabric/protos/peer/EventsPackage$FilteredTransactionActionsOrBuilder.class
 org/hyperledger/fabric/protos/peer/TransactionPackage$ProcessedTransactionOrBuilder.class

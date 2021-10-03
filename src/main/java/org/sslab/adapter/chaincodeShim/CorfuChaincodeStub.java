@@ -365,6 +365,7 @@ public interface CorfuChaincodeStub {
      * @param value the value to write to the ledger
      */
     default void putStringState(final String key, final String value) {
+
         putState(key, value.getBytes(UTF_8));
     }
 

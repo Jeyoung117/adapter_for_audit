@@ -217,8 +217,8 @@ public class InvocationStubImpl implements CorfuChaincodeStub {
      *
      */
     @Override
-    public byte[] getState(final String objectKey) {
-        return corfu_access.getStringState(objectKey, channelId, "fabcar");
+    public byte[] getState(final String key) {
+        return corfu_access.getStringState(key, channelId, "fabcar");
 //        return this.handler.invoke(objectKey, channelId, chaincodeName);
     }
 
@@ -245,7 +245,7 @@ public class InvocationStubImpl implements CorfuChaincodeStub {
 
     @Override
     public void putState(String key, byte[] value) {
-
+        corfu_access.putStringState(key, channelId, "fabcar", value);
     }
 
     @Override

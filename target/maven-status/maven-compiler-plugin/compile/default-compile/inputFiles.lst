@@ -58,6 +58,7 @@
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/gossip/Message.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/peer/ProposalPackage.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/peer/Policy.java
+/home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/grpc-java/org/hyperledger/fabric/protos/corfu/CorfuAccessConnectGrpc.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/adapter/chaincodeShim/impl/InvocationStubImpl.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/peer/ChaincodeShim.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/orderer/etcdraft/Configuration.java
