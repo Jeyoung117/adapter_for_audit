@@ -1,7 +1,16 @@
-package org.sslab.adapter.chaincodeShim.contract;
+/*
+ * Copyright 2019 IBM DTCC All Rights Reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
-import org.hyperledger.fabric.contract.ClientIdentity;
-import org.sslab.adapter.chaincodeShim.ChaincodeStub;
+package org.sslab.adapter.chaincodeshim.contract;
+
+import org.json.JSONException;
+import org.sslab.adapter.chaincodeshim.shim.ChaincodeStub;
+
+import java.io.IOException;
+import java.security.cert.CertificateException;
 
 /**
  *
@@ -44,11 +53,11 @@ public class Context {
      */
     public Context(final ChaincodeStub stub) {
         this.stub = stub;
-//        try {
-//            this.clientIdentity = new ClientIdentity(stub);
-//        } catch (CertificateException | JSONException | IOException e) {
-//            throw new ContractRuntimeException("Could not create new client identity", e);
-//        }
+        try {
+            this.clientIdentity = new ClientIdentity(stub);
+        } catch (CertificateException | JSONException | IOException e) {
+            throw new ContractRuntimeException("Could not create new client identity", e);
+        }
     }
 
     /**

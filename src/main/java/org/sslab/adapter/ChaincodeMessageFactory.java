@@ -1,4 +1,4 @@
-package org.sslab.adapter.chaincodeShim.impl;
+package org.sslab.adapter;
 
 import static org.hyperledger.fabric.protos.corfu.CorfuChaincodeShim.CorfuChaincodeMessage.Type.COMPLETED;
 import static org.hyperledger.fabric.protos.corfu.CorfuChaincodeShim.CorfuChaincodeMessage.Type.DEL_STATE;

@@ -1,6 +1,5 @@
 package org.sslab.adapter;
 
-import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.grpc.stub.StreamObserver;
 import lombok.SneakyThrows;
@@ -9,14 +8,12 @@ import org.corfudb.runtime.CorfuRuntime;
 import org.corfudb.runtime.view.AddressSpaceView;
 import org.corfudb.runtime.view.stream.IStreamView;
 import org.hyperledger.fabric.protos.common.Common;
-import org.hyperledger.fabric.protos.corfu.CorfuChaincodeShim;
 import org.hyperledger.fabric.protos.corfu.CorfuConnectGrpc;
 import org.hyperledger.fabric.protos.peer.*;
 import org.sslab.adapter.chaincode.fabcar.Car;
 import org.sslab.adapter.chaincode.fabcar.FabCar;
-import org.sslab.adapter.chaincodeShim.contract.Context;
-import org.sslab.adapter.chaincodeShim.impl.ChaincodeMessageFactory;
-import org.sslab.adapter.chaincodeShim.impl.InvocationStubImpl;
+import org.sslab.adapter.chaincodeshim.contract.Context;
+import org.sslab.adapter.chaincodeshim.shim.impl.InvocationStubImpl;
 //import org.sslab.adapter.chaincode.fabcar.FabCar;
 //import org.hyperledger.fabric.sdk.ProposalResponse;
 

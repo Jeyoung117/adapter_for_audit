@@ -1,9 +1,15 @@
-package org.sslab.adapter.chaincodeShim;
+/*
+ * Copyright 2019 IBM All Rights Reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+package org.sslab.adapter.chaincodeshim.shim;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Defines methods that all chaincodes must implement.

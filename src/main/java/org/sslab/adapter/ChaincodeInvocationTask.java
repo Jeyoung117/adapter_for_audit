@@ -1,4 +1,4 @@
-package org.sslab.adapter.chaincodeShim.impl;
+package org.sslab.adapter;
 
 import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.ERROR;
 import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.RESPONSE;
@@ -16,7 +16,6 @@ import org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type;
 import org.hyperledger.fabric.shim.Chaincode;
 
 import com.google.protobuf.ByteString;
-import org.sslab.adapter.Corfu_access;
 
 /**
  * A 'Callable' implementation the has the job of invoking the chaincode, and
