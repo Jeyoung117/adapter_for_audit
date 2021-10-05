@@ -1,11 +1,5 @@
 package org.sslab.adapter.chaincode.fabcar;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.sslab.adapter.chaincodeShim.contract.Context;
 import org.hyperledger.fabric.contract.ContractInterface;
 import org.hyperledger.fabric.contract.annotation.Contact;
@@ -15,13 +9,9 @@ import org.hyperledger.fabric.contract.annotation.Info;
 import org.hyperledger.fabric.contract.annotation.License;
 import org.hyperledger.fabric.contract.annotation.Transaction;
 import org.hyperledger.fabric.shim.ChaincodeException;
-import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.hyperledger.fabric.shim.ledger.KeyValue;
-import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
 
 import com.owlike.genson.Genson;
-import org.sslab.adapter.chaincodeShim.CorfuChaincodeStub;
-import org.sslab.adapter.chaincodeShim.impl.InvocationStubImpl;
+import org.sslab.adapter.chaincodeShim.ChaincodeStub;
 
 /**
  * Java implementation of the Fabric Car Contract described in the Writing Your
@@ -59,7 +49,7 @@ public final class FabCar implements ContractInterface {
      */
     @Transaction()
     public Car queryCar(final Context ctx, final String key) {
-        CorfuChaincodeStub stub = ctx.getStub();
+        ChaincodeStub stub = ctx.getStub();
         String carState = stub.getStringState(key);
 
         if (carState.isEmpty()) {
@@ -80,7 +70,7 @@ public final class FabCar implements ContractInterface {
      */
     @Transaction()
     public void initLedger(final Context ctx) {
-        CorfuChaincodeStub stub = ctx.getStub();
+        ChaincodeStub stub = ctx.getStub();
 
         String[] carData = {
                 "{ \"make\": \"Toyota\", \"model\": \"Prius\", \"color\": \"blue\", \"owner\": \"Tomoko\" }",
@@ -118,7 +108,7 @@ public final class FabCar implements ContractInterface {
     @Transaction()
     public Car createCar(final Context ctx, final String key, final String make, final String model,
                          final String color, final String owner) {
-        CorfuChaincodeStub stub = ctx.getStub();
+        ChaincodeStub stub = ctx.getStub();
 
         String carState = stub.getStringState(key);
         if (!carState.isEmpty()) {
@@ -170,7 +160,7 @@ public final class FabCar implements ContractInterface {
      */
     @Transaction()
     public Car changeCarOwner(final Context ctx, final String key, final String newOwner) {
-        CorfuChaincodeStub stub = ctx.getStub();
+        ChaincodeStub stub = ctx.getStub();
 
         String carState = stub.getStringState(key);
 

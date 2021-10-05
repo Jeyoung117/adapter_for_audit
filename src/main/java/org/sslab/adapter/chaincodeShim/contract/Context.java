@@ -1,10 +1,7 @@
 package org.sslab.adapter.chaincodeShim.contract;
-import java.io.IOException;
-import java.security.cert.CertificateException;
 
 import org.hyperledger.fabric.contract.ClientIdentity;
-import org.sslab.adapter.chaincodeShim.CorfuChaincodeStub;
-import org.json.JSONException;
+import org.sslab.adapter.chaincodeShim.ChaincodeStub;
 
 /**
  *
@@ -33,7 +30,7 @@ public class Context {
     /**
      *
      */
-    protected CorfuChaincodeStub stub;
+    protected ChaincodeStub stub;
 
     /**
      *
@@ -43,9 +40,9 @@ public class Context {
     /**
      * Creates new client identity and sets it as a property of the stub.
      *
-     * @param stub Instance of the {@link CorfuChaincodeStub} to use
+     * @param stub Instance of the {@link ChaincodeStub} to use
      */
-    public Context(final CorfuChaincodeStub stub) {
+    public Context(final ChaincodeStub stub) {
         this.stub = stub;
 //        try {
 //            this.clientIdentity = new ClientIdentity(stub);
@@ -58,7 +55,7 @@ public class Context {
      *
      * @return ChaincodeStub instance to use
      */
-    public CorfuChaincodeStub getStub() {
+    public ChaincodeStub getStub() {
         return this.stub;
     }
 

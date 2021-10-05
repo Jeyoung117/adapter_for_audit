@@ -16,7 +16,7 @@ public interface Chaincode {
      * @param stub the chaincode stub
      * @return the chaincode response
      */
-    Response init(CorfuChaincodeStub stub);
+    Response init(ChaincodeStub stub);
 
     /**
      * Called for every Invoke transaction. The chaincode may change its state
@@ -25,12 +25,12 @@ public interface Chaincode {
      * @param stub the chaincode stub
      * @return the chaincode response
      */
-    Response invoke(CorfuChaincodeStub stub);
+    Response invoke(ChaincodeStub stub);
 
     /**
      * Wrapper around protobuf Response, contains status, message and payload.
-     * Object returned by call to {@link #init(CorfuChaincodeStub)}
-     * and{@link #invoke(CorfuChaincodeStub)}
+     * Object returned by call to {@link #init(ChaincodeStub)}
+     * and{@link #invoke(ChaincodeStub)}
      */
     class Response {
 

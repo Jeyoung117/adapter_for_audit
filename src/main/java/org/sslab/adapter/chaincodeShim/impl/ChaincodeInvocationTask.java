@@ -1,6 +1,5 @@
 package org.sslab.adapter.chaincodeShim.impl;
 
-import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.COMPLETED;
 import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.ERROR;
 import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.RESPONSE;
 
@@ -15,12 +14,9 @@ import org.hyperledger.fabric.protos.peer.ChaincodeShim;
 import org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage;
 import org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type;
 import org.hyperledger.fabric.shim.Chaincode;
-import org.hyperledger.fabric.shim.ChaincodeStub;
 
 import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
 import org.sslab.adapter.Corfu_access;
-import org.sslab.adapter.chaincodeShim.CorfuChaincodeStub;
 
 /**
  * A 'Callable' implementation the has the job of invoking the chaincode, and

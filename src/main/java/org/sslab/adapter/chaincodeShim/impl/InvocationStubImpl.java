@@ -1,24 +1,14 @@
 package org.sslab.adapter.chaincodeShim.impl;
 
-import static java.util.stream.Collectors.toList;
-import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.COMPLETED;
-import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.GET_HISTORY_FOR_KEY;
-import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.GET_PRIVATE_DATA_HASH;
-import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.GET_QUERY_RESULT;
-import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.GET_STATE_BY_RANGE;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -29,35 +19,15 @@ import org.hyperledger.fabric.protos.common.Common.Header;
 import org.hyperledger.fabric.protos.common.Common.HeaderType;
 import org.hyperledger.fabric.protos.common.Common.SignatureHeader;
 import org.hyperledger.fabric.protos.corfu.CorfuChaincodeShim;
-import org.hyperledger.fabric.protos.ledger.queryresult.KvQueryResult;
-import org.hyperledger.fabric.protos.ledger.queryresult.KvQueryResult.KV;
-import org.hyperledger.fabric.protos.peer.Chaincode.ChaincodeID;
 import org.hyperledger.fabric.protos.peer.Chaincode.ChaincodeInput;
-import org.hyperledger.fabric.protos.peer.Chaincode.ChaincodeSpec;
 import org.hyperledger.fabric.protos.peer.ChaincodeEventPackage.ChaincodeEvent;
-import org.hyperledger.fabric.protos.peer.ChaincodeShim;
-import org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage;
-import org.hyperledger.fabric.protos.peer.ChaincodeShim.GetQueryResult;
-import org.hyperledger.fabric.protos.peer.ChaincodeShim.GetState;
-import org.hyperledger.fabric.protos.peer.ChaincodeShim.GetStateByRange;
-import org.hyperledger.fabric.protos.peer.ChaincodeShim.QueryResultBytes;
-import org.hyperledger.fabric.protos.peer.ChaincodeShim.StateMetadataResult;
 import org.hyperledger.fabric.protos.peer.ProposalPackage;
 import org.hyperledger.fabric.protos.peer.ProposalPackage.ChaincodeProposalPayload;
 import org.hyperledger.fabric.protos.peer.ProposalPackage.Proposal;
 import org.hyperledger.fabric.protos.peer.ProposalPackage.SignedProposal;
-import org.hyperledger.fabric.protos.peer.ProposalResponsePackage;
-import org.hyperledger.fabric.protos.peer.TransactionPackage;
-import org.hyperledger.fabric.shim.Chaincode;
 import org.hyperledger.fabric.shim.Chaincode.Response;
-import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.hyperledger.fabric.shim.ledger.CompositeKey;
-import org.hyperledger.fabric.shim.ledger.KeyModification;
-import org.hyperledger.fabric.shim.ledger.KeyValue;
-import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
-import org.hyperledger.fabric.shim.ledger.QueryResultsIteratorWithMetadata;
 import org.sslab.adapter.Corfu_access;
-import org.sslab.adapter.chaincodeShim.CorfuChaincodeStub;
+import org.sslab.adapter.chaincodeShim.ChaincodeStub;
 //import org.sslab.adapter.chaincode.fabcar.FabCar;
 //import org.hyperledger.fabric.sdk.ProposalResponse;
 
@@ -66,7 +36,7 @@ import org.sslab.adapter.chaincodeShim.CorfuChaincodeStub;
  * @author Jeyoung Hwang.capricorn116@postech.ac.kr
  *         created on 2021. 4. 10.
  */
-public class InvocationStubImpl implements CorfuChaincodeStub {
+public class InvocationStubImpl implements ChaincodeStub {
     private static final String UNSPECIFIED_START_KEY = new String(Character.toChars(0x000001));
     private static final String UNSPECIFIED_END_KEY = "";
     private static final Logger LOGGER = Logger.getLogger(InvocationStubImpl.class.getName());

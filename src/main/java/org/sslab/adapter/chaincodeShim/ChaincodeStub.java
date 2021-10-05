@@ -15,7 +15,7 @@ import org.hyperledger.fabric.shim.Chaincode.Response;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 
 
-public interface CorfuChaincodeStub {
+public interface ChaincodeStub {
     /**
 
      *
@@ -43,7 +43,7 @@ public interface CorfuChaincodeStub {
     /**
      * A convenience method that returns all except the first argument of the
      * chaincode invocation for use as the parameters to the function returned by
-     * #{@link CorfuChaincodeStub#getFunction()}.
+     * #{@link ChaincodeStub#getFunction()}.
      * <p>
      * The bytes of the arguments are decoded as a UTF-8 strings and returned as a
      * list of string parameters.
