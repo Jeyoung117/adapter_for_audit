@@ -13,7 +13,7 @@ public class AdapterServerRunner {
     public static void main(String[] args) throws IOException, InterruptedException {
 
         final int port = 54323;
-        final BindableService adapterService = (BindableService) new AdapterService();
+        final BindableService adapterService = (BindableService) new AdapterModuleService();
 
         AdapterServer server = new AdapterServer(port, adapterService);
 

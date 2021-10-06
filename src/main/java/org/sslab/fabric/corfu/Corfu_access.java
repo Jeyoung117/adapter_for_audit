@@ -10,8 +10,8 @@ import org.corfudb.runtime.object.transactions.Transaction;
 import org.corfudb.runtime.object.transactions.TransactionType;
 import org.corfudb.runtime.view.AddressSpaceView;
 import org.corfudb.runtime.view.stream.IStreamView;
+import org.sslab.fabric.adapter.AdapterModuleService;
 
-import org.sslab.fabric.adapter.;
 
 import java.util.HashMap;
 import java.util.Map;

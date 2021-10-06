@@ -1,20 +1,6 @@
 syntax = "proto3";
 
-//import "google/protobuf/empty.proto";
-//import "google/protobuf/timestamp.proto";
-
-option java_multiple_files = true;
-option java_outer_classname = "adapterservice";
-//option java_package = "org.sslab.adapter";
-//option java_package = "org.hyperledger.fabric.protos.peer";
-//option java_package = "proto";
-option go_package = "github.com/hyperledger/fabric-protos-go/peer";
-option java_package = "org.hyperledger.fabric.protos.corfu";
-
-
-package protos;
-
-//package org.sslab.adapter;
+package bsp_transaction;
 
 message Version {
     uint64 BlockNumber = 1;
@@ -523,6 +509,34 @@ message QueryResponse {
     bytes Value = 2;
 }
 
-service Adapter {
-    rpc processProposal(Proposal) returns (ProposalResponse);
+// Defines communication interface of BSP blockchain nodes, including BSP Orderer, BSP Executor, BSP Auditor
+// For dev-only purpose, those interfaces are not separated for now.
+service CommitNotifier {
+    // auditor
+    rpc SubscribeTxCommitEventByClientID (CommitEventRequestByClientID) returns (stream TxEvent);
+    rpc MigrateState (stream MigrateRequest) returns (MigrateResponse);
+
+    // orderer
+    rpc Deliver(DeliverRequest) returns (stream ECBlock);
+    rpc MigrateBlocks (stream MigrateRequest) returns (MigrateResponse);
+
+    // executor
+    rpc ProcessMCBlock(MCBlock) returns  (MCResponse);
+    rpc UpdateActiveExecutors (ActiveExecutors) returns (ActiveExecutorsResp);
+    rpc Execute (Proposal) returns (ProposalResponse);
+    rpc ExecuteBatch (ProposalBatch) returns (ProposalResponseBatch);
+
+
+    rpc Ping (HelloRequest) returns (HelloResponse);
+}
+
+service QueryExecutor {
+    rpc Query(QueryRequest) returns (QueryResponse);
+}
+
+service Aggregator {
+    rpc RegisterClientWithPolicy (AggregatorSubscribeRequest) returns (stream AggregatorResponse);
+    rpc ProcessProposal(Proposal)  returns (ProposalResponse);
+    rpc WaitForEvent(WaitForEventRequest) returns (WaitForEventResponse);
+    rpc StartWorkload(WorkerMessage) returns(WorkerMessage);
 }
