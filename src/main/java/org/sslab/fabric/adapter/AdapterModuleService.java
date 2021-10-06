@@ -125,15 +125,20 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
 //        Car car2 = fabcar.queryCar(context, "CAR9");
 //        System.out.println(car2);
 
-
     }
 //    public void executeProposal(String channelID, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) {
 //        FabCar fabcar = new FabCar();
 //        fabcar.queryCar(chaincodeInput.toString());
 
+//        CorfuChaincodeShim.CorfuChaincodeMessage message= new CorfuChaincodeShim.CorfuChaincodeMessage();
+
+    public void callChaincode(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) throws InvalidProtocolBufferException {
+        FabCar fabcar = new FabCar();
+        System.out.println(chaincodeInput);
+        System.out.println(chaincodeInput.toString());
+    }
 
 }
-
 
 
 

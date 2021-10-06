@@ -3,9 +3,9 @@ package org.sslab.fabric.adapter;
 import org.hyperledger.fabric.protos.peer.ProposalPackage;
 
 public class TransactionParams {
-    String txID;
-    String channelID;
-    String namespaceID;
+    public String txID;
+    public String channelID;
+    public String namespaceID;
     public ProposalPackage.SignedProposal signedProp;
     public ProposalPackage.Proposal proposal;
 //    HistoryQueryExecutor ledger.HistoryQueryExecutor
