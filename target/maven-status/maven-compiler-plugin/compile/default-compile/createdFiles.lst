@@ -100,6 +100,7 @@ org/hyperledger/fabric/protos/peer/EventsPackage$BlockAndPrivateData$Builder.cla
 org/hyperledger/fabric/protos/ledger/rwset/kvrwset/KvRwset$RangeQueryInfoOrBuilder.class
 org/hyperledger/fabric/protos/peer/Query$1.class
 org/hyperledger/fabric/protos/peer/ProposalResponsePackage$ProposalResponsePayload.class
+org/sslab/temp/ChaincodeInvocationTask.class
 org/hyperledger/fabric/protos/ledger/rwset/Rwset$TxPvtReadWriteSet.class
 org/hyperledger/fabric/protos/peer/Chaincode$CDSDataOrBuilder.class
 org/sslab/fabric/chaincodeshim/contract/annotation/Property.class
@@ -577,7 +578,6 @@ org/hyperledger/fabric/protos/peer/ProposalResponsePackage$Response.class
 org/hyperledger/fabric/protos/orderer/ClusterOuterClass$SubmitResponse$1.class
 org/hyperledger/fabric/protos/corfu/CorfuChaincodeSupportGrpc.class
 org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$GetInstalledChaincodePackageResult$1.class
-org/sslab/fabric/ChaincodeInvocationTask.class
 org/hyperledger/fabric/protos/common/Policies$SignaturePolicyOrBuilder.class
 org/hyperledger/fabric/protos/corfu/CorfuChaincodeShim$CorfuGetStateOrBuilder.class
 org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$ChaincodeSource$Unavailable$Builder.class
@@ -817,7 +817,6 @@ org/sslab/fabric/chaincodeshim/shim/impl/QueryResultsIteratorImpl.class
 org/hyperledger/fabric/protos/msp/MspConfigPackage$IdemixMSPConfig$Builder.class
 org/hyperledger/fabric/protos/discovery/Protocol$Response$1.class
 org/hyperledger/fabric/protos/discovery/Protocol$Endpoint$Builder.class
-org/sslab/fabric/ChaincodeInvocationTask$1.class
 org/hyperledger/fabric/protos/gossip/Message$PeerIdentityOrBuilder.class
 org/hyperledger/fabric/protos/peer/ProposalPackage$ChaincodeHeaderExtension$1.class
 org/hyperledger/fabric/protos/ledger/rwset/kvrwset/KvRwset$QueryReads.class
@@ -1388,6 +1387,7 @@ org/hyperledger/fabric/protos/peer/lifecycle/ChaincodeDefinition$ChaincodeEndors
 org/hyperledger/fabric/protos/gossip/Message$DataMessage$Builder.class
 org/hyperledger/fabric/protos/peer/ProposalResponsePackage$ProposalResponsePayloadOrBuilder.class
 org/hyperledger/fabric/protos/ledger/rwset/Rwset.class
+org/sslab/fabric/chaincode_support/chaincodeSupport.class
 org/hyperledger/fabric/protos/peer/ProposalPackage.class
 org/hyperledger/fabric/protos/common/MspPrincipal$MSPIdentityAnonymityOrBuilder.class
 org/hyperledger/fabric/protos/orderer/Ab$SeekPosition$TypeCase.class
@@ -1467,6 +1467,7 @@ org/hyperledger/fabric/protos/peer/TransactionPackage$ChaincodeActionPayload$1.c
 org/hyperledger/fabric/protos/gossip/Message$Acknowledgement$1.class
 org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$ApproveChaincodeDefinitionForMyOrgResult.class
 org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$QueryInstalledChaincodeResult$Chaincode.class
+org/sslab/temp/ChaincodeInvocationTask$1.class
 org/hyperledger/fabric/protos/ledger/rwset/Rwset$TxReadWriteSet.class
 org/hyperledger/fabric/protos/gossip/Message$StateInfo$1.class
 org/hyperledger/fabric/protos/peer/ChaincodeShim$ChaincodeMessageOrBuilder.class
