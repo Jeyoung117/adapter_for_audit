@@ -10,8 +10,8 @@ import org.corfudb.runtime.object.transactions.Transaction;
 import org.corfudb.runtime.object.transactions.TransactionType;
 import org.corfudb.runtime.view.AddressSpaceView;
 import org.corfudb.runtime.view.stream.IStreamView;
-import org.hyperledger.fabric.protos.corfu.CorfuChaincodeShim;
-import org.sslab.fabric.adapter.AdapterModuleService;
+
+import org.sslab.fabric.adapter.;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * @author Jeyoung Hwang.capricorn116@postech.ac.kr
  *         created on 2021. 9. 28.
  */
-public class Corfu_access extends org.hyperledger.fabric.protos.corfu.CorfuAccessConnectGrpc.CorfuAccessConnectImplBase {
+public class Corfu_access {
     Map<UUID, CorfuRuntime> runtimes;
     Map<UUID, IStreamView> streamViews;
     Map<String, Long> lastReadAddrs;
@@ -48,44 +48,6 @@ public class Corfu_access extends org.hyperledger.fabric.protos.corfu.CorfuAcces
 
     private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
 
-    @Override
-    public void getStringState(CorfuChaincodeShim.CorfuGetState corfuGetState, StreamObserver<CorfuChaincodeShim.CorfuGetStateResponse> responseObserver) {
-        Token current_token = runtime.getSequencerView().query().getToken();
-        long blockNum = current_token.getSequence();
-
-
-        String channelID = "mychannel";
-        String chaincodeID = "fabcar";
-        System.out.println("channelID:" + channelID);
-        System.out.println("chaincodeID:" + chaincodeID);
-
-
-        Map<String, byte[]> map = runtime.getObjectsView()
-                .build()
-                .setStreamName(channelID + chaincodeID)     // stream ID
-                .setTypeToken(new TypeToken<CorfuTable<String, byte[]>>() {
-                })
-                .open();
-
-//        ByteString data = ByteString.copyFrom(map.get(objectKey));
-        byte[] value = map.get(corfuGetState.getKey());
-        if (value == null) {
-            System.out.println("[corfu-access-interface] {getState} null!!!!");
-
-        } else {
-//            System.out.println(temp);
-            ByteString tempbs = ByteString.copyFrom(value);
-
-            System.out.println("[corfu-access-interface] {getState} success");
-        }
-        CorfuChaincodeShim.CorfuGetStateResponse response = CorfuChaincodeShim.CorfuGetStateResponse.newBuilder()
-                .setKeyBytes(ByteString.copyFrom(value))
-                .build();
-
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
-
-    }
 
 
     //local method call 전용 getstringstate

@@ -8,8 +8,12 @@ import org.corfudb.runtime.CorfuRuntime;
 import org.corfudb.runtime.view.AddressSpaceView;
 import org.corfudb.runtime.view.stream.IStreamView;
 import org.hyperledger.fabric.protos.common.Common;
-import org.hyperledger.fabric.protos.corfu.CorfuConnectGrpc;
-import org.hyperledger.fabric.protos.peer.*;
+import org.hyperledger.fabric.protos.corfu.AdapterGrpc;
+
+import org.hyperledger.fabric.protos.corfu.Proposal;
+import org.hyperledger.fabric.protos.corfu.ProposalPayload;
+import org.hyperledger.fabric.protos.corfu.ProposalResponse;
+import org.hyperledger.fabric.protos.peer.ProposalPackage;
 import org.sslab.fabric.chaincode.fabcar.FabCar;
 //import org.sslab.adapter.chaincode.fabcar.FabCar;
 //import org.hyperledger.fabric.sdk.ProposalResponse;
@@ -23,7 +27,7 @@ import java.util.logging.Logger;
  * @author Jeyoung Hwang.capricorn116@postech.ac.kr
  *         created on 2021. 4. 10.
  */
-public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
+public class AdapterModuleService extends AdapterGrpc.AdapterImplBase{
     Map<UUID, CorfuRuntime> runtimes;
     Map<UUID, IStreamView> streamViews;
     Map<String, Long> lastReadAddrs;
@@ -58,25 +62,25 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
 
     @SneakyThrows
     @Override
-    public void processProposal(ProposalPackage.SignedProposal signedProposal, StreamObserver<ProposalResponsePackage.ProposalResponse> responseObserver) {
-        UnpackedProposal up =  unpackProposal(signedProposal);
+    public void processProposal(Proposal proposal, StreamObserver<ProposalResponse> responseObserver) {
+        UnpackedProposal up =  unpackProposal(proposal);
         String result = processProposalSuccessfullyOrError(up);
 
         System.out.println("[interface] {processProposal} Corfu runtime is finished");
     }
 
     @SneakyThrows
-    public UnpackedProposal unpackProposal(ProposalPackage.SignedProposal signedProposal) {
-        ProposalPackage.Proposal proposal;
+    public UnpackedProposal unpackProposal(Proposal proposal) {
+//        ProposalPackage.Proposal proposal;
         Common.Header header;
         Common.ChannelHeader channelHeader;
         Common.SignatureHeader signatureHeader;
         ProposalPackage.ChaincodeHeaderExtension chaincodeHdrExt;
-        ProposalPackage.ChaincodeProposalPayload payload;
+        ProposalPayload payload;
         Chaincode.ChaincodeInvocationSpec chaincodeInvocationSpec;
 
 //        byte[] sp = signedProposal.getProposalBytes().toByteArray();
-        proposal = ProposalPackage.Proposal.parseFrom(signedProposal.getProposalBytes());
+//        Proposal = ProposalPackage.Proposal.parseFrom(proposal.get());
 
         header = Common.Header.parseFrom(proposal.getHeader());
 
@@ -91,7 +95,7 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
         chaincodeInvocationSpec = Chaincode.ChaincodeInvocationSpec.parseFrom(payload.getInput());
 
         UnpackedProposal unpackedProposal = new UnpackedProposal(chaincodeHdrExt.getChaincodeId().getName().toString(), channelHeader, chaincodeInvocationSpec.getChaincodeSpec().getInput(),
-                proposal, signatureHeader, signedProposal);
+                proposal, signatureHeader);
         return unpackedProposal;
     }
 

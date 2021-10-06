@@ -13,14 +13,13 @@ public class UnpackedProposal {
         public ProposalPackage.SignedProposal signedProp;
         public byte[] proposalHash;
 
-        public UnpackedProposal(String chaincodeName, Common.ChannelHeader channelHeader, Chaincode.ChaincodeInput input, ProposalPackage.Proposal proposal, Common.SignatureHeader signatureHeader,
-                ProposalPackage.SignedProposal signedProp) {
+        public UnpackedProposal(String chaincodeName, Common.ChannelHeader channelHeader, Chaincode.ChaincodeInput input, ProposalPackage.Proposal proposal, Common.SignatureHeader signatureHeader) {
                 this.chaincodeName = chaincodeName;
                 this.channelHeader = channelHeader;
                 this.input = input;
                 this.proposal = proposal;
                 this.signatureHeader = signatureHeader;
-                this.signedProp = signedProp;
+//                this.signedProp = signedProp;
 //                this.proposalHash = proposalHash;
         }
 }
