@@ -80,6 +80,7 @@
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/execution/package-info.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/metadata/TypeSchema.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/execution/ExecutionService.java
+/home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/grpc-java/protos/CorfuConnectGrpc.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/impl/KeyModificationImpl.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/impl/ChaincodeInvocationTask.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/routing/impl/SerializerRegistryImpl.java
@@ -102,3 +103,4 @@
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/grpc-java/bsp_transaction/QueryExecutorGrpc.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/routing/impl/ContractDefinitionImpl.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/ledger/KeyModification.java
+/home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/protos/Sharedlog.java

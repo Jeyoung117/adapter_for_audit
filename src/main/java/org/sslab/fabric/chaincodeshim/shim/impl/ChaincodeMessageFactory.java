@@ -28,7 +28,7 @@ public final class ChaincodeMessageFactory {
         return newEventMessage(GET_PRIVATE_DATA_HASH, channelId, txId, GetState.newBuilder().setCollection(collection).setKey(key).build().toByteString());
     }
 
-    protected static ChaincodeMessage newGetStateEventMessage(final String channelId, final String txId, final String collection, final String key) {
+    public static ChaincodeMessage newGetStateEventMessage(final String channelId, final String txId, final String collection, final String key) {
         return newEventMessage(GET_STATE, channelId, txId, GetState.newBuilder().setCollection(collection).setKey(key).build().toByteString());
     }
 

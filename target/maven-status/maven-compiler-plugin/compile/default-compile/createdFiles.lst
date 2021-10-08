@@ -32,7 +32,9 @@ bsp_transaction/BspTransactionOuterClass$TxEventPayload$1.class
 bsp_transaction/BspTransactionOuterClass$MCBlock.class
 bsp_transaction/BspTransactionOuterClass$QueryResponse$1.class
 bsp_transaction/QueryExecutorGrpc$QueryExecutorBaseDescriptorSupplier.class
+protos/Sharedlog.class
 org/sslab/fabric/chaincodeshim/contract/routing/TypeRegistry.class
+protos/CorfuConnectGrpc$CorfuConnectBaseDescriptorSupplier.class
 org/sslab/fabric/chaincodeshim/shim/impl/ChaincodeSupportClient$1.class
 bsp_transaction/BspTransactionOuterClass$InitializeRequestOrBuilder.class
 bsp_transaction/CommitNotifierGrpc$CommitNotifierFutureStub.class
@@ -66,9 +68,11 @@ org/sslab/fabric/chaincode/fabcar/FabCar$FabCarErrors.class
 bsp_transaction/BspTransactionOuterClass$BspTransaction$Builder.class
 org/sslab/fabric/chaincodeshim/contract/execution/ExecutionService.class
 org/sslab/fabric/chaincodeshim/metrics/impl/NullProvider.class
+protos/Sharedlog$ResCheck$Builder.class
 bsp_transaction/BspTransactionOuterClass$MigrateRequestStatePayload.class
 bsp_transaction/CommitNotifierGrpc$CommitNotifierBlockingStub.class
 org/sslab/fabric/chaincodeshim/contract/routing/impl/RoutingRegistryImpl.class
+protos/Sharedlog$ReqCheck.class
 org/sslab/fabric/chaincodeshim/contract/ContractRouter.class
 org/sslab/fabric/chaincodeshim/contract/execution/impl/ContractInvocationRequest.class
 bsp_transaction/BspTransactionOuterClass$Policy.class
@@ -91,6 +95,7 @@ bsp_transaction/BspTransactionOuterClass$Version$Builder.class
 bsp_transaction/BspTransactionOuterClass$SignatureHeader$1.class
 bsp_transaction/BspTransactionOuterClass$InitializeRequest.class
 org/sslab/fabric/chaincodeshim/contract/routing/RoutingRegistry.class
+protos/CorfuConnectGrpc$MethodHandlers.class
 org/sslab/fabric/chaincodeshim/contract/ContractRuntimeException.class
 bsp_transaction/BspTransactionOuterClass$KVWrite$1.class
 bsp_transaction/BspTransactionOuterClass$CommitEventReplyType.class
@@ -111,7 +116,9 @@ bsp_transaction/CommitNotifierGrpc$CommitNotifierMethodDescriptorSupplier.class
 bsp_transaction/BspTransactionOuterClass$ActiveExecutorsResp$1.class
 bsp_transaction/BspTransactionOuterClass$WaitForEventRequest.class
 bsp_transaction/BspTransactionOuterClass$DeliverRequest$Builder.class
+protos/Sharedlog$ReqCheck$Builder.class
 org/sslab/fabric/chaincodeshim/contract/annotation/Property.class
+protos/CorfuConnectGrpc$CorfuConnectFutureStub.class
 bsp_transaction/BspTransactionOuterClass$Version.class
 bsp_transaction/BspTransactionOuterClass$ECHeader$Builder.class
 bsp_transaction/BspTransactionOuterClass$TxMetadata$1.class
@@ -123,6 +130,7 @@ bsp_transaction/BspTransactionOuterClass$BFTEvent$Builder.class
 bsp_transaction/BspTransactionOuterClass$CommitEventRequestByClientID.class
 org/sslab/fabric/chaincodeshim/shim/impl/InvocationStubImpl.class
 org/sslab/fabric/chaincodeshim/contract/routing/DataTypeDefinition.class
+protos/Sharedlog$ReqCheck$1.class
 bsp_transaction/BspTransactionOuterClass$BuildParameterOfDependencyGraphBasedReOrdering$1.class
 bsp_transaction/BspTransactionOuterClass$AggregatorSubscribeRequest$1.class
 org/sslab/fabric/chaincodeshim/contract/ContextFactory.class
@@ -203,12 +211,15 @@ org/sslab/fabric/chaincodeshim/shim/impl/InvocationStubImpl$1.class
 org/sslab/fabric/chaincodeshim/shim/ext/sbe/impl/StateBasedEndorsementFactory.class
 bsp_transaction/BspTransactionOuterClass$HelloResponse$1.class
 bsp_transaction/BspTransactionOuterClass$TSAEvent$1.class
+protos/CorfuConnectGrpc$CorfuConnectImplBase.class
 bsp_transaction/BspTransactionOuterClass$ProposalResponseBatch$Builder.class
 bsp_transaction/BspTransactionOuterClass$ChangeTriggerEvent$1.class
+protos/CorfuConnectGrpc.class
 org/sslab/fabric/chaincodeshim/contract/execution/ExecutionFactory.class
 bsp_transaction/BspTransactionOuterClass$TSAEventOrBuilder.class
 org/sslab/fabric/adapter/AdapterServer.class
 bsp_transaction/BspTransactionOuterClass$HelloResponseOrBuilder.class
+protos/CorfuConnectGrpc$CorfuConnectMethodDescriptorSupplier.class
 bsp_transaction/BspTransactionOuterClass$ProposalBatchOrBuilder.class
 bsp_transaction/BspTransactionOuterClass$HeartbeatTransaction.class
 bsp_transaction/BspTransactionOuterClass$ChangeTriggerEventOrBuilder.class
@@ -256,6 +267,7 @@ bsp_transaction/BspTransactionOuterClass$MigrateResponse.class
 bsp_transaction/BspTransactionOuterClass$MCResponse.class
 bsp_transaction/BspTransactionOuterClass$CommitEventResponseOrBuilder.class
 bsp_transaction/BspTransactionOuterClass$InterTxResultOrBuilder.class
+protos/CorfuConnectGrpc$CorfuConnectStub.class
 bsp_transaction/BspTransactionOuterClass$ReadPolicy$1.class
 bsp_transaction/BspTransactionOuterClass$MCBlock$1.class
 bsp_transaction/BspTransactionOuterClass$AuditTransactionExtension$1.class
@@ -277,6 +289,7 @@ org/sslab/fabric/chaincodeshim/contract/routing/impl/TypeRegistryImpl.class
 bsp_transaction/BspTransactionOuterClass$MigrateRequestPayload$Builder.class
 bsp_transaction/BspTransactionOuterClass$ProposalResponse.class
 org/sslab/fabric/chaincodeshim/contract/ContractInterface.class
+protos/CorfuConnectGrpc$1.class
 bsp_transaction/BspTransactionOuterClass$QueryResponse$Builder.class
 bsp_transaction/BspTransactionOuterClass$MCResponse$Builder.class
 bsp_transaction/AggregatorGrpc$AggregatorBlockingStub.class
@@ -300,10 +313,12 @@ bsp_transaction/BspTransactionOuterClass$QueryRequest.class
 bsp_transaction/BspTransactionOuterClass$EventUnit.class
 bsp_transaction/BspTransactionOuterClass$Proposal$1.class
 org/sslab/fabric/chaincodeshim/shim/impl/ChaincodeInvocationTask$1.class
+protos/Sharedlog$ResCheck.class
 org/sslab/fabric/chaincodeshim/contract/routing/impl/SerializerRegistryImpl.class
 bsp_transaction/BspTransactionOuterClass$ConsensusState$Builder.class
 bsp_transaction/BspTransactionOuterClass$MCHeaderOrBuilder.class
 bsp_transaction/BspTransactionOuterClass$TransactionCommitEvent$Builder.class
+protos/CorfuConnectGrpc$CorfuConnectBlockingStub.class
 bsp_transaction/BspTransactionOuterClass$BspTransactionType$1.class
 org/sslab/fabric/chaincodeshim/contract/metadata/MetadataBuilder$1.class
 bsp_transaction/BspTransactionOuterClass$BFTEventOrBuilder.class
@@ -318,6 +333,7 @@ org/sslab/fabric/chaincodeshim/Logging.class
 bsp_transaction/BspTransactionOuterClass$MCBlock$Builder.class
 org/sslab/fabric/chaincodeshim/shim/ChaincodeException.class
 bsp_transaction/BspTransactionOuterClass$TransactionCommitEvent$1.class
+protos/Sharedlog$ResCheck$1.class
 bsp_transaction/BspTransactionOuterClass$AuditTransactionPayload$1.class
 bsp_transaction/BspTransactionOuterClass$MigrateRequestPayload$1.class
 bsp_transaction/BspTransactionOuterClass$ReadPolicyOrBuilder.class
@@ -327,11 +343,13 @@ bsp_transaction/BspTransactionOuterClass$AuditTransaction$Builder.class
 bsp_transaction/BspTransactionOuterClass$InterTxResult.class
 org/sslab/fabric/chaincodeshim/shim/ResponseUtils.class
 bsp_transaction/BspTransactionOuterClass$ReadPolicy.class
+protos/Sharedlog$1.class
 bsp_transaction/BspTransactionOuterClass$TxInputOrBuilder.class
 bsp_transaction/BspTransactionOuterClass$ProposalPayload.class
 org/sslab/fabric/chaincodeshim/shim/ChaincodeBase$CCState.class
 bsp_transaction/BspTransactionOuterClass$CommitEventRequestByClientIDOrBuilder.class
 org/sslab/fabric/chaincodeshim/contract/execution/InvocationRequest.class
+protos/Sharedlog$ReqCheckOrBuilder.class
 bsp_transaction/BspTransactionOuterClass$ActiveExecutors$1.class
 bsp_transaction/AggregatorGrpc$AggregatorMethodDescriptorSupplier.class
 bsp_transaction/BspTransactionOuterClass$MigrateRequest.class
@@ -352,6 +370,7 @@ bsp_transaction/BspTransactionOuterClass$SignatureHeader.class
 bsp_transaction/BspTransactionOuterClass$MCBuildParameterOrBuilder.class
 bsp_transaction/AggregatorGrpc$MethodHandlers.class
 bsp_transaction/BspTransactionOuterClass$TxOutput$1.class
+protos/Sharedlog$ResCheckOrBuilder.class
 bsp_transaction/BspTransactionOuterClass$ActiveExecutorsRespOrBuilder.class
 org/sslab/fabric/chaincodeshim/contract/annotation/Contact.class
 org/sslab/fabric/chaincodeshim/shim/ext/sbe/StateBasedEndorsement$RoleType.class
@@ -369,6 +388,7 @@ bsp_transaction/BspTransactionOuterClass$VersionedValueOrBuilder.class
 bsp_transaction/BspTransactionOuterClass$ConsensusState$1.class
 bsp_transaction/BspTransactionOuterClass$AggregatorSubscribeRequest.class
 bsp_transaction/BspTransactionOuterClass$TxEvent.class
+protos/CorfuConnectGrpc$CorfuConnectFileDescriptorSupplier.class
 bsp_transaction/BspTransactionOuterClass$StateBatch$1.class
 bsp_transaction/BspTransactionOuterClass$TxInput$1.class
 bsp_transaction/BspTransactionOuterClass$ReadPolicy$Builder.class

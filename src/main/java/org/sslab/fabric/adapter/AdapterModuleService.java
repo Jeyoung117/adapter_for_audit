@@ -12,10 +12,18 @@ import org.corfudb.runtime.view.stream.IStreamView;
 //import org.hyperledger.fabric.protos.common.Common;
 
 import org.hyperledger.fabric.protos.peer.ProposalPackage;
+import org.sslab.fabric.chaincode.fabcar.FabCar;
+import org.sslab.fabric.chaincodeshim.shim.impl.ChaincodeInvocationTask;
+import org.sslab.fabric.chaincodeshim.shim.impl.ChaincodeMessageFactory;
+import org.sslab.fabric.chaincodeshim.shim.impl.InvocationStubImpl;
+import org.sslab.fabric.corfu.Corfu_access;
+import protos.CorfuConnectGrpc;
+import protos.Sharedlog;
 //import org.sslab.adapter.chaincode.fabcar.FabCar;
 //import org.hyperledger.fabric.sdk.ProposalResponse;
 
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -24,32 +32,37 @@ import java.util.logging.Logger;
  * @author Jeyoung Hwang.capricorn116@postech.ac.kr
  *         created on 2021. 4. 10.
  */
-public class AdapterModuleService extends AggregatorGrpc.AggregatorImplBase{
+public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     Map<UUID, CorfuRuntime> runtimes;
     Map<UUID, IStreamView> streamViews;
     Map<String, Long> lastReadAddrs;
     //tokenMap key: fabric txID, value: access token
     Map<String, Token> tokenMap;
+    CorfuRuntime runtime;
+    Corfu_access corfu_access;
+    int i=0;
 
 //    private ProposalPackage.Proposal proposal;
+private static CorfuRuntime getRuntimeAndConnect(String configurationString) {
+    CorfuRuntime corfuRuntime = new CorfuRuntime(configurationString).connect();
+    return corfuRuntime;
+}
+//    CorfuRuntime runtime =  getRuntimeAndConnect("141.223.121.251:12011");
 
-
-    public AdapterModuleService() {
+    public AdapterModuleService(Corfu_access corfu_access, CorfuRuntime runtime) {
         streamViews = new HashMap<UUID, IStreamView>();
         runtimes = new HashMap<UUID, CorfuRuntime>();
+        this.runtime = runtime;
 //        runtime = new CorfuRuntime(runtimeAddr[0]).connect();
         lastReadAddrs = new HashMap<String, Long>();
         System.out.println("Init AdapterModuleService");
         tokenMap = new HashMap<String, Token>();
+        this.corfu_access = corfu_access;
     }
 
 
-    private static CorfuRuntime getRuntimeAndConnect(String configurationString) {
-            CorfuRuntime corfuRuntime = new CorfuRuntime(configurationString).connect();
-            return corfuRuntime;
-        }
-    CorfuRuntime runtime =  getRuntimeAndConnect("141.223.121.251:12011");
-    AddressSpaceView addressSpaceView = runtime.getAddressSpaceView();
+
+//    AddressSpaceView addressSpaceView = runtime.getAddressSpaceView();
 
         private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
 
@@ -59,18 +72,33 @@ public class AdapterModuleService extends AggregatorGrpc.AggregatorImplBase{
 
     @SneakyThrows
     @Override
-    public void processProposal(BspTransactionOuterClass.Proposal proposal, StreamObserver<BspTransactionOuterClass.ProposalResponse> responseObserver) {
+    public void processProposal(Sharedlog.ReqCheck request, StreamObserver<Sharedlog.ResCheck> responseObserver) {
 //        UnpackedProposal up =  unpackProposal(proposal);
 //        String result = processProposalSuccessfullyOrError(up);
+        i++;
+        System.out.println("received transaction count: " + i);
+        System.out.println("received channel name: " + request.getChannelID());
+        System.out.println("received chaincode name: " + request.getChaincodeID());
+        System.out.println("received key : " + request.getKey());
 
-        BspTransactionOuterClass.ProposalResponse response = BspTransactionOuterClass.ProposalResponse.newBuilder()
-                .setStatus("success")
+        corfu_access.getStringState(request.getKey(), request.getChannelID(),request.getChaincodeID());
+//        corfu_access.putStringState(request.getKey(), request.getChannelID(),request.getChaincodeID(),request.getChaincodeID().getBytes());
+
+
+//        FabCar fabcar = new FabCar();
+//        InvocationStubImpl invocationStub = new InvocationStubImpl(ChaincodeMessageFactory.newGetStateEventMessage("mychannel", "1234", "123", "CAR9"));
+
+////        Context context = new Context(invocationStub);
+
+        Sharedlog.ResCheck response = Sharedlog.ResCheck
+                .newBuilder()
+                .setCheckresult(1)
                 .build();
+
+
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
-
-        System.out.println("[interface] {processProposal} Corfu runtime is finished");
     }
 
     @SneakyThrows
@@ -97,7 +125,7 @@ public class AdapterModuleService extends AggregatorGrpc.AggregatorImplBase{
 //        payload = ProposalPackage.ChaincodeProposalPayload.parseFrom(proposal.getPayload());
 //
 //        chaincodeInvocationSpec = Chaincode.ChaincodeInvocationSpec.parseFrom(payload.getInput());
-
+//
 //        UnpackedProposal unpackedProposal = new UnpackedProposal(chaincodeHdrExt.getChaincodeId().getName().toString(), channelHeader, chaincodeInvocationSpec.getChaincodeSpec().getInput(),
 //                proposal, signatureHeader);
 //        return unpackedProposal;
@@ -113,7 +141,7 @@ public class AdapterModuleService extends AggregatorGrpc.AggregatorImplBase{
 //                );
 //        executeProposal(txParams, up.chaincodeName, up.input);
 //    return null;
-
+//
 //    }
 
 //    public void executeProposal(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) throws InvalidProtocolBufferException {
@@ -132,14 +160,14 @@ public class AdapterModuleService extends AggregatorGrpc.AggregatorImplBase{
 ////        fabcar.changeCarOwner(context,"CAR9", "newowner1");
 ////        Car car2 = fabcar.queryCar(context, "CAR9");
 ////        System.out.println(car2);
-
+//
 //    }
 //    public void executeProposal(String channelID, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) {
 //        FabCar fabcar = new FabCar();
 //        fabcar.queryCar(chaincodeInput.toString());
-
+//
 //        CorfuChaincodeShim.CorfuChaincodeMessage message= new CorfuChaincodeShim.CorfuChaincodeMessage();
-
+//
 //    public void callChaincode(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) throws InvalidProtocolBufferException {
 //        FabCar fabcar = new FabCar();
 //        System.out.println(chaincodeInput);
