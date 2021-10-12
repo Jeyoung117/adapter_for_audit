@@ -11,6 +11,7 @@ import org.hyperledger.fabric.protos.common.Common;
 
 import org.hyperledger.fabric.protos.peer.*;
 import org.sslab.fabric.chaincode.fabcar.FabCar;
+import org.sslab.fabric.corfu.Corfu_access;
 import protos.CorfuConnectGrpc;
 import protos.Sharedlog;
 //import org.sslab.adapter.chaincode.fabcar.FabCar;
@@ -31,32 +32,30 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     Map<String, Long> lastReadAddrs;
     //tokenMap key: fabric txID, value: access token
     Map<String, Token> tokenMap;
+    CorfuRuntime runtime;
+    Corfu_access corfu_access;
 
 //    private ProposalPackage.Proposal proposal;
 
 
-    public AdapterModuleService() {
+    public AdapterModuleService(Corfu_access corfu_access, CorfuRuntime runtime) {
         streamViews = new HashMap<UUID, IStreamView>();
         runtimes = new HashMap<UUID, CorfuRuntime>();
+        this.runtime = runtime;
 //        runtime = new CorfuRuntime(runtimeAddr[0]).connect();
         lastReadAddrs = new HashMap<String, Long>();
         System.out.println("Init AdapterModuleService");
         tokenMap = new HashMap<String, Token>();
+        this.corfu_access = corfu_access;
     }
-
 
     private static CorfuRuntime getRuntimeAndConnect(String configurationString) {
             CorfuRuntime corfuRuntime = new CorfuRuntime(configurationString).connect();
             return corfuRuntime;
         }
-    CorfuRuntime runtime =  getRuntimeAndConnect("141.223.121.251:12011");
-    AddressSpaceView addressSpaceView = runtime.getAddressSpaceView();
 
-        private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
+    private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
 
-
-    //commitTransaction version 3
-    //Receive proposal response from peer
 
     @SneakyThrows
     public UnpackedProposal unpackProposal(ProposalPackage.SignedProposal signedProposal) {
