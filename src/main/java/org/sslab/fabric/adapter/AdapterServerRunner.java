@@ -19,6 +19,7 @@ public class AdapterServerRunner {
         CorfuRuntime corfuRuntime = new CorfuRuntime(configurationString).connect();
         return corfuRuntime;
     }
+
     public static void main(String[] args) throws IOException, InterruptedException {
         runtime = getRuntimeAndConnect("141.223.121.251:12011");
         corfu_access = new Corfu_access();
