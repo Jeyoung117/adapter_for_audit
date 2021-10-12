@@ -9,8 +9,9 @@ package org.sslab.fabric.chaincodeshim.shim.impl;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Timestamp;
+import org.corfudb.runtime.CorfuRuntime;
+import org.hyperledger.fabric.protos.common.Common;
 import org.hyperledger.fabric.protos.common.Common.ChannelHeader;
-import org.hyperledger.fabric.protos.common.Common.Header;
 import org.hyperledger.fabric.protos.common.Common.HeaderType;
 import org.hyperledger.fabric.protos.common.Common.SignatureHeader;
 import org.hyperledger.fabric.protos.ledger.queryresult.KvQueryResult;
@@ -23,7 +24,6 @@ import org.hyperledger.fabric.protos.peer.ChaincodeShim;
 import org.hyperledger.fabric.protos.peer.ChaincodeShim.*;
 import org.hyperledger.fabric.protos.peer.ProposalPackage;
 import org.hyperledger.fabric.protos.peer.ProposalPackage.ChaincodeProposalPayload;
-import org.hyperledger.fabric.protos.peer.ProposalPackage.Proposal;
 import org.hyperledger.fabric.protos.peer.ProposalPackage.SignedProposal;
 import org.hyperledger.fabric.protos.peer.ProposalResponsePackage;
 import org.hyperledger.fabric.protos.peer.TransactionPackage;
@@ -57,32 +57,31 @@ public class InvocationStubImpl implements ChaincodeStub {
     private static final String CORE_PEER_LOCALMSPID = "CORE_PEER_LOCALMSPID";
     private final String channelId;
     private final String txId;
-    private final ChaincodeInvocationTask handler;
-    private final List<ByteString> args;
-    private final SignedProposal signedProposal;
-    private final Instant txTimestamp;
-    private final ByteString creator;
-    private final Map<String, ByteString> transientMap;
-    private final byte[] binding;
-    private final String chaincodeId;
+    private  List<ByteString> args;
+    private  SignedProposal signedProposal;
+    private  Instant txTimestamp;
+    private  ByteString creator;
+    private  Map<String, ByteString> transientMap;
+    private  byte[] binding;
+    private  String chaincodeId;
     private ChaincodeEvent event;
-
-    Corfu_access corfu_access = new Corfu_access();
+    CorfuRuntime runtime;
+    static Corfu_access corfu_access;
 
     /**
-     *
+     *this version 1 InvocationStubImpl is for using chaincodeMessage as a argument. So in benchmark, use below InvocationStubImpl version 2
      * @param message
-     * @param handler
+//     * @param handler
      * @throws InvalidProtocolBufferException
      */
-    public InvocationStubImpl(final ChaincodeShim.ChaincodeMessage message, final ChaincodeInvocationTask handler)
+    public InvocationStubImpl(final ChaincodeShim.ChaincodeMessage message)
             throws InvalidProtocolBufferException {
         this.channelId = message.getChannelId();
         this.txId = message.getTxid();
-        this.handler = handler;
+//        this.handler = handler;
         this.signedProposal = message.getProposal();
-        final Proposal proposal = Proposal.parseFrom(signedProposal.getProposalBytes());
-        final Header header = Header.parseFrom(proposal.getHeader());
+        final ProposalPackage.Proposal proposal = ProposalPackage.Proposal.parseFrom(signedProposal.getProposalBytes());
+        final Common.Header header = Common.Header.parseFrom(proposal.getHeader());
         final ChannelHeader channelHeader = ChannelHeader.parseFrom(header.getChannelHeader());
         final ProposalPackage.ChaincodeHeaderExtension chaincodeHdrExt = ProposalPackage.ChaincodeHeaderExtension.parseFrom(channelHeader.getExtension());
 //        validateProposalType(channelHeader);
@@ -125,6 +124,24 @@ public class InvocationStubImpl implements ChaincodeStub {
         }
     }
 
+    /**
+     *this version 2 InvocationStubImpl is for using chaincodeMessage as a argument. So in benchmark, use below InvocationStubImpl version 2
+     * @param channelId
+     * @param txId
+     * @param chaincodeId
+    //     * @param handler
+//     * @param handler
+     * @throws InvalidProtocolBufferException
+     */
+    public InvocationStubImpl(String channelId, String txId, String chaincodeId, Corfu_access corfu_access)
+            throws InvalidProtocolBufferException {
+        this.channelId = channelId;
+        this.txId = txId;
+//        validateProposalType(channelHeader);
+        this.chaincodeId= chaincodeId;
+        this.corfu_access = corfu_access;
+    }
+
     private byte[] computeBinding(final ChannelHeader channelHeader, final SignatureHeader signatureHeader)
             throws NoSuchAlgorithmException {
         final MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
@@ -149,6 +166,223 @@ public class InvocationStubImpl implements ChaincodeStub {
     }
 
     @Override
+    public List<byte[]> getArgs() {
+        return null;
+    }
+
+    @Override
+    public List<String> getStringArgs() {
+        return null;
+    }
+
+    @Override
+    public String getFunction() {
+        return null;
+    }
+
+    @Override
+    public List<String> getParameters() {
+        return null;
+    }
+
+    @Override
+    public String getTxId() {
+        return null;
+    }
+
+    @Override
+    public String getChannelId() {
+        return null;
+    }
+
+    @Override
+    public Response invokeChaincode(String chaincodeName, List<byte[]> args, String channel) {
+        return null;
+    }
+
+    @Override
+    public byte[] getState(String key) {
+        byte[] value = corfu_access.getStringState(key, channelId, chaincodeId);
+        return value;
+    }
+
+    @Override
+    public byte[] getStateValidationParameter(String key) {
+        return new byte[0];
+    }
+
+    @Override
+    public void putState(String key, byte[] value) {
+        corfu_access.putStringState(key, channelId, "fabcar", value);
+    }
+
+    @Override
+    public void setStateValidationParameter(String key, byte[] value) {
+
+    }
+
+    @Override
+    public void delState(String key) {
+
+    }
+
+    @Override
+    public QueryResultsIterator<KeyValue> getStateByRange(String startKey, String endKey) {
+        return null;
+    }
+
+    @Override
+    public QueryResultsIteratorWithMetadata<KeyValue> getStateByRangeWithPagination(String startKey, String endKey, int pageSize, String bookmark) {
+        return null;
+    }
+
+    @Override
+    public QueryResultsIterator<KeyValue> getStateByPartialCompositeKey(String compositeKey) {
+        return null;
+    }
+
+    @Override
+    public QueryResultsIterator<KeyValue> getStateByPartialCompositeKey(String objectType, String... attributes) {
+        return null;
+    }
+
+    @Override
+    public QueryResultsIterator<KeyValue> getStateByPartialCompositeKey(CompositeKey compositeKey) {
+        return null;
+    }
+
+    @Override
+    public QueryResultsIteratorWithMetadata<KeyValue> getStateByPartialCompositeKeyWithPagination(CompositeKey compositeKey, int pageSize, String bookmark) {
+        return null;
+    }
+
+    @Override
+    public CompositeKey createCompositeKey(String objectType, String... attributes) {
+        return null;
+    }
+
+    @Override
+    public CompositeKey splitCompositeKey(String compositeKey) {
+        return null;
+    }
+
+    @Override
+    public QueryResultsIterator<KeyValue> getQueryResult(String query) {
+        return null;
+    }
+
+    @Override
+    public QueryResultsIteratorWithMetadata<KeyValue> getQueryResultWithPagination(String query, int pageSize, String bookmark) {
+        return null;
+    }
+
+    @Override
+    public QueryResultsIterator<KeyModification> getHistoryForKey(String key) {
+        return null;
+    }
+
+    @Override
+    public byte[] getPrivateData(String collection, String key) {
+        return new byte[0];
+    }
+
+    @Override
+    public byte[] getPrivateDataHash(String collection, String key) {
+        return new byte[0];
+    }
+
+    @Override
+    public byte[] getPrivateDataValidationParameter(String collection, String key) {
+        return new byte[0];
+    }
+
+    @Override
+    public void putPrivateData(String collection, String key, byte[] value) {
+
+    }
+
+    @Override
+    public void setPrivateDataValidationParameter(String collection, String key, byte[] value) {
+
+    }
+
+    @Override
+    public void delPrivateData(String collection, String key) {
+
+    }
+
+    @Override
+    public QueryResultsIterator<KeyValue> getPrivateDataByRange(String collection, String startKey, String endKey) {
+        return null;
+    }
+
+    @Override
+    public QueryResultsIterator<KeyValue> getPrivateDataByPartialCompositeKey(String collection, String compositeKey) {
+        return null;
+    }
+
+    @Override
+    public QueryResultsIterator<KeyValue> getPrivateDataByPartialCompositeKey(String collection, CompositeKey compositeKey) {
+        return null;
+    }
+
+    @Override
+    public QueryResultsIterator<KeyValue> getPrivateDataByPartialCompositeKey(String collection, String objectType, String... attributes) {
+        return null;
+    }
+
+    @Override
+    public QueryResultsIterator<KeyValue> getPrivateDataQueryResult(String collection, String query) {
+        return null;
+    }
+
+    @Override
+    public void setEvent(String name, byte[] payload) {
+
+    }
+
+    @Override
+    public ChaincodeEvent getEvent() {
+        return null;
+    }
+
+    @Override
+    public SignedProposal getSignedProposal() {
+        return null;
+    }
+
+    @Override
+    public Instant getTxTimestamp() {
+        return null;
+    }
+
+    @Override
+    public byte[] getCreator() {
+        return new byte[0];
+    }
+
+    @Override
+    public Map<String, byte[]> getTransient() {
+        return null;
+    }
+
+    @Override
+    public byte[] getBinding() {
+        return new byte[0];
+    }
+
+    @Override
+    public String getMspId() {
+        return null;
+    }
+}
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////
+    /////////////original InvocationStubImpl from chaincode-java//////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
+    /*@Override
     public List<byte[]> getArgs() {
         return args.stream().map(x -> x.toByteArray()).collect(Collectors.toList());
     }
@@ -241,13 +475,13 @@ public class InvocationStubImpl implements ChaincodeStub {
         validateKey(key);
         final ChaincodeMessage msg = ChaincodeMessageFactory.newPutStateMetadataEventMessage(channelId, txId, "", key,
                 TransactionPackage.MetaDataKeys.VALIDATION_PARAMETER.toString(), ByteString.copyFrom(value));
-        this.handler.invoke(msg);
+//        this.handler.invoke(msg);
     }
 
     @Override
     public void delState(final String key) {
         final ChaincodeMessage msg = ChaincodeMessageFactory.newDeleteStateEventMessage(channelId, txId, "", key);
-        this.handler.invoke(msg);
+//        this.handler.invoke(msg);
     }
 
     @Override
@@ -274,7 +508,7 @@ public class InvocationStubImpl implements ChaincodeStub {
 
         final ChaincodeMessage requestMessage = ChaincodeMessageFactory.newEventMessage(GET_STATE_BY_RANGE, channelId,
                 txId, requestPayload);
-        final ByteString response = handler.invoke(requestMessage);
+//        final ByteString response = handler.invoke(requestMessage);
 
         return new QueryResultsIteratorImpl<KeyValue>(this.handler, channelId, txId, response,
                 queryResultBytesToKv.andThen(KeyValueImpl::new));
@@ -688,5 +922,5 @@ public class InvocationStubImpl implements ChaincodeStub {
             return System.getenv(CORE_PEER_LOCALMSPID);
         }
         throw new RuntimeException("CORE_PEER_LOCALMSPID is unset in chaincode process");
-    }
-}
+    }*/
+

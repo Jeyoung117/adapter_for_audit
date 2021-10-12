@@ -75,7 +75,7 @@ public class ChaincodeInvocationTask implements Callable<ChaincodeMessage> {
             //
             // This needs to be passed the message triggering the invoke, as well
             // as the interface to be used for sending any requests to the peer
-            final ChaincodeStub stub = new InvocationStubImpl(message, this);
+            final ChaincodeStub stub = new InvocationStubImpl(message);
 
             // result is what will be sent to the peer as a response to this invocation
             final Chaincode.Response result;

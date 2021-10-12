@@ -11,6 +11,7 @@ import org.corfudb.runtime.view.stream.IStreamView;
 import org.sslab.fabric.adapter.AdapterModuleService;
 
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -25,32 +26,26 @@ public class Corfu_access  {
     Map<String, Long> lastReadAddrs;
     //tokenMap key: fabric txID, value: access token
     Map<String, Token> tokenMap;
-
-//    public Corfu_access() {
-//        streamViews = new HashMap<UUID, IStreamView>();
-//        runtimes = new HashMap<UUID, CorfuRuntime>();
-////        runtime = new CorfuRuntime(runtimeAddr[0]).connect();
-//        lastReadAddrs = new HashMap<String, Long>();
-////        System.out.println("Init AdapterModuleService");
-//        tokenMap = new HashMap<String, Token>();
-//    }
-
-
-
-    private static CorfuRuntime getRuntimeAndConnect(String configurationString) {
-        CorfuRuntime corfuRuntime = new CorfuRuntime(configurationString).connect();
-        return corfuRuntime;
-    }
-    CorfuRuntime runtime = getRuntimeAndConnect("141.223.121.251:12011");
-//    AddressSpaceView addressSpaceView = runtime.getAddressSpaceView();
-
     private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
+    static CorfuRuntime runtime;
 
+    public Corfu_access(CorfuRuntime runtime) {
+        streamViews = new HashMap<UUID, IStreamView>();
+        runtimes = new HashMap<UUID, CorfuRuntime>();
+        this.runtime = runtime;
+        lastReadAddrs = new HashMap<String, Long>();
+//        System.out.println("Init AdapterModuleService");
+        tokenMap = new HashMap<String, Token>();
+    }
 
+//    private static CorfuRuntime getRuntimeAndConnect(String configurationString) {
+//        CorfuRuntime corfuRuntime = new CorfuRuntime(configurationString).connect();
+//        return corfuRuntime;
+//    }
+//    static CorfuRuntime runtime = getRuntimeAndConnect("141.223.121.251:12011");
 
     //local method call 전용 getstringstate
     public byte[] getStringState(String objectKey, String channelID, String chaincodeID) {
-//        CorfuRuntime runtime = getRuntimeAndConnect("141.223.121.251:12011");
             Map<String, byte[]> map = runtime.getObjectsView()
                 .build()
                 .setStreamName(channelID + chaincodeID)     // stream ID
@@ -73,7 +68,6 @@ public class Corfu_access  {
 
 
     public void putStringState(String objectKey, String channelID, String chaincodeID, byte[] data) {
-        CorfuRuntime runtime = getRuntimeAndConnect("141.223.121.251:12011");
         Map<String, byte[]> map = runtime.getObjectsView()
                 .build()
                 .setStreamName(channelID + chaincodeID)     // stream ID
@@ -87,7 +81,6 @@ public class Corfu_access  {
     }
 
     public void issueSnapshotToken() {
-        CorfuRuntime runtime = getRuntimeAndConnect("141.223.121.251:12011");
         Token current_token = runtime.getSequencerView().query().getToken();
         Transaction vCorfutx = runtime.getObjectsView()
                 .TXBuild()
@@ -103,7 +96,6 @@ public class Corfu_access  {
     }
 
     public void commitTransaction() {
-        CorfuRuntime runtime = getRuntimeAndConnect("141.223.121.251:12011");
 //    public void commitTransaction(ReqCommit request, StreamObserver<ResCommit> responseObserver) {
 //        System.out.println("[peer-interface] {commitTransaction} Corfu runtime is connected");
 //        System.out.println("전송받은 request: " + request);

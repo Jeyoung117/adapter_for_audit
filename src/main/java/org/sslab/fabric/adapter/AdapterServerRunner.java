@@ -22,10 +22,10 @@ public class AdapterServerRunner {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         runtime = getRuntimeAndConnect("141.223.121.251:12011");
-        corfu_access = new Corfu_access();
+        corfu_access = new Corfu_access(runtime);
         final int port = 54323;
-        final BindableService adapterService = new AdapterModuleService(corfu_access, runtime);
 
+        final BindableService adapterService =  new AdapterModuleService(corfu_access);
         AdapterServer server = new AdapterServer(port, adapterService);
 
         server.start();

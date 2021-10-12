@@ -11,8 +11,12 @@ import org.corfudb.runtime.view.AddressSpaceView;
 import org.corfudb.runtime.view.stream.IStreamView;
 //import org.hyperledger.fabric.protos.common.Common;
 
+import org.hyperledger.fabric.protos.peer.Chaincode;
+import org.hyperledger.fabric.protos.peer.ChaincodeShim;
 import org.hyperledger.fabric.protos.peer.ProposalPackage;
+import org.sslab.fabric.chaincode.fabcar.Car;
 import org.sslab.fabric.chaincode.fabcar.FabCar;
+import org.sslab.fabric.chaincodeshim.contract.Context;
 import org.sslab.fabric.chaincodeshim.shim.impl.ChaincodeInvocationTask;
 import org.sslab.fabric.chaincodeshim.shim.impl.ChaincodeMessageFactory;
 import org.sslab.fabric.chaincodeshim.shim.impl.InvocationStubImpl;
@@ -38,64 +42,39 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     Map<String, Long> lastReadAddrs;
     //tokenMap key: fabric txID, value: access token
     Map<String, Token> tokenMap;
-    CorfuRuntime runtime;
     Corfu_access corfu_access;
+    private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
     int i=0;
 
-//    private ProposalPackage.Proposal proposal;
-private static CorfuRuntime getRuntimeAndConnect(String configurationString) {
-    CorfuRuntime corfuRuntime = new CorfuRuntime(configurationString).connect();
-    return corfuRuntime;
-}
-//    CorfuRuntime runtime =  getRuntimeAndConnect("141.223.121.251:12011");
 
-    public AdapterModuleService(Corfu_access corfu_access, CorfuRuntime runtime) {
+    public AdapterModuleService(Corfu_access corfu_access) {
         streamViews = new HashMap<UUID, IStreamView>();
         runtimes = new HashMap<UUID, CorfuRuntime>();
-        this.runtime = runtime;
 //        runtime = new CorfuRuntime(runtimeAddr[0]).connect();
         lastReadAddrs = new HashMap<String, Long>();
         System.out.println("Init AdapterModuleService");
         tokenMap = new HashMap<String, Token>();
         this.corfu_access = corfu_access;
+//        this.runtime = runtime;
     }
-
-
-
-//    AddressSpaceView addressSpaceView = runtime.getAddressSpaceView();
-
-        private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
-
-
-    //commitTransaction version 3
-    //Receive proposal response from peer
 
     @SneakyThrows
     @Override
     public void processProposal(Sharedlog.ReqCheck request, StreamObserver<Sharedlog.ResCheck> responseObserver) {
 //        UnpackedProposal up =  unpackProposal(proposal);
 //        String result = processProposalSuccessfullyOrError(up);
-        i++;
-        System.out.println("received transaction count: " + i);
-        System.out.println("received channel name: " + request.getChannelID());
-        System.out.println("received chaincode name: " + request.getChaincodeID());
-        System.out.println("received key : " + request.getKey());
 
-        corfu_access.getStringState(request.getKey(), request.getChannelID(),request.getChaincodeID());
+//        System.out.println("received channel name: " + request.getChannelID());
+//        System.out.println("received chaincode name: " + request.getChaincodeID());
+//        System.out.println("received key : " + request.getKey());
+
+        executeProposal(request.getChannelID(), request.getChaincodeID(), request.getKey());
+//        corfu_access.getStringState(request.getKey(), request.getChannelID(),request.getChaincodeID());
 //        corfu_access.putStringState(request.getKey(), request.getChannelID(),request.getChaincodeID(),request.getChaincodeID().getBytes());
-
-
-//        FabCar fabcar = new FabCar();
-//        InvocationStubImpl invocationStub = new InvocationStubImpl(ChaincodeMessageFactory.newGetStateEventMessage("mychannel", "1234", "123", "CAR9"));
-
-////        Context context = new Context(invocationStub);
-
         Sharedlog.ResCheck response = Sharedlog.ResCheck
                 .newBuilder()
                 .setCheckresult(1)
                 .build();
-
-
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -146,28 +125,48 @@ private static CorfuRuntime getRuntimeAndConnect(String configurationString) {
 
 //    public void executeProposal(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) throws InvalidProtocolBufferException {
 //
-////        CorfuChaincodeShim.CorfuChaincodeMessage message= new CorfuChaincodeShim.CorfuChaincodeMessage();
+//        ChaincodeShim.ChaincodeMessage message= new ChaincodeShim.ChaincodeMessage();
 //        FabCar fabcar = new FabCar();
 //        System.out.println(chaincodeInput);
 //        System.out.println(chaincodeInput.toString());
-//
-//
-////        InvocationStubImpl invocationStub = new InvocationStubImpl(ChaincodeMessageFactory.newGetStateEventMessage(txParams.channelID, txParams.txID, "", "CAR9", );
-////        Context context = new Context(invocationStub);
-//////        Car car = fabcar.queryCar(context, chaincodeInput.getArgs(1).toString());
-////        Car car1 = fabcar.queryCar(context, "CAR9");
-////        System.out.println(car1);
-////        fabcar.changeCarOwner(context,"CAR9", "newowner1");
-////        Car car2 = fabcar.queryCar(context, "CAR9");
-////        System.out.println(car2);
+
+
+//        InvocationStubImpl invocationStub = new InvocationStubImpl(ChaincodeMessageFactory.newGetStateEventMessage(txParams.channelID, txParams.txID, "", "CAR9", );
+//        Context context = new Context(invocationStub);
+////        Car car = fabcar.queryCar(context, chaincodeInput.getArgs(1).toString());
+//        Car car1 = fabcar.queryCar(context, "CAR9");
+//        System.out.println(car1);
+//        fabcar.changeCarOwner(context,"CAR9", "newowner1");
+//        Car car2 = fabcar.queryCar(context, "CAR9");
+//        System.out.println(car2);
 //
 //    }
-//    public void executeProposal(String channelID, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) {
-//        FabCar fabcar = new FabCar();
-//        fabcar.queryCar(chaincodeInput.toString());
-//
-//        CorfuChaincodeShim.CorfuChaincodeMessage message= new CorfuChaincodeShim.CorfuChaincodeMessage();
-//
+
+    public void executeProposal(String channelID, String chaincodeId, String key) {
+        try {
+            callChaincode(channelID, chaincodeId, key);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+
+//        System.out.println(car);
+    }
+
+
+    public void callChaincode(String channelID, String chaincodeId, String key) throws InvalidProtocolBufferException {
+        corfu_access.issueSnapshotToken();
+        FabCar fabcar = new FabCar();
+        InvocationStubImpl invocationStub = null;
+        try {
+            invocationStub = new InvocationStubImpl(channelID, "123456", chaincodeId, corfu_access);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        Context context = new Context(invocationStub);
+        fabcar.queryCar(context, key);
+        corfu_access.commitTransaction();
+    }
+
 //    public void callChaincode(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) throws InvalidProtocolBufferException {
 //        FabCar fabcar = new FabCar();
 //        System.out.println(chaincodeInput);

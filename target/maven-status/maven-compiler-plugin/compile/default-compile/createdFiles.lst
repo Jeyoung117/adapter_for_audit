@@ -378,7 +378,6 @@ bsp_transaction/BspTransactionOuterClass$1.class
 bsp_transaction/BspTransactionOuterClass$BspTransactionType.class
 org/sslab/fabric/chaincodeshim/contract/annotation/Contract.class
 bsp_transaction/BspTransactionOuterClass$OrderingMethod.class
-org/sslab/fabric/chaincodeshim/shim/impl/InvocationStubImpl$2.class
 bsp_transaction/BspTransactionOuterClass$SignatureHeader$Builder.class
 bsp_transaction/BspTransactionOuterClass$AggregatorSubscribeRequestOrBuilder.class
 bsp_transaction/BspTransactionOuterClass$ChangeTriggerEvent$Builder.class
@@ -402,7 +401,6 @@ org/sslab/fabric/chaincodeshim/metrics/MetricsProvider.class
 org/sslab/fabric/chaincodeshim/shim/ledger/KeyModification.class
 bsp_transaction/BspTransactionOuterClass$ProposalResponseBatch.class
 org/sslab/fabric/chaincodeshim/shim/impl/KeyModificationImpl.class
-org/sslab/fabric/chaincodeshim/shim/impl/InvocationStubImpl$3.class
 bsp_transaction/BspTransactionOuterClass$DeliverRequestOrBuilder.class
 bsp_transaction/BspTransactionOuterClass$HelloRequestOrBuilder.class
 bsp_transaction/BspTransactionOuterClass$MigrateRequestStatePayloadOrBuilder.class

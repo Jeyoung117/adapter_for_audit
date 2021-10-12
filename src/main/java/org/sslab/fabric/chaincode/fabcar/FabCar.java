@@ -48,7 +48,7 @@ public final class FabCar implements ContractInterface {
      * @return the Car found on the ledger if there was one
      */
     @Transaction()
-    public Car queryCar(final Context ctx, final String key) {
+    public void queryCar(final Context ctx, final String key) {
         ChaincodeStub stub = ctx.getStub();
         String carState = stub.getStringState(key);
 
@@ -58,9 +58,10 @@ public final class FabCar implements ContractInterface {
             throw new ChaincodeException(errorMessage, FabCarErrors.CAR_NOT_FOUND.toString());
         }
 
-        Car car = genson.deserialize(carState, Car.class);
+//        System.out.println(carState);
+//        Car car = genson.deserialize(carState, Car.class);
 
-        return car;
+//        return car;
     }
 
     /**
