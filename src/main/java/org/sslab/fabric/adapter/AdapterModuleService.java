@@ -9,11 +9,11 @@ import org.corfudb.runtime.view.AddressSpaceView;
 import org.corfudb.runtime.view.stream.IStreamView;
 import org.hyperledger.fabric.protos.common.Common;
 
+import org.hyperledger.fabric.protos.corfu.CorfuConnectGrpc;
 import org.hyperledger.fabric.protos.peer.*;
 import org.sslab.fabric.chaincode.fabcar.FabCar;
 import org.sslab.fabric.corfu.Corfu_access;
-import protos.CorfuConnectGrpc;
-import protos.Sharedlog;
+
 //import org.sslab.adapter.chaincode.fabcar.FabCar;
 //import org.hyperledger.fabric.sdk.ProposalResponse;
 
@@ -57,6 +57,24 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
 
 
+    @Override
+    public void processProposal(ProposalPackage.SignedProposal signedProposal, StreamObserver<ProposalResponsePackage.ProposalResponse> responseObserver) {
+        UnpackedProposal up =  unpackProposal(signedProposal);
+        try {
+            String result = processProposalSuccessfullyOrError(up);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        ProposalResponsePackage.ProposalResponse resCheck = ProposalResponsePackage.ProposalResponse.newBuilder()
+//                .se(1)
+                .build();
+
+        System.out.println("[interface] {processProposal} Corfu runtime is finished");
+        responseObserver.onNext(resCheck);
+        responseObserver.onCompleted();
+
+    }
+
     @SneakyThrows
     public UnpackedProposal unpackProposal(ProposalPackage.SignedProposal signedProposal) {
         ProposalPackage.Proposal proposal;
@@ -88,20 +106,6 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     }
 
 
-    @Override
-    public void processProposal(Sharedlog.ReqCheck reqCheck, StreamObserver<Sharedlog.ResCheck> responseObserver) {
-//        UnpackedProposal up =  unpackProposal(signedProposal);
-//        String result = processProposalSuccessfullyOrError(up);
-        Sharedlog.ResCheck resCheck = Sharedlog.ResCheck.newBuilder()
-                .setCheckresult(1)
-                .build();
-
-        System.out.println("[interface] {processProposal} Corfu runtime is finished");
-        responseObserver.onNext(resCheck);
-        responseObserver.onCompleted();
-
-    }
-
     public String processProposalSuccessfullyOrError(UnpackedProposal up) throws InvalidProtocolBufferException {
         TransactionParams txParams =  new TransactionParams(
                 up.channelHeader.getTxId(),
@@ -112,7 +116,6 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
                 );
         executeProposal(txParams, up.chaincodeName, up.input);
     return null;
-
     }
 
     public void executeProposal(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) throws InvalidProtocolBufferException {

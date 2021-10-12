@@ -3,31 +3,28 @@ syntax = "proto3";
 //import "google/protobuf/empty.proto";
 //import "google/protobuf/timestamp.proto";
 
-//option java_multiple_files = true;
-//option java_outer_classname = "adapterservice";
-////option java_package = "org.sslab.adapter";
-////option java_package = "org.hyperledger.fabric.protos.peer";
-////option java_package = "proto";
-//option go_package = "github.com/hyperledger/fabric-protos-go/peer";
-//option java_package = "org.hyperledger.fabric.protos.corfu";
+option java_multiple_files = true;
+option java_outer_classname = "adapterservice";
+option go_package = "github.com/hyperledger/fabric-protos-go/peer";
+option java_package = "org.hyperledger.fabric.protos.corfu";
 
 
 package protos;
 
 //package org.sslab.adapter;
 
-//import "peer/proposal_response.proto";
-//import "peer/proposal.proto";
+import "peer/proposal_response.proto";
+import "peer/proposal.proto";
 
-message ReqCheck {
-    string channelID = 1;
-    string chaincodeID = 2;
-    string key = 3;
-}
-
-message ResCheck {
-    uint64 checkresult = 1;
-}
+//message ReqCheck {
+//    string channelID = 1;
+//    string chaincodeID = 2;
+//    bytes key = 3;
+//}
+//
+//message ResCheck {
+//    uint64 checkresult = 1;
+//}
 //
 //message ObjectRequest {
 //    string objectname = 1;
@@ -57,6 +54,5 @@ message ResCheck {
 //}
 
 service CorfuConnect {
-//    rpc processProposal(SignedProposal) returns (ProposalResponse);
-    rpc processProposal(ReqCheck) returns (ResCheck);
+    rpc processProposal(SignedProposal) returns (ProposalResponse);
 }
