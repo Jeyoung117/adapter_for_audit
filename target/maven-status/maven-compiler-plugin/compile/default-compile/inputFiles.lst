@@ -10,9 +10,7 @@
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/Chaincode.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/grpc-java/org/hyperledger/fabric/protos/peer/ChaincodeGrpc.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/annotation/Contract.java
-/home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/corfu/CorfuChaincodeShim.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/idemix/Idemix.java
-/home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/grpc-java/org/hyperledger/fabric/protos/corfu/CorfuChaincodeGrpc.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/metrics/MetricsProvider.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/impl/KeyValueImpl.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/impl/InvocationStubImpl.java
@@ -24,6 +22,7 @@
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/routing/package-info.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/Logging.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/peer/Resources.java
+/home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/corfu/ResCheckOrBuilder.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/ContextFactory.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/routing/PropertyDefinition.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/orderer/etcdraft/Metadata.java
@@ -49,7 +48,6 @@
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/ChaincodeBase.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/msp/Identities.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/ledger/CompositeKeyFormatException.java
-/home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/corfu/Corfu_access.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/orderer/Kafka.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/ContractRouter.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/routing/DataTypeDefinition.java
@@ -97,10 +95,10 @@
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/metrics/impl/DefaultProvider.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/ledger/CompositeKey.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle.java
+/home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/corfu/ResCheck.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/grpc-java/org/hyperledger/fabric/protos/peer/ChaincodeSupportGrpc.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/metadata/MetadataBuilder.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/peer/lifecycle/ChaincodeDefinition.java
-/home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/grpc-java/org/hyperledger/fabric/protos/corfu/CorfuChaincodeSupportGrpc.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/Context.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/metadata/package-info.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/orderer/Configuration.java
@@ -139,6 +137,7 @@
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/annotation/package-info.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/ledger/queryresult/KvQueryResult.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincode_support/chaincodeSupport.java
+/home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/corfu/CorfuAccess.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/adapter/TransactionParams.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/peer/ProposalPackage.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/annotation/Property.java
@@ -146,7 +145,6 @@
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/peer/Policy.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/ledger/KeyValue.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/Logger.java
-/home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/grpc-java/org/hyperledger/fabric/protos/corfu/CorfuAccessConnectGrpc.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/peer/ChaincodeShim.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/routing/impl/ContractDefinitionImpl.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/ledger/KeyModification.java

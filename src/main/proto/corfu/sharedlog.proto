@@ -22,9 +22,9 @@ import "peer/proposal.proto";
 //    bytes key = 3;
 //}
 //
-//message ResCheck {
-//    uint64 checkresult = 1;
-//}
+message ResCheck {
+    uint64 checkresult = 1;
+}
 //
 //message ObjectRequest {
 //    string objectname = 1;

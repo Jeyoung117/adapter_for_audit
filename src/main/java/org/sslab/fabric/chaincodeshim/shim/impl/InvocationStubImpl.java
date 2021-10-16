@@ -27,7 +27,7 @@ import org.hyperledger.fabric.protos.peer.ProposalPackage.Proposal;
 import org.hyperledger.fabric.protos.peer.ProposalPackage.SignedProposal;
 import org.hyperledger.fabric.protos.peer.ProposalResponsePackage;
 import org.hyperledger.fabric.protos.peer.TransactionPackage;
-import org.sslab.fabric.corfu.Corfu_access;
+import org.sslab.fabric.corfu.CorfuAccess;
 import org.sslab.fabric.chaincodeshim.shim.Chaincode.Response;
 import org.sslab.fabric.chaincodeshim.shim.ChaincodeStub;
 import org.sslab.fabric.chaincodeshim.shim.ledger.*;
@@ -67,7 +67,7 @@ public class InvocationStubImpl implements ChaincodeStub {
     private final String chaincodeId;
     private ChaincodeEvent event;
 
-    Corfu_access corfu_access = new Corfu_access();
+    CorfuAccess corfu_access = new CorfuAccess();
 
     /**
      *

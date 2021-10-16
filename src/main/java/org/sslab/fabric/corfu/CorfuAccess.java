@@ -22,14 +22,14 @@ import java.util.logging.Logger;
  * @author Jeyoung Hwang.capricorn116@postech.ac.kr
  *         created on 2021. 9. 28.
  */
-public class Corfu_access {
+public class CorfuAccess {
     Map<UUID, CorfuRuntime> runtimes;
     Map<UUID, IStreamView> streamViews;
     Map<String, Long> lastReadAddrs;
     //tokenMap key: fabric txID, value: access token
     Map<String, Token> tokenMap;
 
-    public Corfu_access() {
+    public CorfuAccess() {
         streamViews = new HashMap<UUID, IStreamView>();
         runtimes = new HashMap<UUID, CorfuRuntime>();
 //        runtime = new CorfuRuntime(runtimeAddr[0]).connect();

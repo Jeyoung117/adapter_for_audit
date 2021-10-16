@@ -2,7 +2,7 @@ package org.sslab.fabric.adapter;
 
 import io.grpc.BindableService;
 import org.corfudb.runtime.CorfuRuntime;
-import org.sslab.fabric.corfu.Corfu_access;
+import org.sslab.fabric.corfu.CorfuAccess;
 
 import java.io.IOException;
 
@@ -12,12 +12,12 @@ import java.io.IOException;
  */
 public class AdapterServerRunner {
 
-    static Corfu_access corfu_access;
+    static CorfuAccess corfu_access;
     static CorfuRuntime runtime;
 
     public static void main(String[] args) throws IOException, InterruptedException {
         runtime = getRuntimeAndConnect("141.223.121.251:12011");
-        corfu_access = new Corfu_access();
+        corfu_access = new CorfuAccess();
         final int port = 54323;
         final BindableService adapterService = new AdapterModuleService(corfu_access, runtime);
 

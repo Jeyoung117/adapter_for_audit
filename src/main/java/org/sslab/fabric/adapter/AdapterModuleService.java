@@ -1,18 +1,21 @@
 package org.sslab.fabric.adapter;
 
+import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.owlike.genson.Genson;
 import io.grpc.stub.StreamObserver;
 import lombok.SneakyThrows;
 import org.corfudb.protocols.wireprotocol.Token;
 import org.corfudb.runtime.CorfuRuntime;
-import org.corfudb.runtime.view.AddressSpaceView;
 import org.corfudb.runtime.view.stream.IStreamView;
 import org.hyperledger.fabric.protos.common.Common;
+
 
 import org.hyperledger.fabric.protos.corfu.CorfuConnectGrpc;
 import org.hyperledger.fabric.protos.peer.*;
 import org.sslab.fabric.chaincode.fabcar.FabCar;
-import org.sslab.fabric.corfu.Corfu_access;
+import org.sslab.fabric.corfu.CorfuAccess;
+import org.sslab.fabric.protoutil.Proputils;
 
 //import org.sslab.adapter.chaincode.fabcar.FabCar;
 //import org.hyperledger.fabric.sdk.ProposalResponse;
@@ -33,12 +36,12 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     //tokenMap key: fabric txID, value: access token
     Map<String, Token> tokenMap;
     CorfuRuntime runtime;
-    Corfu_access corfu_access;
-
+    CorfuAccess corfu_access;
+    private final Genson genson = new Genson();
 //    private ProposalPackage.Proposal proposal;
 
 
-    public AdapterModuleService(Corfu_access corfu_access, CorfuRuntime runtime) {
+    public AdapterModuleService(CorfuAccess corfu_access, CorfuRuntime runtime) {
         streamViews = new HashMap<UUID, IStreamView>();
         runtimes = new HashMap<UUID, CorfuRuntime>();
         this.runtime = runtime;
@@ -60,19 +63,37 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     @Override
     public void processProposal(ProposalPackage.SignedProposal signedProposal, StreamObserver<ProposalResponsePackage.ProposalResponse> responseObserver) {
         UnpackedProposal up =  unpackProposal(signedProposal);
-        try {
-            String result = processProposalSuccessfullyOrError(up);
-        } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
-        }
-        ProposalResponsePackage.ProposalResponse resCheck = ProposalResponsePackage.ProposalResponse.newBuilder()
-//                .se(1)
+//        String upState = genson.serialize(up);
+
+//        try {
+//            ProposalResponsePackage.ProposalResponse pResp = processProposalSuccessfullyOrError(up);
+//            System.out.println("[interface] {processProposal} Corfu runtime is finished");
+//
+//            responseObserver.onNext(pResp);
+//            responseObserver.onCompleted();
+//
+//            UUID streamID = CorfuRuntime.getStreamID(up.channelHeader.getChannelId());
+//            IStreamView sv = streamViews.get(streamID);
+//
+//            long logicalAddr = sv.append(pResp.toByteArray());
+//            System.out.println("[orderer-stub] {append} proposal response size: " + pResp.getSerializedSize());
+//            System.out.println("[orderer-stub] {append} logical addr: " + logicalAddr);
+//        } catch (InvalidProtocolBufferException e) {
+//            e.printStackTrace();
+//        }
+        ProposalResponsePackage.ProposalResponse pResp = ProposalResponsePackage.ProposalResponse
+                .newBuilder()
+                .setVersion(1)
                 .build();
 
-        System.out.println("[interface] {processProposal} Corfu runtime is finished");
-        responseObserver.onNext(resCheck);
+        responseObserver.onNext(pResp);
         responseObserver.onCompleted();
+        UUID streamID = CorfuRuntime.getStreamID(up.channelHeader.getChannelId());
+        IStreamView sv = streamViews.get(streamID);
 
+//        long logicalAddr = sv.append(pResp.toByteArray());
+//        System.out.println("[orderer-stub] {append} proposal response size: " + pResp.getSerializedSize());
+//        System.out.println("[orderer-stub] {append} logical addr: " + logicalAddr);
     }
 
     @SneakyThrows
@@ -87,17 +108,11 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
 
 //        byte[] sp = signedProposal.getProposalBytes().toByteArray();
         proposal = ProposalPackage.Proposal.parseFrom(signedProposal.getProposalBytes());
-
         header = Common.Header.parseFrom(proposal.getHeader());
-
         channelHeader = Common.ChannelHeader.parseFrom(header.getChannelHeader());
-
         signatureHeader = Common.SignatureHeader.parseFrom(header.getSignatureHeader());
-
         chaincodeHdrExt = ProposalPackage.ChaincodeHeaderExtension.parseFrom(channelHeader.getExtension());
-
         payload = ProposalPackage.ChaincodeProposalPayload.parseFrom(proposal.getPayload());
-
         chaincodeInvocationSpec = Chaincode.ChaincodeInvocationSpec.parseFrom(payload.getInput());
 
         UnpackedProposal unpackedProposal = new UnpackedProposal(chaincodeHdrExt.getChaincodeId().getName().toString(), channelHeader, chaincodeInvocationSpec.getChaincodeSpec().getInput(),
@@ -106,19 +121,27 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     }
 
 
-    public String processProposalSuccessfullyOrError(UnpackedProposal up) throws InvalidProtocolBufferException {
-        TransactionParams txParams =  new TransactionParams(
-                up.channelHeader.getTxId(),
-                up.channelHeader.getChannelId(),
-                up.chaincodeName,
-                up.signedProp,
-                up.proposal
-                );
-        executeProposal(txParams, up.chaincodeName, up.input);
-    return null;
-    }
+//    public ProposalResponsePackage.ProposalResponse processProposalSuccessfullyOrError(UnpackedProposal up) throws InvalidProtocolBufferException {
+//        TransactionParams txParams =  new TransactionParams(
+//                up.channelHeader.getTxId(),
+//                up.channelHeader.getChannelId(),
+//                up.chaincodeName,
+//                up.signedProp,
+//                up.proposal
+//                );
+//        ChaincodeShim.ChaincodeMessage ccMsg = executeProposal(txParams, up.chaincodeName, up.input);
+//        ByteString cceventBytes = createCCEventBytes(ccMsg.getChaincodeEvent());
+//        Proputils proputils = new Proputils();
+//
+//        Chaincode.ChaincodeID ccID = Chaincode.ChaincodeID.newBuilder().setName(up.chaincodeName).setVersion(up.chaincodeName).build();
+//        ByteString prpBytes = proputils.getBytesProposalResponsePayload(up.proposalHash, ccMsg.getPayload(), ccMsg.getPayload(), cceventBytes, ccID);
+//
+//        return ProposalResponsePackage.ProposalResponse.newBuilder().setVersion(1).setPayload(prpBytes).setResponse(res).build();
+//
+//    return null;
+//    }
 
-    public void executeProposal(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) throws InvalidProtocolBufferException {
+    public ChaincodeShim.ChaincodeMessage executeProposal(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) throws InvalidProtocolBufferException {
 
 //        CorfuChaincodeShim.CorfuChaincodeMessage message= new CorfuChaincodeShim.CorfuChaincodeMessage();
         FabCar fabcar = new FabCar();
@@ -135,6 +158,7 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
 //        Car car2 = fabcar.queryCar(context, "CAR9");
 //        System.out.println(car2);
 
+        return null;
     }
 //    public void executeProposal(String channelID, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) {
 //        FabCar fabcar = new FabCar();
@@ -148,6 +172,12 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
         System.out.println(chaincodeInput.toString());
     }
 
+    public ByteString createCCEventBytes(ChaincodeEventPackage.ChaincodeEvent ccevent) {
+        if(ccevent == null) {
+            return null;
+        }
+        return ccevent.toByteString();
+    }
 }
 
 
