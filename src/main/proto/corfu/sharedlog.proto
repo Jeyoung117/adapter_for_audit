@@ -17,7 +17,7 @@ package protos;
 //package org.sslab.adapter;
 
 //import "peer/proposal_response.proto";
-//import "peer/proposal.proto";
+import "peer/proposal.proto";
 
 message ReqCheck {
     string channelID = 1;
@@ -59,4 +59,5 @@ message ResCheck {
 service CorfuConnect {
 //    rpc processProposal(SignedProposal) returns (ProposalResponse);
     rpc processProposal(ReqCheck) returns (ResCheck);
+    rpc processProposalwrite(SignedProposal) returns (ResCheck);
 }

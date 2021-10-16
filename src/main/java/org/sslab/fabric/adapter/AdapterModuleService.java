@@ -1,7 +1,5 @@
 package org.sslab.fabric.adapter;
 
-import bsp_transaction.AggregatorGrpc;
-import bsp_transaction.BspTransactionOuterClass;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.grpc.stub.StreamObserver;
 import lombok.SneakyThrows;
@@ -11,6 +9,7 @@ import org.corfudb.runtime.view.AddressSpaceView;
 import org.corfudb.runtime.view.stream.IStreamView;
 //import org.hyperledger.fabric.protos.common.Common;
 
+import org.hyperledger.fabric.protos.common.Common;
 import org.hyperledger.fabric.protos.peer.Chaincode;
 import org.hyperledger.fabric.protos.peer.ChaincodeShim;
 import org.hyperledger.fabric.protos.peer.ProposalPackage;
@@ -81,33 +80,56 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     }
 
     @SneakyThrows
-    public void unpackProposal(BspTransactionOuterClass.Proposal proposal) {
-//        Proposal pr;
-//        Common.Header header;
-//        Common.ChannelHeader channelHeader;
-//        Common.SignatureHeader signatureHeader;
-//        ProposalPackage.ChaincodeHeaderExtension chaincodeHdrExt;
-//        ProposalPayload payload;
-//        Chaincode.ChaincodeInvocationSpec chaincodeInvocationSpec;
-//
-////        byte[] sp = signedProposal.getProposalBytes().toByteArray();
+    @Override
+    public void processProposalWrite(Sharedlog.SubmitCheck request, StreamObserver<Sharedlog.ResCheck> responseObserver) {
+//        UnpackedProposal up =  unpackProposal(proposal);
+//        String result = processProposalSuccessfullyOrError(up);
+
+//        System.out.println("received channel name: " + request.getChannelID());
+//        System.out.println("received chaincode name: " + request.getChaincodeID());
+//        System.out.println("received key : " + request.getKey());
+
+        executeProposal(request.getChannelID(), request.getChaincodeID(), request.getKey());
+//        corfu_access.getStringState(request.getKey(), request.getChannelID(),request.getChaincodeID());
+//        corfu_access.putStringState(request.getKey(), request.getChannelID(),request.getChaincodeID(),request.getChaincodeID().getBytes());
+        Sharedlog.ResCheck response = Sharedlog.ResCheck
+                .newBuilder()
+                .setCheckresult(1)
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    @SneakyThrows
+    public UnpackedProposal unpackProposal(ProposalPackage.SignedProposal signedProposal) {
+        ProposalPackage.Proposal proposal;
+        Common.Header header;
+        Common.ChannelHeader channelHeader;
+        Common.SignatureHeader signatureHeader;
+        ProposalPackage.ChaincodeHeaderExtension chaincodeHdrExt;
+        ProposalPackage.ChaincodeProposalPayload payload;
+        Chaincode.ChaincodeInvocationSpec chaincodeInvocationSpec;
+
+//        byte[] sp = signedProposal.getProposalBytes().toByteArray();
 //        pr = ProposalPackage.Proposal.parseFrom(proposal);
-//
-//        header = Common.Header.parseFrom(proposal.getHeader());
-//
-//        channelHeader = Common.ChannelHeader.parseFrom(header.getChannelHeader());
-//
-//        signatureHeader = Common.SignatureHeader.parseFrom(header.getSignatureHeader());
-//
-//        chaincodeHdrExt = ProposalPackage.ChaincodeHeaderExtension.parseFrom(channelHeader.getExtension());
-//
-//        payload = ProposalPackage.ChaincodeProposalPayload.parseFrom(proposal.getPayload());
-//
-//        chaincodeInvocationSpec = Chaincode.ChaincodeInvocationSpec.parseFrom(payload.getInput());
-//
-//        UnpackedProposal unpackedProposal = new UnpackedProposal(chaincodeHdrExt.getChaincodeId().getName().toString(), channelHeader, chaincodeInvocationSpec.getChaincodeSpec().getInput(),
-//                proposal, signatureHeader);
-//        return unpackedProposal;
+        proposal = ProposalPackage.SignedProposal.parseFrom(signedProposal);
+
+        header = Common.Header.parseFrom(proposal.getHeader());
+
+        channelHeader = Common.ChannelHeader.parseFrom(header.getChannelHeader());
+
+        signatureHeader = Common.SignatureHeader.parseFrom(header.getSignatureHeader());
+
+        chaincodeHdrExt = ProposalPackage.ChaincodeHeaderExtension.parseFrom(channelHeader.getExtension());
+
+        payload = ProposalPackage.ChaincodeProposalPayload.parseFrom(proposal.getPayload());
+
+        chaincodeInvocationSpec = Chaincode.ChaincodeInvocationSpec.parseFrom(payload.getInput());
+
+        UnpackedProposal unpackedProposal = new UnpackedProposal(chaincodeHdrExt.getChaincodeId().getName().toString(), channelHeader, chaincodeInvocationSpec.getChaincodeSpec().getInput(),
+                proposal, signatureHeader);
+        return unpackedProposal;
     }
 
 //    public String processProposalSuccessfullyOrError(UnpackedProposal up) throws InvalidProtocolBufferException {
