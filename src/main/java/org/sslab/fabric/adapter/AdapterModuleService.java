@@ -63,35 +63,35 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     @Override
     public void processProposal(ProposalPackage.SignedProposal signedProposal, StreamObserver<ProposalResponsePackage.ProposalResponse> responseObserver) {
         UnpackedProposal up =  unpackProposal(signedProposal);
-//        String upState = genson.serialize(up);
+        try {
+            ProposalResponsePackage.ProposalResponse pResp = processProposalSuccessfullyOrError(up);
+            System.out.println("[interface] {processProposal} Corfu runtime is finished");
 
-//        try {
-//            ProposalResponsePackage.ProposalResponse pResp = processProposalSuccessfullyOrError(up);
-//            System.out.println("[interface] {processProposal} Corfu runtime is finished");
-//
-//            responseObserver.onNext(pResp);
-//            responseObserver.onCompleted();
-//
-//            UUID streamID = CorfuRuntime.getStreamID(up.channelHeader.getChannelId());
-//            IStreamView sv = streamViews.get(streamID);
-//
-//            long logicalAddr = sv.append(pResp.toByteArray());
-//            System.out.println("[orderer-stub] {append} proposal response size: " + pResp.getSerializedSize());
-//            System.out.println("[orderer-stub] {append} logical addr: " + logicalAddr);
-//        } catch (InvalidProtocolBufferException e) {
-//            e.printStackTrace();
-//        }
-        ProposalResponsePackage.ProposalResponse pResp = ProposalResponsePackage.ProposalResponse
-                .newBuilder()
-                .setVersion(1)
-                .build();
+            responseObserver.onNext(pResp);
+            responseObserver.onCompleted();
 
-        responseObserver.onNext(pResp);
-        responseObserver.onCompleted();
-        UUID streamID = CorfuRuntime.getStreamID(up.channelHeader.getChannelId());
-        IStreamView sv = streamViews.get(streamID);
+            UUID streamID = CorfuRuntime.getStreamID(up.channelHeader.getChannelId());
+            IStreamView sv = streamViews.get(streamID);
 
+            long logicalAddr = sv.append(pResp.toByteArray());
+            System.out.println("[orderer-stub] {append} proposal response size: " + pResp.getSerializedSize());
+            System.out.println("[orderer-stub] {append} logical addr: " + logicalAddr);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+//        ProposalResponsePackage.ProposalResponse pResp = ProposalResponsePackage.ProposalResponse
+//                .newBuilder()
+//                .setVersion(1)
+//                .build();
+//
+//        responseObserver.onNext(pResp);
+//        responseObserver.onCompleted();
+//        UUID streamID = runtime.getStreamID(up.channelHeader.getChannelId());
+//        IStreamView sv = runtime.getStreamsView().get(streamID);
+//        System.out.println(up.channelHeader.getChannelId());
 //        long logicalAddr = sv.append(pResp.toByteArray());
+//        sv.seek(27);
+//        System.out.println(sv.getId());
 //        System.out.println("[orderer-stub] {append} proposal response size: " + pResp.getSerializedSize());
 //        System.out.println("[orderer-stub] {append} logical addr: " + logicalAddr);
     }
@@ -121,25 +121,28 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     }
 
 
-//    public ProposalResponsePackage.ProposalResponse processProposalSuccessfullyOrError(UnpackedProposal up) throws InvalidProtocolBufferException {
-//        TransactionParams txParams =  new TransactionParams(
-//                up.channelHeader.getTxId(),
-//                up.channelHeader.getChannelId(),
-//                up.chaincodeName,
-//                up.signedProp,
-//                up.proposal
-//                );
-//        ChaincodeShim.ChaincodeMessage ccMsg = executeProposal(txParams, up.chaincodeName, up.input);
-//        ByteString cceventBytes = createCCEventBytes(ccMsg.getChaincodeEvent());
-//        Proputils proputils = new Proputils();
-//
-//        Chaincode.ChaincodeID ccID = Chaincode.ChaincodeID.newBuilder().setName(up.chaincodeName).setVersion(up.chaincodeName).build();
-//        ByteString prpBytes = proputils.getBytesProposalResponsePayload(up.proposalHash, ccMsg.getPayload(), ccMsg.getPayload(), cceventBytes, ccID);
-//
-//        return ProposalResponsePackage.ProposalResponse.newBuilder().setVersion(1).setPayload(prpBytes).setResponse(res).build();
-//
-//    return null;
-//    }
+    public ProposalResponsePackage.ProposalResponse processProposalSuccessfullyOrError(UnpackedProposal up) throws InvalidProtocolBufferException {
+        TransactionParams txParams =  new TransactionParams(
+                up.channelHeader.getTxId(),
+                up.channelHeader.getChannelId(),
+                up.chaincodeName,
+                up.signedProp,
+                up.proposal
+                );
+        ChaincodeShim.ChaincodeMessage ccMsg = executeProposal(txParams, up.chaincodeName, up.input);
+        ByteString cceventBytes = createCCEventBytes(ccMsg.getChaincodeEvent());
+        Proputils proputils = new Proputils();
+
+        Chaincode.ChaincodeID ccID = Chaincode.ChaincodeID.newBuilder().setName(up.chaincodeName).setVersion(up.chaincodeName).build();
+        ByteString prpBytes = proputils.getBytesProposalResponsePayload(up.proposalHash, null, ccMsg.getPayload(), cceventBytes, ccID);
+
+        return ProposalResponsePackage.ProposalResponse
+                .newBuilder()
+                .setVersion(1)
+                .setPayload(prpBytes)
+//                .setResponse(null)
+                .build();
+    }
 
     public ChaincodeShim.ChaincodeMessage executeProposal(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) throws InvalidProtocolBufferException {
 

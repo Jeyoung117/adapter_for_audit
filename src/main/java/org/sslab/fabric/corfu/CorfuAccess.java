@@ -150,20 +150,17 @@ public class CorfuAccess {
     }
 
     public void commitTransaction() {
-//    public void commitTransaction(ReqCommit request, StreamObserver<ResCommit> responseObserver) {
-//        System.out.println("[peer-interface] {commitTransaction} Corfu runtime is connected");
-//        System.out.println("전송받은 request: " + request);
-//        System.out.println(request.getTest());
         Token current_token = runtime.getSequencerView().query().getToken();
-//        UUIfD streamID = CorfuRuntime.getStreamID("mychannel"); //추후 실제 channel ID로 변
-//        IStreamView sv = streamViews.get(streamID);
+        UUID streamID = CorfuRuntime.getStreamID("mychannel"); //추후 실제 channel ID로 변
+        IStreamView sv = streamViews.get(streamID);
 
         long appended_add = runtime.getObjectsView().TXEnd();
 
 
+
 //            long logicalAddr = sv.append(request.toByteArray());
-//        System.out.println("[peer-interface] {commitTransaction} ProposalResponse size: " + request.getSerializedSize());
-//        System.out.println("[peer-interface] {commitTransaction} appended_add: " + appended_add);
+        System.out.println("[corfu-access-interface] {commitTransaction} ProposalResponse size: " + request.getSerializedSize());
+        System.out.println("[corfu-access-interface] {commitTransaction} appended_add: " + appended_add);
 //            System.out.println("[peer-interface] {commitTransaction} logical addr: " + logicalAddr);
 
 //            if(logicalAddr >= 0) {
@@ -179,6 +176,6 @@ public class CorfuAccess {
 
 
 //        System.out.println("appended_add:" + appended_add);
-        System.out.println("[peer-interface] {commitTransaction} Corfu runtime is finished");
+        System.out.println("[corfu-access-interface] {commitTransaction} Corfu runtime is finished");
     }
 }
