@@ -14,6 +14,8 @@ import org.hyperledger.fabric.protos.common.Common;
 import org.hyperledger.fabric.protos.corfu.CorfuConnectGrpc;
 import org.hyperledger.fabric.protos.peer.*;
 import org.sslab.fabric.chaincode.fabcar.FabCar;
+import org.sslab.fabric.chaincodeshim.contract.Context;
+import org.sslab.fabric.chaincodeshim.shim.impl.InvocationStubImpl;
 import org.sslab.fabric.corfu.CorfuAccess;
 import org.sslab.fabric.protoutil.Proputils;
 
@@ -145,11 +147,11 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     }
 
     public ChaincodeShim.ChaincodeMessage executeProposal(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) throws InvalidProtocolBufferException {
-
-//        CorfuChaincodeShim.CorfuChaincodeMessage message= new CorfuChaincodeShim.CorfuChaincodeMessage();
-        FabCar fabcar = new FabCar();
-        System.out.println(chaincodeInput);
-        System.out.println(chaincodeInput.toString());
+        try {
+            callChaincode(txParams, chaincodeName, chaincodeInput);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
 
 
 //        InvocationStubImpl invocationStub = new InvocationStubImpl(ChaincodeMessageFactory.newGetStateEventMessage(txParams.channelID, txParams.txID, "", "CAR9", );
@@ -163,16 +165,19 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
 
         return null;
     }
-//    public void executeProposal(String channelID, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) {
-//        FabCar fabcar = new FabCar();
-//        fabcar.queryCar(chaincodeInput.toString());
-
-//        CorfuChaincodeShim.CorfuChaincodeMessage message= new CorfuChaincodeShim.CorfuChaincodeMessage();
 
     public void callChaincode(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) throws InvalidProtocolBufferException {
+        corfu_access.issueSnapshotToken();
         FabCar fabcar = new FabCar();
-        System.out.println(chaincodeInput);
-        System.out.println(chaincodeInput.toString());
+        InvocationStubImpl invocationStub = null;
+        try {
+            invocationStub = new InvocationStubImpl(txParams.channelID, "123456", chaincodeName, corfu_access);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        Context context = new Context(invocationStub);
+        fabcar.queryCar(context, key);
+        corfu_access.commitTransaction();
     }
 
     public ByteString createCCEventBytes(ChaincodeEventPackage.ChaincodeEvent ccevent) {
