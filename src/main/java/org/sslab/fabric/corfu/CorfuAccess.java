@@ -108,7 +108,7 @@ public class CorfuAccess {
         byte[] value = map.get(objectKey);
         if (value == null) {
             System.out.println("[corfu-access-interface] {getState} null!!!!");
-            return value;
+            return null;
         } else {
 //            System.out.println(temp);
             ByteString tempbs = ByteString.copyFrom(value);

@@ -16,14 +16,14 @@ public class UnpackedProposal {
         public ByteString proposalHash;
 
         public UnpackedProposal(String chaincodeName, Common.ChannelHeader channelHeader, Chaincode.ChaincodeInput input, ProposalPackage.Proposal proposal, Common.SignatureHeader signatureHeader,
-                ProposalPackage.SignedProposal signedProp) {
+                ProposalPackage.SignedProposal signedProp, ByteString proposalHash) {
                 this.chaincodeName = chaincodeName;
                 this.channelHeader = channelHeader;
                 this.input = input;
                 this.proposal = proposal;
                 this.signatureHeader = signatureHeader;
                 this.signedProp = signedProp;
-//                this.proposalHash = proposalHash;
+                this.proposalHash = proposalHash;
         }
 
         @SneakyThrows
@@ -46,7 +46,7 @@ public class UnpackedProposal {
                 chaincodeInvocationSpec = Chaincode.ChaincodeInvocationSpec.parseFrom(payload.getInput());
 
                 UnpackedProposal unpackedProposal = new UnpackedProposal(chaincodeHdrExt.getChaincodeId().getName().toString(), channelHeader, chaincodeInvocationSpec.getChaincodeSpec().getInput(),
-                        proposal, signatureHeader, signedProposal);
+                        proposal, signatureHeader, signedProposal, signedProposal.getProposalBytes());
                 return unpackedProposal;
         }
 }

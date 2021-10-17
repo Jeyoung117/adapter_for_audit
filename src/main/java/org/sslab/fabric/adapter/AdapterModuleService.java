@@ -2,11 +2,13 @@ package org.sslab.fabric.adapter;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Timestamp;
 import com.owlike.genson.Genson;
 import io.grpc.stub.StreamObserver;
 import lombok.SneakyThrows;
 import org.corfudb.protocols.wireprotocol.Token;
 import org.corfudb.runtime.CorfuRuntime;
+import org.corfudb.runtime.view.StreamsView;
 import org.corfudb.runtime.view.stream.IStreamView;
 import org.hyperledger.fabric.protos.common.Common;
 
@@ -15,6 +17,7 @@ import org.hyperledger.fabric.protos.corfu.CorfuConnectGrpc;
 import org.hyperledger.fabric.protos.peer.*;
 import org.sslab.fabric.chaincode.fabcar.FabCar;
 import org.sslab.fabric.chaincodeshim.contract.Context;
+import org.sslab.fabric.chaincodeshim.shim.impl.ChaincodeMessageFactory;
 import org.sslab.fabric.chaincodeshim.shim.impl.InvocationStubImpl;
 import org.sslab.fabric.corfu.CorfuAccess;
 import org.sslab.fabric.protoutil.Proputils;
@@ -23,6 +26,7 @@ import org.sslab.fabric.protoutil.Proputils;
 //import org.hyperledger.fabric.sdk.ProposalResponse;
 
 
+import java.time.Instant;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -40,6 +44,7 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     CorfuRuntime runtime;
     CorfuAccess corfu_access;
     private final Genson genson = new Genson();
+
 //    private ProposalPackage.Proposal proposal;
 
 
@@ -67,17 +72,19 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
         UnpackedProposal up =  unpackProposal(signedProposal);
         try {
             ProposalResponsePackage.ProposalResponse pResp = processProposalSuccessfullyOrError(up);
-            System.out.println("[interface] {processProposal} Corfu runtime is finished");
 
             responseObserver.onNext(pResp);
             responseObserver.onCompleted();
 
-            UUID streamID = CorfuRuntime.getStreamID(up.channelHeader.getChannelId());
-            IStreamView sv = streamViews.get(streamID);
+            System.out.println(up.channelHeader.getChannelId());
+            UUID streamID = runtime.getStreamID(up.channelHeader.getChannelId());
+            IStreamView iStreamView = runtime.getStreamsView().get(streamID);
+            StreamsView streamsView = new StreamsView(runtime);
 
-            long logicalAddr = sv.append(pResp.toByteArray());
+            long logicalAddr = iStreamView.append(pResp.toByteArray());
             System.out.println("[orderer-stub] {append} proposal response size: " + pResp.getSerializedSize());
             System.out.println("[orderer-stub] {append} logical addr: " + logicalAddr);
+            System.out.println("[interface] {processProposal} Corfu runtime is finished");
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
@@ -118,7 +125,7 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
         chaincodeInvocationSpec = Chaincode.ChaincodeInvocationSpec.parseFrom(payload.getInput());
 
         UnpackedProposal unpackedProposal = new UnpackedProposal(chaincodeHdrExt.getChaincodeId().getName().toString(), channelHeader, chaincodeInvocationSpec.getChaincodeSpec().getInput(),
-                proposal, signatureHeader, signedProposal);
+                proposal, signatureHeader, signedProposal, signedProposal.getProposalBytes());
         return unpackedProposal;
     }
 
@@ -132,23 +139,51 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
                 up.proposal
                 );
         ChaincodeShim.ChaincodeMessage ccMsg = executeProposal(txParams, up.chaincodeName, up.input);
+        ProposalResponsePackage.Response response = ProposalResponsePackage.Response.newBuilder()
+                .setStatus(200)
+                .setMessage("ChaincodeMessage_COMPLETED")
+                .build();
+
         ByteString cceventBytes = createCCEventBytes(ccMsg.getChaincodeEvent());
         Proputils proputils = new Proputils();
 
         Chaincode.ChaincodeID ccID = Chaincode.ChaincodeID.newBuilder().setName(up.chaincodeName).setVersion(up.chaincodeName).build();
-        ByteString prpBytes = proputils.getBytesProposalResponsePayload(up.proposalHash, null, ccMsg.getPayload(), cceventBytes, ccID);
+        System.out.println(up.proposalHash);
+        ByteString prpBytes = proputils.getBytesProposalResponsePayload(up.proposalHash, response, ccMsg.getPayload(), cceventBytes, ccID);
 
-        return ProposalResponsePackage.ProposalResponse
+        ProposalResponsePackage.ProposalResponse pResp = ProposalResponsePackage.ProposalResponse
                 .newBuilder()
                 .setVersion(1)
                 .setPayload(prpBytes)
 //                .setResponse(null)
                 .build();
+
+        return pResp;
     }
 
     public ChaincodeShim.ChaincodeMessage executeProposal(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) throws InvalidProtocolBufferException {
         try {
             callChaincode(txParams, chaincodeName, chaincodeInput);
+            Instant time = Instant.now();
+            Timestamp timestamp = Timestamp.newBuilder().setSeconds(time.getEpochSecond())
+                    .setNanos(time.getNano()).build();
+            ChaincodeEventPackage.ChaincodeEvent ccEvent = ChaincodeEventPackage.ChaincodeEvent.newBuilder()
+                    .setPayload(txParams.proposal.getPayload())
+                    .setChaincodeId(chaincodeName)
+                    .setEventName("success")
+                    .setTxId(txParams.txID)
+                    .build();
+
+            return ChaincodeShim.ChaincodeMessage
+                    .newBuilder()
+                    .setType(ChaincodeShim.ChaincodeMessage.Type.RESPONSE)
+                    .setTimestamp(timestamp)
+                    .setPayload(txParams.proposal.getPayload())
+                    .setTxid(txParams.txID)
+                    .setProposal(txParams.signedProp)
+                    .setChaincodeEvent(ccEvent)
+                    .setChannelId(txParams.channelID)
+                    .build();
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
@@ -175,13 +210,16 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
+
         Context context = new Context(invocationStub);
         String key = String.valueOf(chaincodeInput.getArgs(1));
-
+        System.out.println(key);
         fabcar.createCar(context, key, key, key, key, key);
         key = "CAR10";
         fabcar.createCar(context, key, key, key, key, key);
+
         corfu_access.commitTransaction();
+
     }
 
     public ByteString createCCEventBytes(ChaincodeEventPackage.ChaincodeEvent ccevent) {
