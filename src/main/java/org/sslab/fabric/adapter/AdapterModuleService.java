@@ -176,7 +176,11 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
             e.printStackTrace();
         }
         Context context = new Context(invocationStub);
-        fabcar.queryCar(context, key);
+        String key = String.valueOf(chaincodeInput.getArgs(1));
+
+        fabcar.createCar(context, key, key, key, key, key);
+        key = "CAR10";
+        fabcar.createCar(context, key, key, key, key, key);
         corfu_access.commitTransaction();
     }
 

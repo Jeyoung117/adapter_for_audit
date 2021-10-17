@@ -156,10 +156,6 @@ public class CorfuAccess {
 
         long appended_add = runtime.getObjectsView().TXEnd();
 
-
-
-//            long logicalAddr = sv.append(request.toByteArray());
-        System.out.println("[corfu-access-interface] {commitTransaction} ProposalResponse size: " + request.getSerializedSize());
         System.out.println("[corfu-access-interface] {commitTransaction} appended_add: " + appended_add);
 //            System.out.println("[peer-interface] {commitTransaction} logical addr: " + logicalAddr);
 

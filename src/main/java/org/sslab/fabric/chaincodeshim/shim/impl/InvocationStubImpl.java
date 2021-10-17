@@ -57,13 +57,13 @@ public class InvocationStubImpl implements ChaincodeStub {
     private static final String CORE_PEER_LOCALMSPID = "CORE_PEER_LOCALMSPID";
     private final String channelId;
     private final String txId;
-    private final ChaincodeInvocationTask handler;
-    private final List<ByteString> args;
-    private final SignedProposal signedProposal;
-    private final Instant txTimestamp;
-    private final ByteString creator;
-    private final Map<String, ByteString> transientMap;
-    private final byte[] binding;
+    private ChaincodeInvocationTask handler;
+    private List<ByteString> args;
+    private SignedProposal signedProposal;
+    private Instant txTimestamp;
+    private ByteString creator;
+    private Map<String, ByteString> transientMap;
+    private byte[] binding;
     private final String chaincodeId;
     private ChaincodeEvent event;
 
@@ -123,6 +123,24 @@ public class InvocationStubImpl implements ChaincodeStub {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    /**
+     *this version 2 InvocationStubImpl is for using chaincodeMessage as a argument. So in benchmark, use below InvocationStubImpl version 2
+     * @param channelId
+     * @param txId
+     * @param chaincodeId
+    //     * @param handler
+    //     * @param handler
+     * @throws InvalidProtocolBufferException
+     */
+    public InvocationStubImpl(String channelId, String txId, String chaincodeId, CorfuAccess corfu_access)
+            throws InvalidProtocolBufferException {
+        this.channelId = channelId;
+        this.txId = txId;
+//        validateProposalType(channelHeader);
+        this.chaincodeId= chaincodeId;
+        this.corfu_access = corfu_access;
     }
 
     private byte[] computeBinding(final ChannelHeader channelHeader, final SignatureHeader signatureHeader)
