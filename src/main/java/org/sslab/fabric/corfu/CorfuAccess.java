@@ -1,18 +1,21 @@
 package org.sslab.fabric.corfu;
 
 import com.google.common.reflect.TypeToken;
-import com.google.protobuf.ByteString;
-import io.grpc.stub.StreamObserver;
+import org.corfudb.protocols.logprotocol.LogEntry;
+import org.corfudb.protocols.logprotocol.MultiObjectSMREntry;
+import org.corfudb.protocols.logprotocol.MultiSMREntry;
+import org.corfudb.protocols.logprotocol.SMREntry;
+import org.corfudb.protocols.wireprotocol.ILogData;
 import org.corfudb.protocols.wireprotocol.Token;
 import org.corfudb.runtime.CorfuRuntime;
 import org.corfudb.runtime.collections.CorfuTable;
-import org.corfudb.runtime.object.transactions.Transaction;
-import org.corfudb.runtime.object.transactions.TransactionType;
 import org.corfudb.runtime.view.AddressSpaceView;
+import org.corfudb.runtime.view.StreamsView;
 import org.corfudb.runtime.view.stream.IStreamView;
 //import org.hyperledger.fabric.protos.corfu.CorfuChaincodeShim;
 import org.sslab.fabric.adapter.AdapterModuleService;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -43,9 +46,7 @@ public class CorfuAccess {
         CorfuRuntime corfuRuntime = new CorfuRuntime(configurationString).connect();
         return corfuRuntime;
     }
-    CorfuRuntime runtime =  getRuntimeAndConnect("141.223.121.251:12011");
-    AddressSpaceView addressSpaceView = runtime.getAddressSpaceView();
-
+    CorfuRuntime runtime =  getRuntimeAndConnect("141.223.121.251:13011");
     private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
 
 
@@ -87,15 +88,10 @@ public class CorfuAccess {
 //
 //    }
 
-
     //local method call 전용 getstringstate
     public byte[] getStringState(String objectKey, String channelID, String chaincodeID) {
-        Token current_token = runtime.getSequencerView().query().getToken();
-        long blockNum = current_token.getSequence();
-
         System.out.println("channelID:" + channelID);
         System.out.println("chaincodeID:" + chaincodeID);
-
 
         Map<String, byte[]> map = runtime.getObjectsView()
                 .build()
@@ -104,18 +100,13 @@ public class CorfuAccess {
                 })
                 .open();
 
-//        ByteString data = ByteString.copyFrom(map.get(objectKey));
         byte[] value = map.get(objectKey);
         if (value == null) {
             System.out.println("[corfu-access-interface] {getState} null!!!!");
-            return null;
         } else {
-//            System.out.println(temp);
-            ByteString tempbs = ByteString.copyFrom(value);
-
             System.out.println("[corfu-access-interface] {getState} success");
-            return value;
         }
+        return value;
     }
 
 
@@ -128,50 +119,64 @@ public class CorfuAccess {
                 .setTypeToken(new TypeToken<CorfuTable<String, byte[]>>() {
                 })
                 .open();
+        String test = "test";
+        byte[] testbytes = test.getBytes();
+        int destLength = testbytes.length + data.length;
+        byte[] dest = new byte[destLength];
+        System.arraycopy(testbytes, 0,dest,0,testbytes.length);
+        System.arraycopy(data, 0,dest,testbytes.length, data.length);
 
-        map.put(objectKey, data);
+        map.put(objectKey, dest);
 
         System.out.println("[corfu-access-interface] {putState} success");
     }
 
     public void issueSnapshotToken() {
-        Token current_token = runtime.getSequencerView().query().getToken();
-        Transaction vCorfutx = runtime.getObjectsView()
-                .TXBuild()
-                .type(TransactionType.OPTIMISTIC)
-                .runtime(runtime)
-                .snapshot(current_token)
-                .build();
-        vCorfutx.begin();
-
-//        tokenMap.put(request.getTemp(), current_token);
-
+        runtime.getObjectsView().TXBegin();
         System.out.println("[corfu-access-interface] {issueSnapshotToken} success");
     }
 
     public void commitTransaction() {
-        Token current_token = runtime.getSequencerView().query().getToken();
-        UUID streamID = CorfuRuntime.getStreamID("mychannel"); //추후 실제 channel ID로 변
-        IStreamView sv = streamViews.get(streamID);
-
+//        Token current_token = runtime.getSequencerView().query().getToken();
+        AddressSpaceView addressSpaceView = runtime.getAddressSpaceView();
+        UUID streamID = runtime.getStreamID("mychannel" + "fabcar"); //추후 실제 channel ID로 변
+        IStreamView iStreamView = runtime.getStreamsView().get(streamID);
+        StreamsView streamsView = new StreamsView(runtime);
         long appended_add = runtime.getObjectsView().TXEnd();
+        iStreamView.seek(appended_add);
+        ILogData ilogData = addressSpaceView.read(appended_add);
+        LogEntry logEntry = ilogData.getLogEntry(runtime);
+//        SMREntry smrEntry = ilogData.getLogEntry(runtime);
+        MultiObjectSMREntry multiObjectSMREntry = (MultiObjectSMREntry) ilogData.getPayload(runtime);
+        MultiSMREntry  multiSMREntry = multiObjectSMREntry.getEntryMap().entrySet().iterator().next().getValue();
 
+//        for (Map.Entry<UUID, MultiSMREntry> multiSMREntry : multiObjectSMREntry.getEntryMap().entrySet()) {
+//            for (SMREntry update : multiSMREntry.getValue().getUpdates()) {
+//
+//            }
+//        }
+//        MultiSMREntry multiSMREntry = (MultiSMREntry) ilogData.getLogEntry(runtime);
+//        SMREntry smrEntry = (SMREntry) ilogData.getLogEntry(runtime);
+        System.out.println(appended_add +  " log 조사 시작");
         System.out.println("[corfu-access-interface] {commitTransaction} appended_add: " + appended_add);
-//            System.out.println("[peer-interface] {commitTransaction} logical addr: " + logicalAddr);
+        System.out.println("streamsView.get(streamID).next(): " + streamsView.get(streamID).next());
+        System.out.println("ilogData: " + ilogData);
+        System.out.println("logData: " + ilogData.getPayload(runtime));
+        System.out.println("type: " + ilogData.getType());
+        System.out.println("ilogData.getLogEntry: " + ilogData.getLogEntry(runtime));
+//        System.out.println("ilogData.getSerializedForm: " + ilogData.getSerializedForm().getSerialized());
+        System.out.println("logData: " + multiObjectSMREntry.getSMRUpdates(streamID));
+        System.out.println("multiSMREntry.getSMRUpdates(streamID;: " + multiSMREntry.getSMRUpdates(streamID).get(0));
+        SMREntry smrEntry =  multiSMREntry.getSMRUpdates(streamID).get(0);
 
-//            if(logicalAddr >= 0) {
-
-//            System.out.println("[peer-interface] {commitTransaction} return success");
-//            }
-//            else {
-//                reply = ResCommit.newBuilder()
-//                        .setSuccess(false)
-//                        .build();
-//                System.out.println("[peer-interface] {commitTransaction} return fail");
-//            }
-
-
-//        System.out.println("appended_add:" + appended_add);
+        System.out.println("smrEntry.getSMRArguments(): " + smrEntry.getSMRArguments());
+        Object[] ob = Arrays.stream(smrEntry.getSMRArguments()).toArray();
+//        Car car =
+        System.out.println("smrEntry.getSMRArguments(): " + ob[0] + ob[1]);
+        String temp = new String((byte[]) ob[1]);
+        System.out.println("temp: " + temp);
+        System.out.println("key: " + ob[0]);
         System.out.println("[corfu-access-interface] {commitTransaction} Corfu runtime is finished");
     }
 }
+

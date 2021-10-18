@@ -622,11 +622,12 @@ public interface ChaincodeStub {
      * @return value the value read from the ledger
      */
     default String getStringState(final String key) {
-        if(getState(key) == null) {
-            return null;
-        }
-        else {
-            return new String(getState(key), UTF_8);
+        byte[] result = getState(key);
+        if (result == null) {
+            return "";
+        } else {
+            String value = new String(result);
+            return value;
         }
     }
 

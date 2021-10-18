@@ -12,14 +12,14 @@ import java.io.IOException;
  */
 public class AdapterServerRunner {
 
-    static CorfuAccess corfu_access;
-    static CorfuRuntime runtime;
+//    static CorfuAccess corfu_access = new CorfuAccess();
+//    static CorfuRuntime runtime;
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        runtime = getRuntimeAndConnect("141.223.121.251:12011");
-        corfu_access = new CorfuAccess();
+//        runtime = getRuntimeAndConnect("141.223.121.251:13011");
+//        corfu_access = new CorfuAccess();
         final int port = 54323;
-        final BindableService adapterService = new AdapterModuleService(corfu_access, runtime);
+        final BindableService adapterService = new AdapterModuleService();
 
         AdapterServer server = new AdapterServer(port, adapterService);
 

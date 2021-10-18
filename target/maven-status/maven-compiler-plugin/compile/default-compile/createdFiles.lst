@@ -1274,6 +1274,7 @@ org/hyperledger/fabric/protos/msp/MspConfigPackage$1.class
 org/hyperledger/fabric/protos/common/Configuration$BlockDataHashingStructureOrBuilder.class
 org/hyperledger/fabric/protos/common/MspPrincipal$1.class
 org/hyperledger/fabric/protos/common/MspPrincipal.class
+org/sslab/fabric/protoutil/Proputils.class
 org/hyperledger/fabric/protos/peer/EventsPackage$FilteredTransaction.class
 org/hyperledger/fabric/protos/common/Configuration$BlockDataHashingStructure.class
 org/hyperledger/fabric/protos/discovery/Protocol$ChaincodeInterest.class

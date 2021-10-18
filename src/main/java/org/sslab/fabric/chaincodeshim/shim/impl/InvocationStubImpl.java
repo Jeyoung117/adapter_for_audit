@@ -45,6 +45,7 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.*;
 
@@ -216,10 +217,7 @@ public class InvocationStubImpl implements ChaincodeStub {
 
     @Override
     public byte[] getState(final String key) {
-        return corfu_access.getStringState(key, channelId, "fabcar");
-
-//        return this.handler.invoke(ChaincodeMessageFactory.newGetStateEventMessage(channelId, txId, "", key))
-//                .toByteArray();
+            return corfu_access.getStringState(key, channelId, "fabcar");
     }
 
     @Override

@@ -59,6 +59,7 @@
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/impl/QueryResultsIteratorWithMetadataImpl.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/ledger/rwset/Rwset.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/routing/impl/package-info.java
+/home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/protoutil/Proputils.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/annotation/Default.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/routing/ParameterDefinition.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/routing/impl/TypeRegistryImpl.java

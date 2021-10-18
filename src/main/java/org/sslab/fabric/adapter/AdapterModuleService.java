@@ -41,31 +41,25 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     Map<String, Long> lastReadAddrs;
     //tokenMap key: fabric txID, value: access token
     Map<String, Token> tokenMap;
-    CorfuRuntime runtime;
-    CorfuAccess corfu_access;
+//    CorfuRuntime runtime;
+//    CorfuAccess corfu_access;
     private final Genson genson = new Genson();
 
 //    private ProposalPackage.Proposal proposal;
 
 
-    public AdapterModuleService(CorfuAccess corfu_access, CorfuRuntime runtime) {
+    public AdapterModuleService() {
         streamViews = new HashMap<UUID, IStreamView>();
         runtimes = new HashMap<UUID, CorfuRuntime>();
-        this.runtime = runtime;
+//        this.runtime = runtime;
 //        runtime = new CorfuRuntime(runtimeAddr[0]).connect();
         lastReadAddrs = new HashMap<String, Long>();
         System.out.println("Init AdapterModuleService");
         tokenMap = new HashMap<String, Token>();
-        this.corfu_access = corfu_access;
+//        this.corfu_access = corfu_access;
     }
 
-    private static CorfuRuntime getRuntimeAndConnect(String configurationString) {
-            CorfuRuntime corfuRuntime = new CorfuRuntime(configurationString).connect();
-            return corfuRuntime;
-        }
-
     private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
-
 
     @Override
     public void processProposal(ProposalPackage.SignedProposal signedProposal, StreamObserver<ProposalResponsePackage.ProposalResponse> responseObserver) {
@@ -76,15 +70,15 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
             responseObserver.onNext(pResp);
             responseObserver.onCompleted();
 
-            System.out.println(up.channelHeader.getChannelId());
-            UUID streamID = runtime.getStreamID(up.channelHeader.getChannelId());
-            IStreamView iStreamView = runtime.getStreamsView().get(streamID);
-            StreamsView streamsView = new StreamsView(runtime);
-
-            long logicalAddr = iStreamView.append(pResp.toByteArray());
-            System.out.println("[orderer-stub] {append} proposal response size: " + pResp.getSerializedSize());
-            System.out.println("[orderer-stub] {append} logical addr: " + logicalAddr);
-            System.out.println("[interface] {processProposal} Corfu runtime is finished");
+//            System.out.println(up.channelHeader.getChannelId());
+//            UUID streamID = runtime.getStreamID(up.channelHeader.getChannelId());
+//            IStreamView iStreamView = runtime.getStreamsView().get(streamID);
+//            StreamsView streamsView = new StreamsView(runtime);
+//
+//            long logicalAddr = iStreamView.append(pResp.toByteArray());
+//            System.out.println("[orderer-stub] {append} proposal response size: " + pResp.getSerializedSize());
+//            System.out.println("[orderer-stub] {append} logical addr: " + logicalAddr);
+//            System.out.println("[interface] {processProposal} Corfu runtime is finished");
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
@@ -202,6 +196,7 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     }
 
     public void callChaincode(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) throws InvalidProtocolBufferException {
+        CorfuAccess corfu_access = new CorfuAccess();
         corfu_access.issueSnapshotToken();
         FabCar fabcar = new FabCar();
         InvocationStubImpl invocationStub = null;
@@ -212,11 +207,12 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
         }
 
         Context context = new Context(invocationStub);
-        String key = String.valueOf(chaincodeInput.getArgs(1));
-        System.out.println(key);
+        String key = chaincodeInput.getArgs(1).toStringUtf8();
+        System.out.println("전달받은 키: " + key);
+        System.out.println("chaincodeInput : " + chaincodeInput.getArgs(0).toStringUtf8());
         fabcar.createCar(context, key, key, key, key, key);
-        key = "CAR10";
-        fabcar.createCar(context, key, key, key, key, key);
+//        key = "CAR69";
+//        fabcar.createCar(context, key, key, key, key, key);
 
         corfu_access.commitTransaction();
 
