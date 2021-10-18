@@ -67,8 +67,7 @@ public class InvocationStubImpl implements ChaincodeStub {
     private byte[] binding;
     private final String chaincodeId;
     private ChaincodeEvent event;
-
-    CorfuAccess corfu_access = new CorfuAccess();
+    CorfuAccess corfu_access;
 
     /**
      *

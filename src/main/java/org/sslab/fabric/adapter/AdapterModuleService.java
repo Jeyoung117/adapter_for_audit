@@ -41,22 +41,22 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     Map<String, Long> lastReadAddrs;
     //tokenMap key: fabric txID, value: access token
     Map<String, Token> tokenMap;
-//    CorfuRuntime runtime;
-//    CorfuAccess corfu_access;
+    CorfuRuntime runtime;
+    CorfuAccess corfu_access;
     private final Genson genson = new Genson();
 
 //    private ProposalPackage.Proposal proposal;
 
 
-    public AdapterModuleService() {
+    public AdapterModuleService(CorfuAccess corfu_access, CorfuRuntime runtime) {
         streamViews = new HashMap<UUID, IStreamView>();
         runtimes = new HashMap<UUID, CorfuRuntime>();
-//        this.runtime = runtime;
+        this.runtime = runtime;
 //        runtime = new CorfuRuntime(runtimeAddr[0]).connect();
         lastReadAddrs = new HashMap<String, Long>();
         System.out.println("Init AdapterModuleService");
         tokenMap = new HashMap<String, Token>();
-//        this.corfu_access = corfu_access;
+        this.corfu_access = corfu_access;
     }
 
     private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
@@ -196,7 +196,6 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     }
 
     public void callChaincode(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) throws InvalidProtocolBufferException {
-        CorfuAccess corfu_access = new CorfuAccess();
         corfu_access.issueSnapshotToken();
         FabCar fabcar = new FabCar();
         InvocationStubImpl invocationStub = null;

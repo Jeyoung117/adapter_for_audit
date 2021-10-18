@@ -46,7 +46,7 @@ public class CorfuAccess {
         CorfuRuntime corfuRuntime = new CorfuRuntime(configurationString).connect();
         return corfuRuntime;
     }
-    CorfuRuntime runtime =  getRuntimeAndConnect("141.223.121.251:13011");
+    CorfuRuntime runtime =  getRuntimeAndConnect("141.223.121.251:12011");
     private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
 
 
@@ -119,14 +119,14 @@ public class CorfuAccess {
                 .setTypeToken(new TypeToken<CorfuTable<String, byte[]>>() {
                 })
                 .open();
-        String test = "test";
-        byte[] testbytes = test.getBytes();
-        int destLength = testbytes.length + data.length;
-        byte[] dest = new byte[destLength];
-        System.arraycopy(testbytes, 0,dest,0,testbytes.length);
-        System.arraycopy(data, 0,dest,testbytes.length, data.length);
+//        String test = "test";
+//        byte[] testbytes = test.getBytes();
+//        int destLength = testbytes.length + data.length;
+//        byte[] dest = new byte[destLength];
+//        System.arraycopy(testbytes, 0,dest,0,testbytes.length);
+//        System.arraycopy(data, 0,dest,testbytes.length, data.length);
 
-        map.put(objectKey, dest);
+        map.put(objectKey, data);
 
         System.out.println("[corfu-access-interface] {putState} success");
     }
