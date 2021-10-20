@@ -15,6 +15,7 @@ import org.corfudb.runtime.view.stream.IStreamView;
 //import org.hyperledger.fabric.protos.corfu.CorfuChaincodeShim;
 import org.sslab.fabric.adapter.AdapterModuleService;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -163,7 +164,15 @@ public class CorfuAccess {
         System.out.println("ilogData: " + ilogData);
         System.out.println("logData: " + ilogData.getPayload(runtime));
         System.out.println("type: " + ilogData.getType());
+        String metadataTest = "metadataTest";
+        byte[] metaTXbytes = metadataTest.getBytes(StandardCharsets.UTF_8);
+
         System.out.println("ilogData.getLogEntry: " + ilogData.getLogEntry(runtime));
+        ilogData.getLogEntry(runtime).setTxMetadata(metaTXbytes);
+        System.out.println("ilogData.getLogEntry: " + ilogData.getLogEntry(runtime));
+        String result = String.valueOf(ilogData.getLogEntry(runtime).getTxMetadata());
+        String result1 = new String(ilogData.getLogEntry(runtime).getTxMetadata());
+        System.out.println("ilogData.getLogEntry의 meta 복구: " + result1);
 //        System.out.println("ilogData.getSerializedForm: " + ilogData.getSerializedForm().getSerialized());
         System.out.println("logData: " + multiObjectSMREntry.getSMRUpdates(streamID));
         System.out.println("multiSMREntry.getSMRUpdates(streamID;: " + multiSMREntry.getSMRUpdates(streamID).get(0));
