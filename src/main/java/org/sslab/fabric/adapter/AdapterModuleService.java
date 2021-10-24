@@ -208,6 +208,8 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
         Context context = new Context(invocationStub);
         String key = chaincodeInput.getArgs(1).toStringUtf8();
         System.out.println("전달받은 키: " + key);
+        System.out.println("전달받은 channelID: " + txParams.channelID);
+        System.out.println("전달받은 chaincodeName: " + chaincodeName);
         System.out.println("chaincodeInput : " + chaincodeInput.getArgs(0).toStringUtf8());
         fabcar.createCar(context, key, key, key, key, key);
 //        key = "CAR69";

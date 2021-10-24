@@ -1,14 +1,16 @@
 package org.sslab.fabric.corfu;
 
 import com.google.common.reflect.TypeToken;
-import org.corfudb.protocols.logprotocol.LogEntry;
 import org.corfudb.protocols.logprotocol.MultiObjectSMREntry;
-import org.corfudb.protocols.logprotocol.MultiSMREntry;
-import org.corfudb.protocols.logprotocol.SMREntry;
 import org.corfudb.protocols.wireprotocol.ILogData;
+import org.corfudb.protocols.wireprotocol.LogData;
 import org.corfudb.protocols.wireprotocol.Token;
+
 import org.corfudb.runtime.CorfuRuntime;
 import org.corfudb.runtime.collections.CorfuTable;
+import org.corfudb.runtime.object.transactions.OptimisticTransactionalContext;
+import org.corfudb.runtime.object.transactions.TransactionalContext;
+import org.corfudb.runtime.object.transactions.WriteSetInfo;
 import org.corfudb.runtime.view.AddressSpaceView;
 import org.corfudb.runtime.view.StreamsView;
 import org.corfudb.runtime.view.stream.IStreamView;
@@ -16,10 +18,7 @@ import org.corfudb.runtime.view.stream.IStreamView;
 import org.sslab.fabric.adapter.AdapterModuleService;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -47,7 +46,7 @@ public class CorfuAccess {
         CorfuRuntime corfuRuntime = new CorfuRuntime(configurationString).connect();
         return corfuRuntime;
     }
-    CorfuRuntime runtime =  getRuntimeAndConnect("141.223.121.251:12011");
+    CorfuRuntime runtime =  getRuntimeAndConnect("141.223.121.139:12011");
     private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
 
 
@@ -96,7 +95,7 @@ public class CorfuAccess {
 
         Map<String, byte[]> map = runtime.getObjectsView()
                 .build()
-                .setStreamName(channelID + chaincodeID)     // stream ID
+                .setStreamName("mychannel + fabcar")     // stream ID
                 .setTypeToken(new TypeToken<CorfuTable<String, byte[]>>() {
                 })
                 .open();
@@ -105,6 +104,8 @@ public class CorfuAccess {
         if (value == null) {
             System.out.println("[corfu-access-interface] {getState} null!!!!");
         } else {
+            String car = new String(value);
+            System.out.println("value: " + car);
             System.out.println("[corfu-access-interface] {getState} success");
         }
         return value;
@@ -116,7 +117,7 @@ public class CorfuAccess {
 
         Map<String, byte[]> map = runtime.getObjectsView()
                 .build()
-                .setStreamName(channelID + chaincodeID)     // stream ID
+                .setStreamName("mychannel + fabcar")     // stream ID
                 .setTypeToken(new TypeToken<CorfuTable<String, byte[]>>() {
                 })
                 .open();
@@ -128,7 +129,8 @@ public class CorfuAccess {
 //        System.arraycopy(data, 0,dest,testbytes.length, data.length);
 
         map.put(objectKey, data);
-
+        String car = new String(data);
+        System.out.println("{putState}로 집어넣은 value: " + car);
         System.out.println("[corfu-access-interface] {putState} success");
     }
 
@@ -138,54 +140,58 @@ public class CorfuAccess {
     }
 
     public void commitTransaction() {
-//        Token current_token = runtime.getSequencerView().query().getToken();
-        AddressSpaceView addressSpaceView = runtime.getAddressSpaceView();
         UUID streamID = runtime.getStreamID("mychannel" + "fabcar"); //추후 실제 channel ID로 변
+        System.out.println("UUID: " + streamID);
+        String testString = "진짜 된 거 맞냐";
+        byte[] testbyte = testString.getBytes();
+        OptimisticTransactionalContext transactionalContext = (OptimisticTransactionalContext) TransactionalContext.getCurrentContext();
+        transactionalContext.setTxMetadata(testbyte);
+        System.out.println("getTxMetadata();: " + transactionalContext.getTxMetadata());
+        long appended_add = runtime.getObjectsView().TXEnd();
+
+        System.out.println("[corfu-access-interface] {commitTransaction} Corfu runtime is finished");
+        AddressSpaceView addressSpaceView = runtime.getAddressSpaceView();
         IStreamView iStreamView = runtime.getStreamsView().get(streamID);
         StreamsView streamsView = new StreamsView(runtime);
-        long appended_add = runtime.getObjectsView().TXEnd();
-        iStreamView.seek(appended_add);
-        ILogData ilogData = addressSpaceView.read(appended_add);
-        LogEntry logEntry = ilogData.getLogEntry(runtime);
-//        SMREntry smrEntry = ilogData.getLogEntry(runtime);
-        MultiObjectSMREntry multiObjectSMREntry = (MultiObjectSMREntry) ilogData.getPayload(runtime);
-        MultiSMREntry  multiSMREntry = multiObjectSMREntry.getEntryMap().entrySet().iterator().next().getValue();
 
-//        for (Map.Entry<UUID, MultiSMREntry> multiSMREntry : multiObjectSMREntry.getEntryMap().entrySet()) {
-//            for (SMREntry update : multiSMREntry.getValue().getUpdates()) {
-//
-//            }
-//        }
-//        MultiSMREntry multiSMREntry = (MultiSMREntry) ilogData.getLogEntry(runtime);
-//        SMREntry smrEntry = (SMREntry) ilogData.getLogEntry(runtime);
-        System.out.println(appended_add +  " log 조사 시작");
-        System.out.println("[corfu-access-interface] {commitTransaction} appended_add: " + appended_add);
-        System.out.println("streamsView.get(streamID).next(): " + streamsView.get(streamID).next());
+        long beforappended = appended_add;
+        ILogData ilogData = addressSpaceView.read(beforappended);
+        LogData logData = (LogData) ilogData;
+
+        System.out.println(beforappended +  " log 조사 시작");
         System.out.println("ilogData: " + ilogData);
-        System.out.println("logData: " + ilogData.getPayload(runtime));
-        System.out.println("type: " + ilogData.getType());
+        System.out.println("logdata 사이즈: " + ilogData.getSizeEstimate());
+
+
+//        System.out.println("logData의 txMetadata: " + text);
+    }
+
+    public void logSearch() {
+        UUID streamID = runtime.getStreamID("mychannel" + "fabcar"); //추후 실제 channel ID로 변
+        System.out.println("UUID: " + streamID);
+
         String metadataTest = "metadataTest";
         byte[] metaTXbytes = metadataTest.getBytes(StandardCharsets.UTF_8);
-
-        System.out.println("ilogData.getLogEntry: " + ilogData.getLogEntry(runtime));
-        ilogData.getLogEntry(runtime).setTxMetadata(metaTXbytes);
-        System.out.println("ilogData.getLogEntry: " + ilogData.getLogEntry(runtime));
-        String result = String.valueOf(ilogData.getLogEntry(runtime).getTxMetadata());
-        String result1 = new String(ilogData.getLogEntry(runtime).getTxMetadata());
-        System.out.println("ilogData.getLogEntry의 meta 복구: " + result1);
-//        System.out.println("ilogData.getSerializedForm: " + ilogData.getSerializedForm().getSerialized());
-        System.out.println("logData: " + multiObjectSMREntry.getSMRUpdates(streamID));
-        System.out.println("multiSMREntry.getSMRUpdates(streamID;: " + multiSMREntry.getSMRUpdates(streamID).get(0));
-        SMREntry smrEntry =  multiSMREntry.getSMRUpdates(streamID).get(0);
-
-        System.out.println("smrEntry.getSMRArguments(): " + smrEntry.getSMRArguments());
-        Object[] ob = Arrays.stream(smrEntry.getSMRArguments()).toArray();
-//        Car car =
-        System.out.println("smrEntry.getSMRArguments(): " + ob[0] + ob[1]);
-        String temp = new String((byte[]) ob[1]);
-        System.out.println("temp: " + temp);
-        System.out.println("key: " + ob[0]);
+//        TransactionalContext.getCurrentContext().getWriteSetInfo().getWriteSet().setTxMetadata(metaTXbytes);
+//        System.out.println("TransactionalContext.getCurrentContext().getWriteSetInfo().getWriteSet().getTxMetadata();: " + TransactionalContext.getCurrentContext().getWriteSetInfo().getWriteSet().getTxMetadata());
+        long appended_add = runtime.getObjectsView().TXEnd();
+        System.out.println("[corfu-access-interface] {commitTransaction} Appended global address: " + appended_add);
         System.out.println("[corfu-access-interface] {commitTransaction} Corfu runtime is finished");
+
+        AddressSpaceView addressSpaceView = runtime.getAddressSpaceView();
+
+//        IStreamView iStreamView = runtime.getStreamsView().get(streamID);
+        StreamsView streamsView = new StreamsView(runtime);
+
+        ILogData ilogData = addressSpaceView.read(appended_add);
+        LogData logData = (LogData) ilogData;
+
+        System.out.println(appended_add +  " log 조사 시작");
+        System.out.println("[corfu-access-interface] {commitTransaction} appended_add: " + appended_add);
+        System.out.println("streamsView.get(streamID).next(): " + streamsView.get(streamID).current());
+        System.out.println("ilogData의 data: " + logData.getData());
+        System.out.println("logData: " + ilogData.getPayload(runtime));
+
     }
 }
 

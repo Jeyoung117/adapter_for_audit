@@ -16,7 +16,8 @@ public class AdapterServerRunner {
     static CorfuRuntime runtime;
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        runtime = getRuntimeAndConnect("141.223.121.251:12011");
+//        runtime = getRuntimeAndConnect("141.223.121.251:12011");
+        runtime = getRuntimeAndConnect("141.223.121.139:12011");
         corfu_access = new CorfuAccess();
         final int port = 54323;
         final BindableService adapterService = new AdapterModuleService(corfu_access, runtime);

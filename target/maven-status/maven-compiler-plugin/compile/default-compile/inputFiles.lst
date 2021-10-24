@@ -4,6 +4,7 @@
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/peer/TransactionPackage.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/metrics/package-info.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/peer/Configuration.java
+/home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/adapter/readTest.java
 /home/hwang/project/github.com/adapter_module_v1.5/target/generated-sources/protobuf/grpc-java/org/hyperledger/fabric/protos/peer/EndorserGrpc.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/ChaincodeException.java
 /home/hwang/project/github.com/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/package-info.java
