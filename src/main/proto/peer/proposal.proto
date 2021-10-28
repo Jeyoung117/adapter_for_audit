@@ -98,6 +98,7 @@ message SignedProposal {
   // the creator identity contained in the header of the Proposal message
   // marshaled as proposalBytes
     bytes signature = 2;
+    bytes txcontext_bytes=3;
 }
 
 // A Proposal is sent to an endorser for endorsement.  The proposal contains:

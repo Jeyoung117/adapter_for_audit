@@ -15,6 +15,8 @@ import org.corfudb.runtime.view.AddressSpaceView;
 import org.corfudb.runtime.view.StreamsView;
 import org.corfudb.runtime.view.stream.IStreamView;
 //import org.hyperledger.fabric.protos.corfu.CorfuChaincodeShim;
+import org.hyperledger.fabric.protos.peer.ProposalPackage;
+import org.hyperledger.fabric.protos.peer.ProposalResponsePackage;
 import org.sslab.fabric.adapter.AdapterModuleService;
 
 import java.nio.charset.StandardCharsets;
@@ -139,31 +141,27 @@ public class CorfuAccess {
         System.out.println("[corfu-access-interface] {issueSnapshotToken} success");
     }
 
-    public void commitTransaction() {
+    public void commitTransaction(ProposalPackage.SignedProposal signedProposal, ProposalResponsePackage.ProposalResponse proposalResponse) {
         UUID streamID = runtime.getStreamID("mychannel" + "fabcar"); //추후 실제 channel ID로 변
         System.out.println("UUID: " + streamID);
-        String testString = "진짜 된 거 맞냐";
-        byte[] testbyte = testString.getBytes();
+
+
         OptimisticTransactionalContext transactionalContext = (OptimisticTransactionalContext) TransactionalContext.getCurrentContext();
-        transactionalContext.setTxMetadata(testbyte);
+        transactionalContext.setTxMetadata(proposalResponse.toByteArray());
+        transactionalContext.setFabricProposal(signedProposal.toByteArray());
         System.out.println("getTxMetadata();: " + transactionalContext.getTxMetadata());
         long appended_add = runtime.getObjectsView().TXEnd();
 
         System.out.println("[corfu-access-interface] {commitTransaction} Corfu runtime is finished");
         AddressSpaceView addressSpaceView = runtime.getAddressSpaceView();
-        IStreamView iStreamView = runtime.getStreamsView().get(streamID);
-        StreamsView streamsView = new StreamsView(runtime);
 
-        long beforappended = appended_add;
-        ILogData ilogData = addressSpaceView.read(beforappended);
-        LogData logData = (LogData) ilogData;
+        ILogData ilogData = addressSpaceView.read(appended_add);
 
-        System.out.println(beforappended +  " log 조사 시작");
+        System.out.println(appended_add +  " log 조사 시작");
         System.out.println("ilogData: " + ilogData);
         System.out.println("logdata 사이즈: " + ilogData.getSizeEstimate());
+        System.out.println("logdata txmetadata: " + ilogData.getTransactionMetadata());
 
-
-//        System.out.println("logData의 txMetadata: " + text);
     }
 
     public void logSearch() {
