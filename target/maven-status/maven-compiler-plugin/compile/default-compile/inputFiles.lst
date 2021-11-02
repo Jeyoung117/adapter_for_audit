@@ -6,6 +6,7 @@
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/systemcontract/package-info.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/peer/Chaincode.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/package-info.java
+/home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/corfu/rwset_builder.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/routing/impl/DataTypeDefinitionImpl.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/routing/TransactionType.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/execution/SerializerInterface.java
@@ -28,7 +29,6 @@
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/ext/sbe/impl/StateBasedEndorsementFactory.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/routing/impl/SerializerRegistryImpl.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/metrics/impl/NullProvider.java
-/home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincode/fabcar/FabCar.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/ChaincodeBase.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/impl/KeyValueImpl.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/target/generated-sources/protobuf/grpc-java/org/hyperledger/fabric/protos/peer/ChaincodeGrpc.java
@@ -108,6 +108,7 @@
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/impl/QueryResultsIteratorImpl.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/execution/InvocationRequest.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/routing/PropertyDefinition.java
+/home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincode/fabcar/fabcar.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/execution/impl/ContractInvocationRequest.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/annotation/DataType.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/ResponseUtils.java

@@ -103,6 +103,7 @@ org/hyperledger/fabric/protos/discovery/DiscoveryGrpc$DiscoveryImplBase.class
 org/hyperledger/fabric/protos/discovery/Protocol$Peers.class
 org/sslab/fabric/chaincodeshim/contract/routing/impl/ContractDefinitionImpl.class
 org/hyperledger/fabric/protos/peer/Collection$StaticCollectionConfig$1.class
+org/sslab/fabric/chaincode/fabcar/fabcar.class
 org/hyperledger/fabric/protos/common/Common$Envelope.class
 org/hyperledger/fabric/protos/orderer/Ab$DeliverResponse$1.class
 org/hyperledger/fabric/protos/gossip/Message.class
@@ -758,6 +759,7 @@ org/sslab/fabric/chaincode/fabcar/Car.class
 org/hyperledger/fabric/protos/peer/ChaincodeShim$QueryMetadata$Builder.class
 org/hyperledger/fabric/protos/peer/ProposalPackage$ProposalOrBuilder.class
 org/hyperledger/fabric/protos/discovery/DiscoveryGrpc$1.class
+org/sslab/fabric/corfu/rwset_builder.class
 org/hyperledger/fabric/protos/discovery/Protocol$Error.class
 org/hyperledger/fabric/protos/peer/EndorserGrpc$EndorserImplBase.class
 org/hyperledger/fabric/protos/common/Common$BlockData$1.class
@@ -829,7 +831,6 @@ org/hyperledger/fabric/protos/gossip/Message$GossipMessage$Builder.class
 org/sslab/fabric/chaincodeshim/shim/Chaincode.class
 org/hyperledger/fabric/protos/peer/ChaincodeSupportGrpc$ChaincodeSupportFileDescriptorSupplier.class
 org/hyperledger/fabric/protos/gossip/Message$RemotePvtDataRequestOrBuilder.class
-org/sslab/fabric/chaincode/fabcar/FabCar$FabCarErrors.class
 org/hyperledger/fabric/protos/orderer/etcdraft/Configuration$ConsenterOrBuilder.class
 org/sslab/fabric/chaincodeshim/metrics/impl/NullProvider.class
 org/hyperledger/fabric/protos/orderer/etcdraft/Configuration$ConfigMetadata$Builder.class
@@ -1138,9 +1139,9 @@ org/hyperledger/fabric/protos/gossip/GossipGrpc$GossipMethodDescriptorSupplier.c
 org/hyperledger/fabric/protos/peer/Resources$VSCCArgs$Builder.class
 org/hyperledger/fabric/protos/common/MspPrincipal$OrganizationUnit$1.class
 org/hyperledger/fabric/protos/orderer/Kafka$KafkaMessageRegular.class
+org/sslab/fabric/chaincode/fabcar/fabcar$FabCarErrors.class
 org/hyperledger/fabric/protos/corfu/adapterservice$1.class
 org/sslab/fabric/chaincodeshim/shim/ledger/QueryResultsIteratorWithMetadata.class
-org/sslab/fabric/chaincode/fabcar/FabCar.class
 org/hyperledger/fabric/protos/peer/EndorserGrpc$EndorserBaseDescriptorSupplier.class
 org/hyperledger/fabric/protos/orderer/AtomicBroadcastGrpc$AtomicBroadcastBlockingStub.class
 org/hyperledger/fabric/protos/peer/lifecycle/ChaincodeDefinition.class

@@ -54,5 +54,5 @@ message ResCheck {
 //}
 
 service CorfuConnect {
-    rpc processProposal(SignedProposal) returns (ProposalResponse);
+    rpc processProposal(SignedProposal) returns (Response);
 }
