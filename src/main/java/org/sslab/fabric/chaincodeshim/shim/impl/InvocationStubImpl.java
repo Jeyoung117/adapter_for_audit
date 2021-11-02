@@ -65,9 +65,10 @@ public class InvocationStubImpl implements ChaincodeStub {
     private ByteString creator;
     private Map<String, ByteString> transientMap;
     private byte[] binding;
-    private final String chaincodeId;
+//    private final String chaincodeId;
     private ChaincodeEvent event;
     CorfuAccess corfu_access;
+
 
     /**
      *
@@ -75,26 +76,16 @@ public class InvocationStubImpl implements ChaincodeStub {
      * @param handler
      * @throws InvalidProtocolBufferException
      */
-    public InvocationStubImpl(final ChaincodeShim.ChaincodeMessage message, final ChaincodeInvocationTask handler)
+    InvocationStubImpl(final ChaincodeMessage message, final ChaincodeInvocationTask handler)
             throws InvalidProtocolBufferException {
         this.channelId = message.getChannelId();
         this.txId = message.getTxid();
         this.handler = handler;
-        this.signedProposal = message.getProposal();
-        final Proposal proposal = Proposal.parseFrom(signedProposal.getProposalBytes());
-        final Header header = Header.parseFrom(proposal.getHeader());
-        final ChannelHeader channelHeader = ChannelHeader.parseFrom(header.getChannelHeader());
-        final ProposalPackage.ChaincodeHeaderExtension chaincodeHdrExt = ProposalPackage.ChaincodeHeaderExtension.parseFrom(channelHeader.getExtension());
-//        validateProposalType(channelHeader);
-        final String chaincodeID =String.valueOf(chaincodeHdrExt.getChaincodeId());
-
-        this.chaincodeId= chaincodeID;
-
-
         final ChaincodeInput input = ChaincodeInput.parseFrom(message.getPayload());
 
-        this.args = Collections.unmodifiableList(input.getArgsList());
 
+        this.args = Collections.unmodifiableList(input.getArgsList());
+        this.signedProposal = message.getProposal();
         if (this.signedProposal == null || this.signedProposal.getProposalBytes().isEmpty()) {
             this.creator = null;
             this.txTimestamp = null;
@@ -102,23 +93,60 @@ public class InvocationStubImpl implements ChaincodeStub {
             this.binding = null;
         } else {
             try {
-//                final Proposal proposal = Proposal.parseFrom(signedProposal.getProposalBytes());
-//                final Header header = Header.parseFrom(proposal.getHeader());
-//                final ChannelHeader channelHeader = ChannelHeader.parseFrom(header.getChannelHeader());
-//                final ProposalPackage.ChaincodeHeaderExtension chaincodeHdrExt = ProposalPackage.ChaincodeHeaderExtension.parseFrom(channelHeader.getExtension());
-//                validateProposalType(channelHeader);
+                final Proposal proposal = Proposal.parseFrom(signedProposal.getProposalBytes());
+                final Header header = Header.parseFrom(proposal.getHeader());
+                final ChannelHeader channelHeader = ChannelHeader.parseFrom(header.getChannelHeader());
+                validateProposalType(channelHeader);
                 final SignatureHeader signatureHeader = SignatureHeader.parseFrom(header.getSignatureHeader());
                 final ChaincodeProposalPayload chaincodeProposalPayload = ChaincodeProposalPayload
                         .parseFrom(proposal.getPayload());
                 final Timestamp timestamp = channelHeader.getTimestamp();
 
+                this.txTimestamp = Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos());
+                this.creator = signatureHeader.getCreator();
+                this.transientMap = chaincodeProposalPayload.getTransientMapMap();
+                this.binding = computeBinding(channelHeader, signatureHeader);
+            } catch (InvalidProtocolBufferException | NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+    /**
+     *
+     * @param message
+//     * @param handler
+     * @throws InvalidProtocolBufferException
+     */
+    public InvocationStubImpl(final ChaincodeMessage message)
+            throws InvalidProtocolBufferException {
+        this.channelId = message.getChannelId();
+        this.txId = message.getTxid();
+//        this.handler = handler;
+        final ChaincodeInput input = ChaincodeInput.parseFrom(message.getPayload());
+
+
+        this.args = Collections.unmodifiableList(input.getArgsList());
+        this.signedProposal = message.getProposal();
+        if (this.signedProposal == null || this.signedProposal.getProposalBytes().isEmpty()) {
+            this.creator = null;
+            this.txTimestamp = null;
+            this.transientMap = Collections.emptyMap();
+            this.binding = null;
+        } else {
+            try {
+                final Proposal proposal = Proposal.parseFrom(signedProposal.getProposalBytes());
+                final Header header = Header.parseFrom(proposal.getHeader());
+                final ChannelHeader channelHeader = ChannelHeader.parseFrom(header.getChannelHeader());
+                validateProposalType(channelHeader);
+                final SignatureHeader signatureHeader = SignatureHeader.parseFrom(header.getSignatureHeader());
+                final ChaincodeProposalPayload chaincodeProposalPayload = ChaincodeProposalPayload
+                        .parseFrom(proposal.getPayload());
+                final Timestamp timestamp = channelHeader.getTimestamp();
 
                 this.txTimestamp = Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos());
                 this.creator = signatureHeader.getCreator();
                 this.transientMap = chaincodeProposalPayload.getTransientMapMap();
                 this.binding = computeBinding(channelHeader, signatureHeader);
-
-                System.out.println("전달받아서 생성한 this.chaincodeId:" + this.chaincodeId);
             } catch (InvalidProtocolBufferException | NoSuchAlgorithmException e) {
                 throw new RuntimeException(e);
             }
@@ -139,7 +167,7 @@ public class InvocationStubImpl implements ChaincodeStub {
         this.channelId = channelId;
         this.txId = txId;
 //        validateProposalType(channelHeader);
-        this.chaincodeId= chaincodeId;
+//        this.chaincodeId= chaincodeId;
         this.corfu_access = corfu_access;
     }
 

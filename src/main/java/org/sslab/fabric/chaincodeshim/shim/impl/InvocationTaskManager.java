@@ -55,20 +55,20 @@ public final class InvocationTaskManager {
     private Consumer<ChaincodeMessage> outgoingMessage;
 
     // references to the chaincode, and the chaincode id
-    private final ChaincodeBase chaincode;
-    private final ChaincodeID chaincodeId;
+    private ChaincodeBase chaincode;
+    private ChaincodeID chaincodeId;
 
     // Thread Pool creation and settings
-    private final int queueSize;
-    private final int maximumPoolSize;
-    private final int corePoolSize;
-    private final long keepAliveTime;
+    private int queueSize;
+    private int maximumPoolSize;
+    private int corePoolSize;
+    private long keepAliveTime;
     private final TimeUnit unit = TimeUnit.MILLISECONDS;
-    private final BlockingQueue<Runnable> workQueue;
+    private BlockingQueue<Runnable> workQueue;
     private final ThreadFactory threadFactory = Executors.defaultThreadFactory();
     private final RejectedExecutionHandler handler = new ThreadPoolExecutor.AbortPolicy();
 
-    private final InvocationTaskExecutor taskService;
+    private InvocationTaskExecutor taskService;
 
     /**
      * New InvocationTaskManager.
@@ -96,6 +96,10 @@ public final class InvocationTaskManager {
         taskService = new InvocationTaskExecutor(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
 
         Metrics.getProvider().setTaskMetricsCollector(taskService);
+
+    }
+
+    public InvocationTaskManager() {
 
     }
 

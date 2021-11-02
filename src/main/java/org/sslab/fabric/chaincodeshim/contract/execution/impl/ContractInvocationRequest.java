@@ -27,7 +27,10 @@ public class ContractInvocationRequest implements InvocationRequest {
      */
     public ContractInvocationRequest(final ChaincodeStub context) {
         final String func = context.getStringArgs().size() > 0 ? context.getStringArgs().get(0) : null;
+        logger.info("in ContractInvocationRequest func is " + func);
+
         final String[] funcParts = func.split(":");
+        logger.info("in ContractInvocationRequest funcParts is " + funcParts);
         logger.debug(func);
         if (funcParts.length == 2) {
             namespace = funcParts[0];
@@ -38,7 +41,7 @@ public class ContractInvocationRequest implements InvocationRequest {
         }
 
         args = context.getArgs().stream().skip(1).collect(Collectors.toList());
-        logger.debug(namespace + " " + method + " " + args);
+        logger.info(namespace + " " + method + " " + args);
     }
 
     /**

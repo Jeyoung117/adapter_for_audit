@@ -16,12 +16,15 @@ import org.sslab.fabric.chaincodeshim.contract.routing.ContractDefinition;
 import org.sslab.fabric.chaincodeshim.contract.routing.RoutingRegistry;
 import org.sslab.fabric.chaincodeshim.contract.routing.TxFunction;
 import org.sslab.fabric.chaincodeshim.contract.routing.TypeRegistry;
+import org.sslab.fabric.chaincodeshim.contract.routing.impl.RoutingRegistryImpl;
 import org.sslab.fabric.chaincodeshim.contract.routing.impl.SerializerRegistryImpl;
+import org.sslab.fabric.chaincodeshim.metrics.Metrics;
 import org.sslab.fabric.chaincodeshim.shim.Chaincode;
 import org.sslab.fabric.chaincodeshim.shim.ChaincodeBase;
 import org.sslab.fabric.chaincodeshim.shim.ChaincodeStub;
 import org.sslab.fabric.chaincodeshim.shim.ResponseUtils;
 
+import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -47,27 +50,27 @@ public final class ContractRouter extends ChaincodeBase {
      * @param args
      */
     public ContractRouter(final String[] args) {
-//        super.initializeLogging();
-//        super.processEnvironmentOptions();
-//        super.processCommandLineOptions(args);
+        super.initializeLogging();
+        super.processEnvironmentOptions();
+        super.processCommandLineOptions(args);
 
 //        final Properties props = super.getChaincodeConfig();
 //        Metrics.initialize(props);
-//
+
 //        super.validateOptions();
         logger.fine("ContractRouter<init>");
-//        registry = new RoutingRegistryImpl();
-//        typeRegistry = TypeRegistry.getRegistry();
+        registry = new RoutingRegistryImpl();
+        typeRegistry = TypeRegistry.getRegistry();
 
-//        serializers = new SerializerRegistryImpl();
+        serializers = new SerializerRegistryImpl();
 
-//        try {
-//            serializers.findAndSetContents();
-//        } catch (InstantiationException | IllegalAccessException e) {
-//            final ContractRuntimeException cre = new ContractRuntimeException("Unable to locate Serializers", e);
-//            logger.severe(() -> Logging.formatError(cre));
-//            throw new RuntimeException(cre);
-//        }
+        try {
+            serializers.findAndSetContents();
+        } catch (InstantiationException | IllegalAccessException e) {
+            final ContractRuntimeException cre = new ContractRuntimeException("Unable to locate Serializers", e);
+            logger.severe(() -> Logging.formatError(cre));
+            throw new RuntimeException(cre);
+        }
 
     }
 
@@ -139,7 +142,7 @@ public final class ContractRouter extends ChaincodeBase {
         if (registry.containsRoute(request)) {
             return registry.getTxFn(request);
         } else {
-            logger.fine(() -> "Namespace is " + request);
+            logger.info(() -> "Namespace is " + request);
             final ContractDefinition contract = registry.getContract(request.getNamespace());
             return contract.getUnknownRoute();
         }

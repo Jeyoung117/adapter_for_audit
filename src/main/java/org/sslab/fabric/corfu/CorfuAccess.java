@@ -150,6 +150,7 @@ public class CorfuAccess {
         transactionalContext.setTxMetadata(proposalResponse.toByteArray());
         transactionalContext.setFabricProposal(signedProposal.toByteArray());
         System.out.println("getTxMetadata();: " + transactionalContext.getTxMetadata());
+        System.out.println("getFabricProposal();: " + transactionalContext.getFabricProposal());
         long appended_add = runtime.getObjectsView().TXEnd();
 
         System.out.println("[corfu-access-interface] {commitTransaction} Corfu runtime is finished");
@@ -161,6 +162,7 @@ public class CorfuAccess {
         System.out.println("ilogData: " + ilogData);
         System.out.println("logdata 사이즈: " + ilogData.getSizeEstimate());
         System.out.println("logdata txmetadata: " + ilogData.getTransactionMetadata());
+        System.out.println("logdata fabric proposal: " + ilogData.getFabricProposal());
 
     }
 

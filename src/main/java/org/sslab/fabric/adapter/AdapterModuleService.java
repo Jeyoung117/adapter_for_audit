@@ -8,7 +8,6 @@ import io.grpc.stub.StreamObserver;
 import lombok.SneakyThrows;
 import org.corfudb.protocols.wireprotocol.Token;
 import org.corfudb.runtime.CorfuRuntime;
-import org.corfudb.runtime.view.StreamsView;
 import org.corfudb.runtime.view.stream.IStreamView;
 import org.hyperledger.fabric.protos.common.Common;
 
@@ -17,8 +16,10 @@ import org.hyperledger.fabric.protos.corfu.CorfuConnectGrpc;
 import org.hyperledger.fabric.protos.peer.*;
 import org.sslab.fabric.chaincode.fabcar.FabCar;
 import org.sslab.fabric.chaincodeshim.contract.Context;
-import org.sslab.fabric.chaincodeshim.shim.impl.ChaincodeMessageFactory;
+import org.sslab.fabric.chaincodeshim.contract.ContractRouter;
+import org.sslab.fabric.chaincodeshim.shim.ChaincodeStub;
 import org.sslab.fabric.chaincodeshim.shim.impl.InvocationStubImpl;
+import org.sslab.fabric.chaincodeshim.shim.impl.InvocationTaskManager;
 import org.sslab.fabric.corfu.CorfuAccess;
 import org.sslab.fabric.protoutil.Proputils;
 
@@ -219,6 +220,16 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     }
 
     public void callChaincode(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput, ProposalResponsePackage.ProposalResponse proposalResponse) throws InvalidProtocolBufferException {
+
+        //fabric chaincode_support.go 의 execute 에서의 선언 copy
+        ChaincodeShim.ChaincodeMessage ccMsg = ChaincodeShim.ChaincodeMessage.newBuilder()
+                .setType(ChaincodeShim.ChaincodeMessage.Type.TRANSACTION)
+                .setChannelId(txParams.channelID)
+                .setTxid(txParams.txID)
+                .setProposal(txParams.signedProp)
+                .setPayload(chaincodeInput.toByteString())
+                .build();
+
         corfu_access.issueSnapshotToken();
         FabCar fabcar = new FabCar();
         InvocationStubImpl invocationStub = null;
@@ -227,13 +238,33 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
+        int chaincodeInputsize = chaincodeInput.getArgsList().size();
+        ListIterator<ByteString> chaincodeArgList =  chaincodeInput.getArgsList().listIterator();
+        List<ByteString> chaincodeList =  chaincodeInput.getArgsList();
+        Object[] temp = chaincodeInput.getArgsList().toArray();
+        String[] chaincodeArgs = new String[chaincodeInputsize];
+        for (int i = 0; chaincodeArgList.hasNext(); i++) {
+            chaincodeArgs[i] = chaincodeArgList.next().toStringUtf8();
+            System.out.println("chaincodeArgs" +i +"번째:" + chaincodeArgs[i]);
+        }
+        //InvocationTaskManager를 통해 chaincode routing
+        ChaincodeStub stub = new InvocationStubImpl(ccMsg);
+        ContractRouter contractRouter = new ContractRouter(chaincodeArgs);
+
+        contractRouter.invoke(stub);
+//        InvocationTaskManager invocationTaskManager = new InvocationTaskManager();
+//        final ChaincodeInvocationTask task = new ChaincodeInvocationTask(ccMsg, ccMsg.getType(), this.outgoingMessage, this.chaincode);
+
+//        invocationTaskManager.call
 
         Context context = new Context(invocationStub);
         String key = chaincodeInput.getArgs(1).toStringUtf8();
         System.out.println("전달받은 키: " + key);
         System.out.println("전달받은 channelID: " + txParams.channelID);
         System.out.println("전달받은 chaincodeName: " + chaincodeName);
-        System.out.println("chaincodeInput : " + chaincodeInput.getArgs(0).toStringUtf8());
+        System.out.println("chaincodeInput 첫번째: " + chaincodeInput.getArgs(0).toStringUtf8());
+        System.out.println("chaincodeInput 두번째 : " + chaincodeInput.getArgs(1).toStringUtf8());
+        System.out.println("chaincodeInput 세번째 : " + chaincodeInput.getArgs(2).toStringUtf8());
         fabcar.createCar(context, key, key, key, key, key);
 //        key = "CAR69";
 //        fabcar.createCar(context, key, key, key, key, key);
