@@ -6,13 +6,13 @@
 
 package org.sslab.fabric.chaincodeshim.contract.execution.impl;
 
+import com.owlike.genson.Genson;
 import org.sslab.fabric.chaincodeshim.contract.Context;
 import org.sslab.fabric.chaincodeshim.contract.ContractInterface;
 import org.sslab.fabric.chaincodeshim.contract.ContractRuntimeException;
 import org.sslab.fabric.chaincodeshim.contract.execution.ExecutionService;
 import org.sslab.fabric.chaincodeshim.contract.execution.InvocationRequest;
 import org.sslab.fabric.chaincodeshim.contract.execution.SerializerInterface;
-import org.sslab.fabric.chaincodeshim.contract.metadata.TypeSchema;
 import org.sslab.fabric.chaincodeshim.contract.routing.ParameterDefinition;
 import org.sslab.fabric.chaincodeshim.contract.routing.TxFunction;
 import org.sslab.fabric.chaincodeshim.shim.Chaincode;
@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -34,6 +34,7 @@ public class ContractExecutionService implements ExecutionService {
     private static Logger logger = Logger.getLogger(ContractExecutionService.class.getName());
 
     private final SerializerInterface serializer;
+    final Genson genson = new Genson();
     private Map<String, Object> proxies = new HashMap<>();
 
     /**
@@ -56,7 +57,7 @@ public class ContractExecutionService implements ExecutionService {
             final ContractInterface contractObject = rd.getContractInstance();
             final Context context = contractObject.createContext(stub);
             final Object[] stubArgs = stub.getParameters().toArray();
-            logger.info(() -> "여기일세" + stubArgs[0]);
+
             final List<Object> args = new ArrayList<>(stubArgs.length + 1); // allow for context as the first argument
             for (int i = 0; i < stubArgs.length; i++) {
                 args.add(i, stubArgs[0]);
@@ -67,10 +68,11 @@ public class ContractExecutionService implements ExecutionService {
             final Object value = rd.getMethod().invoke(contractObject, args.toArray());
             contractObject.afterTransaction(context, value);
 
+            String tesmp = genson.serialize(value);
             if (value == null) {
                 response = ResponseUtils.newSuccessResponse();
             } else {
-                response = ResponseUtils.newSuccessResponse(value.toString().getBytes());
+                response = ResponseUtils.newSuccessResponse(tesmp.getBytes(StandardCharsets.UTF_8));
             }
 
         } catch (IllegalAccessException | InstantiationException | NoSuchMethodException e) {

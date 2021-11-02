@@ -677,7 +677,7 @@ public class InvocationStubImpl implements ChaincodeStub {
             } else {
                 // error
                 final String message = responseMessage.getPayload().toStringUtf8();
-                return new Response(Response.Status.INTERNAL_SERVER_ERROR, message, null);
+                return new Response(Response.Status.INTERNAL_SERVER_ERROR, message, message);
             }
         } catch (final InvalidProtocolBufferException e) {
             throw new RuntimeException(e);

@@ -24,6 +24,17 @@ public class Proputils {
 
         ByteString prpBytes = prp.toByteString();
         return prpBytes;
+    }
 
+    public static ProposalResponsePackage.Response toProtoResponse(final org.sslab.fabric.chaincodeshim.shim.Chaincode.Response response) {
+        final ProposalResponsePackage.Response.Builder builder = ProposalResponsePackage.Response.newBuilder();
+        builder.setStatus(response.getStatus().getCode());
+        if (response.getMessage() != null) {
+            builder.setMessage(response.getMessage());
+        }
+        if (response.getPayload() != null) {
+            builder.setPayload(ByteString.copyFrom(response.getPayload()));
+        }
+        return builder.build();
     }
 }

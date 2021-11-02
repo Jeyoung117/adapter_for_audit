@@ -24,7 +24,14 @@ public class chaincodeSupport {
         execute("test", INIT, txParams, chaincodeName, chaincodeInput);
     }
 
-    public void processChaincodeExecutionResult() {
+    public void processChaincodeExecutionResult(String ccName, String txid, ChaincodeShim.ChaincodeMessage resp) {
+        if(resp == null) {
+
+        }
+        if(resp.getChaincodeEvent() != null) {
+//            resp.ch
+        }
+
 
     }
 
@@ -43,5 +50,7 @@ public class chaincodeSupport {
 //        ChaincodeShim.ChaincodeMessage ccresp = ;
 
     }
+
+
 }
 
