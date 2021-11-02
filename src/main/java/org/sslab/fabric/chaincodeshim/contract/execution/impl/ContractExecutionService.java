@@ -20,11 +20,13 @@ import org.sslab.fabric.chaincodeshim.shim.ChaincodeException;
 import org.sslab.fabric.chaincodeshim.shim.ChaincodeStub;
 import org.sslab.fabric.chaincodeshim.shim.ResponseUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class ContractExecutionService implements ExecutionService {
@@ -46,15 +48,19 @@ public class ContractExecutionService implements ExecutionService {
      */
     @Override
     public Chaincode.Response executeRequest(final TxFunction txFn, final InvocationRequest req, final ChaincodeStub stub) {
-        logger.fine(() -> "Routing Request" + txFn);
+        logger.info(() -> "Routing Request " + txFn);
         final TxFunction.Routing rd = txFn.getRouting();
         Chaincode.Response response;
 
         try {
             final ContractInterface contractObject = rd.getContractInstance();
             final Context context = contractObject.createContext(stub);
-
-            final List<Object> args = convertArgs(req.getArgs(), txFn);
+            final Object[] stubArgs = stub.getParameters().toArray();
+            logger.info(() -> "여기일세" + stubArgs[0]);
+            final List<Object> args = new ArrayList<>(stubArgs.length + 1); // allow for context as the first argument
+            for (int i = 0; i < stubArgs.length; i++) {
+                args.add(i, stubArgs[0]);
+            }
             args.add(0, context); // force context into 1st position, other elements move up
 
             contractObject.beforeTransaction(context);
@@ -64,7 +70,7 @@ public class ContractExecutionService implements ExecutionService {
             if (value == null) {
                 response = ResponseUtils.newSuccessResponse();
             } else {
-                response = ResponseUtils.newSuccessResponse(convertReturn(value, txFn));
+                response = ResponseUtils.newSuccessResponse(value.toString().getBytes());
             }
 
         } catch (IllegalAccessException | InstantiationException | NoSuchMethodException e) {
@@ -83,12 +89,16 @@ public class ContractExecutionService implements ExecutionService {
         return response;
     }
 
-    private byte[] convertReturn(final Object obj, final TxFunction txFn) {
-        byte[] buffer;
-        final TypeSchema ts = txFn.getReturnSchema();
-        buffer = serializer.toBuffer(obj, ts);
+    private byte[] convertReturn(final Object obj) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = new ObjectOutputStream(bos);
+        out.writeObject(obj);
+        out.flush();
+        out.close();
+        bos.close();
+        byte[] yourBytes = bos.toByteArray();
 
-        return buffer;
+        return yourBytes;
     }
 
     private List<Object> convertArgs(final List<byte[]> stubArgs, final TxFunction txFn) {

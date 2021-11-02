@@ -8,6 +8,7 @@ package org.sslab.fabric.chaincodeshim.contract.routing.impl;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
+import lombok.SneakyThrows;
 import org.sslab.fabric.chaincodeshim.Logger;
 import org.sslab.fabric.chaincodeshim.contract.ContractInterface;
 import org.sslab.fabric.chaincodeshim.contract.ContractRuntimeException;
@@ -35,7 +36,7 @@ import java.util.*;
 public final class RoutingRegistryImpl implements RoutingRegistry {
     private static Logger logger = Logger.getLogger(RoutingRegistryImpl.class);
 
-    private final Map<String, ContractDefinition> contracts = new HashMap<>();
+    private final static Map<String, ContractDefinition> contracts = new HashMap<>();
 
     /*
      * (non-Javadoc)
@@ -52,9 +53,11 @@ public final class RoutingRegistryImpl implements RoutingRegistry {
 
         // index this by the full qualified name
         contracts.put(contract.getName(), contract);
-        if (contract.isDefault()) {
-            contracts.put(InvocationRequest.DEFAULT_NAMESPACE, contract);
-        }
+        logger.info("추가된 contract name: " + contract.getName());
+        logger.info("contract 목록: " + contracts);
+//        if (contract.isDefault()) {
+//            contracts.put(contract.getName(), contract);
+//        }
 
         logger.debug(() -> "Put new contract in under name " + contract.getName());
         return contract;
@@ -91,22 +94,42 @@ public final class RoutingRegistryImpl implements RoutingRegistry {
         return txFunction.getRouting();
     }
 
+
     @Override
     public TxFunction getTxFn(final InvocationRequest request) {
         final TxFunction txFunction = contracts.get(request.getNamespace()).getTxFunction(request.getMethod());
         return txFunction;
     }
 
-    /*
+//    @SneakyThrows
+//    @Override
+//    public TxFunction getTxFn(final InvocationRequest request) {
+//
+//        logger.info("namespace is " + request.getNamespace());
+//        String calssPath = "org.sslab.fabric.chaincode." + request.getNamespace() + "." + request.getNamespace();
+//        logger.info("calssPath is " + calssPath);
+//
+//        Class<?> chaincodeDefi = Class.forName(calssPath);
+//        ContractDefinition contract;
+//        contract = new ContractDefinitionImpl((Class<? extends ContractInterface>) chaincodeDefi);
+//
+//        logger.info("새로 정의된 contract의 txfun들" + contract.getTxFunctions());
+//        final TxFunction txFunction = contract.getTxFunction(request.getMethod());
+//        return txFunction;
+//    }
+        /*
      * (non-Javadoc)
      *
      * @see
      * org.hyperledger.fabric.contract.routing.RoutingRegistry#getContract(java.lang
      * .String)
      */
+    @SneakyThrows
     @Override
     public ContractDefinition getContract(final String namespace) {
-        final ContractDefinition contract = contracts.get(namespace);
+        logger.info("namespace is " + namespace);
+        final ContractDefinition contract = contracts.get("fabcar");
+        logger.info("contract is " + contracts);
 
         if (contract == null) {
             throw new ContractRuntimeException("Undefined contract called");

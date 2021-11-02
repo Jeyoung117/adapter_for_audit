@@ -53,6 +53,7 @@ message ChaincodeMessage {
 
     //channel id
     string channel_id = 7;
+    string chaincode_id=8;
 }
 
 // TODO: We need to finalize the design on chaincode container

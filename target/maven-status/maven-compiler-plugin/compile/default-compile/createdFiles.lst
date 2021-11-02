@@ -143,6 +143,7 @@ org/hyperledger/fabric/protos/common/Configtx$ConfigPolicy.class
 org/hyperledger/fabric/protos/orderer/etcdraft/Metadata$1.class
 org/hyperledger/fabric/protos/orderer/etcdraft/Metadata$BlockMetadata$1.class
 org/hyperledger/fabric/protos/gossip/Message$Payload.class
+org/sslab/fabric/chaincode/abstore/ABstore.class
 org/hyperledger/fabric/protos/transientstore/Transientstore$TxPvtReadWriteSetWithConfigInfo.class
 org/hyperledger/fabric/protos/peer/Collection$CollectionConfig$1.class
 org/hyperledger/fabric/protos/discovery/Protocol$QueryOrBuilder.class

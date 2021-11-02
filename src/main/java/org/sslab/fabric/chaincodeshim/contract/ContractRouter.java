@@ -19,11 +19,12 @@ import org.sslab.fabric.chaincodeshim.contract.routing.TypeRegistry;
 import org.sslab.fabric.chaincodeshim.contract.routing.impl.RoutingRegistryImpl;
 import org.sslab.fabric.chaincodeshim.contract.routing.impl.SerializerRegistryImpl;
 import org.sslab.fabric.chaincodeshim.metrics.Metrics;
-import org.sslab.fabric.chaincodeshim.shim.Chaincode;
-import org.sslab.fabric.chaincodeshim.shim.ChaincodeBase;
-import org.sslab.fabric.chaincodeshim.shim.ChaincodeStub;
-import org.sslab.fabric.chaincodeshim.shim.ResponseUtils;
+import org.sslab.fabric.chaincodeshim.shim.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -31,11 +32,11 @@ import java.util.logging.Logger;
  * Router class routes Init/Invoke requests to contracts. Implements
  * {@link Chaincode} interface.
  */
-public final class ContractRouter extends ChaincodeBase {
+public class ContractRouter extends ChaincodeBase {
     private static Logger logger = Logger.getLogger(ContractRouter.class.getName());
 
-    private RoutingRegistry registry;
-    private TypeRegistry typeRegistry;
+    private static RoutingRegistry registry;
+    private static TypeRegistry typeRegistry;
 
     // Store instances of SerializerInterfaces - identified by the contract
     // annotation (default is JSON)
@@ -65,6 +66,7 @@ public final class ContractRouter extends ChaincodeBase {
         serializers = new SerializerRegistryImpl();
 
         try {
+            logger.info("contractrouter에서 try진입:");
             serializers.findAndSetContents();
         } catch (InstantiationException | IllegalAccessException e) {
             final ContractRuntimeException cre = new ContractRuntimeException("Unable to locate Serializers", e);
@@ -77,7 +79,7 @@ public final class ContractRouter extends ChaincodeBase {
     /**
      * Locate all the contracts that are available on the classpath.
      */
-    protected void findAllContracts() {
+    public void findAllContracts() {
         registry.findAndSetContracts(this.typeRegistry);
     }
 
@@ -97,7 +99,6 @@ public final class ContractRouter extends ChaincodeBase {
             throw cre;
         }
     }
-
     private Response processRequest(final ChaincodeStub stub) {
         logger.info(() -> "Got invoke routing request");
         try {
@@ -121,15 +122,85 @@ public final class ContractRouter extends ChaincodeBase {
         }
     }
 
+
+    //modifying
+//    private Response processRequest(final ChaincodeStub stub) {
+//        logger.info(() -> "Got invoke routing request");
+//        try {
+//            if (stub.getStringArgs().size() > 0) {
+//                logger.info(() -> "Got the invoke request for:" + stub.getFunction() + " " + stub.getParameters());
+//                final InvocationRequest request = ExecutionFactory.getInstance().createRequest(stub);
+//                final TxFunction txFn = getRouting(request);
+////                logger.info(() -> "Got the txFn.getRouting():" + txFn.getRouting());
+//
+//
+//                // based on the routing information the serializer can be found
+//                // TRANSACTION target as this on the 'inbound' to invoke a tx
+////                final SerializerInterface si = serializers.getSerializer(txFn.getRouting().getSerializerName(), Serializer.TARGET.TRANSACTION);
+////                final ExecutionService executor = ExecutionFactory.getInstance().createExecutionService(si);
+//
+////                logger.info(() -> "Got routing:" + txFn.getRouting());
+//                return executeRequest(request, stub);
+//            } else {
+//                return ResponseUtils.newSuccessResponse();
+//            }
+//        } catch (final Throwable throwable) {
+//            return ResponseUtils.newErrorResponse(throwable);
+//        }
+//    }
+
+    public Chaincode.Response executeRequest(final InvocationRequest req, final ChaincodeStub stub) {
+        logger.fine(() -> "Routing Request");
+        Chaincode.Response response;
+
+        logger.info("namespace is " + req.getNamespace());
+        String calssPath = "org.sslab.fabric.chaincode." + req.getNamespace() + "." + req.getNamespace();
+        logger.info("calssPath is " + calssPath);
+
+        try {
+            Class<?> testClass = Class.forName(calssPath);
+            Object newObj = testClass.newInstance();
+            Method method = testClass.getDeclaredMethod(req.getMethod());
+
+            List<Object> args = Arrays.asList(req.getArgs().toArray());
+            Context context = new Context(stub);
+            final Object value = method.invoke(newObj, req.getArgs().toArray());
+            logger.info("value:" + value );
+            args.add(0, context); // force context into 1st position, other elements move up
+
+
+            if (value == null) {
+                response = ResponseUtils.newSuccessResponse();
+            } else {
+                response = ResponseUtils.newSuccessResponse();
+            }
+
+        } catch (IllegalAccessException | InstantiationException | NoSuchMethodException e) {
+            final String message = String.format("Could not execute contract method: ");
+            throw new ContractRuntimeException(message, e);
+        } catch (final InvocationTargetException | ClassNotFoundException e) {
+            final Throwable cause = e.getCause();
+
+            if (cause instanceof ChaincodeException) {
+                throw (ChaincodeException) cause;
+            } else {
+                throw new ContractRuntimeException("Error during contract method execution", cause);
+            }
+        }
+
+        return response;
+    }
+
     @Override
     public Response invoke(final ChaincodeStub stub) {
-        return processRequest(stub);
+        return  processRequest(stub);
     }
 
     @Override
     public Response init(final ChaincodeStub stub) {
         return processRequest(stub);
     }
+
 
     /**
      * Given the Invocation Request, return the routing object for this call.
@@ -142,11 +213,23 @@ public final class ContractRouter extends ChaincodeBase {
         if (registry.containsRoute(request)) {
             return registry.getTxFn(request);
         } else {
-            logger.info(() -> "Namespace is " + request);
+            logger.info(() -> "Namespace is " + request.getNamespace());
             final ContractDefinition contract = registry.getContract(request.getNamespace());
             return contract.getUnknownRoute();
         }
     }
+//    /**
+//     * Given the Invocation Request, return the routing object for this call.
+//     *
+//     * @param request
+//     * @return TxFunction for the request
+//     */
+//    TxFunction getRouting(final InvocationRequest request) {
+//        // request name is the fully qualified 'name:txname'
+//        logger.info(() -> "Namespace is " + request);
+//        return registry.getTxFn(request);
+//
+//    }
 
     /**
      * Main method to start the contract based chaincode.
@@ -172,11 +255,11 @@ public final class ContractRouter extends ChaincodeBase {
 
     }
 
-    protected TypeRegistry getTypeRegistry() {
+    public TypeRegistry getTypeRegistry() {
         return this.typeRegistry;
     }
 
-    protected RoutingRegistry getRoutingRegistry() {
+    public RoutingRegistry getRoutingRegistry() {
         return this.registry;
     }
 }

@@ -34,11 +34,11 @@ public final class TxFunctionImpl implements TxFunction {
     private List<ParameterDefinition> paramsList = new ArrayList<>();
     private boolean isUnknownTx;
 
-    public final class RoutingImpl implements Routing {
+    public static final class RoutingImpl implements Routing {
 
         private final Method method;
         private final Class<? extends ContractInterface> clazz;
-        private final String serializerName;
+        private static String serializerName;
 
         /**
          *

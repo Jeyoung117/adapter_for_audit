@@ -7,11 +7,13 @@ package org.sslab.fabric.chaincodeshim.shim.impl;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import org.corfudb.runtime.CorfuRuntime;
 import org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage;
 import org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type;
 import org.sslab.fabric.chaincodeshim.Logging;
 import org.sslab.fabric.chaincodeshim.shim.Chaincode;
 import org.sslab.fabric.chaincodeshim.shim.ChaincodeStub;
+import org.sslab.fabric.corfu.CorfuAccess;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Exchanger;
@@ -33,7 +35,8 @@ public class ChaincodeInvocationTask implements Callable<ChaincodeMessage> {
     private final String key;
     private final Type type;
     private final String txId;
-    private final Consumer<ChaincodeMessage> outgoingMessageConsumer;
+    private Consumer<ChaincodeMessage> outgoingMessageConsumer;
+    private ChaincodeMessage outgoingMessage;
     private final Exchanger<ChaincodeMessage> messageExchange = new Exchanger<>();
     private final ChaincodeMessage message;
     private final Chaincode chaincode;
@@ -54,6 +57,16 @@ public class ChaincodeInvocationTask implements Callable<ChaincodeMessage> {
         this.key = message.getChannelId() + message.getTxid();
         this.type = type;
         this.outgoingMessageConsumer = outgoingMessage;
+        this.txId = message.getTxid();
+        this.chaincode = chaincode;
+        this.message = message;
+    }
+
+    public ChaincodeInvocationTask(final ChaincodeMessage message, final Type type, final Chaincode chaincode) {
+
+        this.key = message.getChannelId() + message.getTxid();
+        this.type = type;
+        this.outgoingMessage = outgoingMessage;
         this.txId = message.getTxid();
         this.chaincode = chaincode;
         this.message = message;

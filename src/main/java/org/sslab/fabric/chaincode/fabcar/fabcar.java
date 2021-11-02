@@ -18,7 +18,7 @@ import org.sslab.fabric.chaincodeshim.shim.ChaincodeStub;
  * First Application tutorial
  */
 @Contract(
-        name = "FabCar",
+        name = "fabcar",
         info = @Info(
                 title = "FabCar contract",
                 description = "The hyperlegendary car contract",
@@ -31,7 +31,7 @@ import org.sslab.fabric.chaincodeshim.shim.ChaincodeStub;
                         name = "F Carr",
                         url = "https://hyperledger.example.com")))
 @Default
-public final class FabCar implements ContractInterface {
+public final class fabcar implements ContractInterface {
 
     private final Genson genson = new Genson();
 
@@ -110,7 +110,7 @@ public final class FabCar implements ContractInterface {
                          final String color, final String owner) {
         ChaincodeStub stub = ctx.getStub();
 
-        String carState = stub.getStringState(key);
+//        String carState = stub.getStringState(key);
 
 //        if (!carState.isEmpty()) {
 //            String errorMessage = String.format("Car %s already exists", key);
@@ -119,7 +119,7 @@ public final class FabCar implements ContractInterface {
 //        }
 
         Car car = new Car(make, model, color, owner);
-        carState = genson.serialize(car);
+        String carState = genson.serialize(car);
         stub.putStringState(key, carState);
 
         return car;

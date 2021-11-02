@@ -51,7 +51,7 @@ public final class ChaincodeMessageFactory {
         return newEventMessage(DEL_STATE, channelId, txId, DelState.newBuilder().setCollection(collection).setKey(key).build().toByteString());
     }
 
-    protected static ChaincodeMessage newErrorEventMessage(final String channelId, final String txId, final Throwable throwable) {
+    public static ChaincodeMessage newErrorEventMessage(final String channelId, final String txId, final Throwable throwable) {
         return newErrorEventMessage(channelId, txId, printStackTrace(throwable));
     }
 
@@ -59,12 +59,12 @@ public final class ChaincodeMessageFactory {
         return newErrorEventMessage(channelId, txId, message, null);
     }
 
-    protected static ChaincodeMessage newErrorEventMessage(final String channelId, final String txId, final String message, final ChaincodeEvent event) {
+    public static ChaincodeMessage newErrorEventMessage(final String channelId, final String txId, final String message, final ChaincodeEvent event) {
         return newEventMessage(ERROR, channelId, txId, ByteString.copyFromUtf8(message), event);
     }
 
-    protected static ChaincodeMessage newCompletedEventMessage(final String channelId, final String txId, final Chaincode.Response response,
-            final ChaincodeEvent event) {
+    public static ChaincodeMessage newCompletedEventMessage(final String channelId, final String txId, final Chaincode.Response response,
+                                                            final ChaincodeEvent event) {
         final ChaincodeMessage message = newEventMessage(COMPLETED, channelId, txId, toProtoResponse(response).toByteString(), event);
         return message;
     }

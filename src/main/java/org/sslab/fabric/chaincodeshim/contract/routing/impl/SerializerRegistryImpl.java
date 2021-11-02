@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Registry to hold permit access to the serializer implementations.
@@ -35,7 +36,7 @@ public class SerializerRegistryImpl {
     }
 
     // Could index these by name and or type.
-    private final Map<String, SerializerInterface> contents = new HashMap<>();
+    private static final Map<String, SerializerInterface> contents = new HashMap<>();
 
     /**
      * Get a Serializer for the matching fully qualified classname, and the Target.
@@ -46,6 +47,7 @@ public class SerializerRegistryImpl {
      */
     public SerializerInterface getSerializer(final String name, final Serializer.TARGET target) {
         final String key = name + ":" + target;
+        logger.info(String.valueOf(contents));
         return contents.get(key);
     }
 

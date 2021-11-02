@@ -14,12 +14,13 @@ import org.hyperledger.fabric.protos.common.Common;
 
 import org.hyperledger.fabric.protos.corfu.CorfuConnectGrpc;
 import org.hyperledger.fabric.protos.peer.*;
-import org.sslab.fabric.chaincode.fabcar.FabCar;
+import org.sslab.fabric.chaincode.fabcar.fabcar;
 import org.sslab.fabric.chaincodeshim.contract.Context;
 import org.sslab.fabric.chaincodeshim.contract.ContractRouter;
 import org.sslab.fabric.chaincodeshim.shim.ChaincodeStub;
+import org.sslab.fabric.chaincodeshim.shim.impl.ChaincodeInvocationTask;
+import org.sslab.fabric.chaincodeshim.shim.impl.ChaincodeMessageFactory;
 import org.sslab.fabric.chaincodeshim.shim.impl.InvocationStubImpl;
-import org.sslab.fabric.chaincodeshim.shim.impl.InvocationTaskManager;
 import org.sslab.fabric.corfu.CorfuAccess;
 import org.sslab.fabric.protoutil.Proputils;
 
@@ -27,9 +28,13 @@ import org.sslab.fabric.protoutil.Proputils;
 //import org.hyperledger.fabric.sdk.ProposalResponse;
 
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
 import java.util.logging.Logger;
+
+import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.COMPLETED;
+import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.ERROR;
 
 
 /**
@@ -45,11 +50,11 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     CorfuRuntime runtime;
     CorfuAccess corfu_access;
     private final Genson genson = new Genson();
-
+    ContractRouter cfc;
 //    private ProposalPackage.Proposal proposal;
 
 
-    public AdapterModuleService(CorfuAccess corfu_access, CorfuRuntime runtime) {
+    public AdapterModuleService(CorfuAccess corfu_access, CorfuRuntime runtime, ContractRouter cfc) {
         streamViews = new HashMap<UUID, IStreamView>();
         runtimes = new HashMap<UUID, CorfuRuntime>();
         this.runtime = runtime;
@@ -58,6 +63,7 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
         System.out.println("Init AdapterModuleService");
         tokenMap = new HashMap<String, Token>();
         this.corfu_access = corfu_access;
+        this.cfc = cfc;
     }
 
     private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
@@ -225,19 +231,15 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
         ChaincodeShim.ChaincodeMessage ccMsg = ChaincodeShim.ChaincodeMessage.newBuilder()
                 .setType(ChaincodeShim.ChaincodeMessage.Type.TRANSACTION)
                 .setChannelId(txParams.channelID)
+                .setChaincodeId(txParams.namespaceID)
                 .setTxid(txParams.txID)
                 .setProposal(txParams.signedProp)
                 .setPayload(chaincodeInput.toByteString())
                 .build();
 
         corfu_access.issueSnapshotToken();
-        FabCar fabcar = new FabCar();
-        InvocationStubImpl invocationStub = null;
-        try {
-            invocationStub = new InvocationStubImpl(txParams.channelID, "123456", chaincodeName, corfu_access);
-        } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
-        }
+        fabcar fabcar = new fabcar();
+
         int chaincodeInputsize = chaincodeInput.getArgsList().size();
         ListIterator<ByteString> chaincodeArgList =  chaincodeInput.getArgsList().listIterator();
         List<ByteString> chaincodeList =  chaincodeInput.getArgsList();
@@ -248,29 +250,55 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
             System.out.println("chaincodeArgs" +i +"번째:" + chaincodeArgs[i]);
         }
         //InvocationTaskManager를 통해 chaincode routing
-        ChaincodeStub stub = new InvocationStubImpl(ccMsg);
-        ContractRouter contractRouter = new ContractRouter(chaincodeArgs);
+        ChaincodeInvocationTask invocationTask = new ChaincodeInvocationTask(ccMsg, ChaincodeShim.ChaincodeMessage.Type.TRANSACTION, cfc);
+//        ChaincodeShim.ChaincodeMessage finalResponseMessage = invocationTask.call();
+        ChaincodeStub stub = new InvocationStubImpl(ccMsg, corfu_access);
+//        ContractRouter contractRouter = new ContractRouter(chaincodeArgs);
 
-        contractRouter.invoke(stub);
+        org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp  = cfc.invoke(stub);
+        ChaincodeShim.ChaincodeMessage ccMessage =  createCCMSG(ccresp, ccMsg, stub);
+        System.out.println("getChaincodeEvent:" + ccMessage.getChaincodeEvent());
+
+
+
 //        InvocationTaskManager invocationTaskManager = new InvocationTaskManager();
 //        final ChaincodeInvocationTask task = new ChaincodeInvocationTask(ccMsg, ccMsg.getType(), this.outgoingMessage, this.chaincode);
 
 //        invocationTaskManager.call
 
-        Context context = new Context(invocationStub);
+        Context context = new Context(stub);
         String key = chaincodeInput.getArgs(1).toStringUtf8();
         System.out.println("전달받은 키: " + key);
         System.out.println("전달받은 channelID: " + txParams.channelID);
         System.out.println("전달받은 chaincodeName: " + chaincodeName);
-        System.out.println("chaincodeInput 첫번째: " + chaincodeInput.getArgs(0).toStringUtf8());
-        System.out.println("chaincodeInput 두번째 : " + chaincodeInput.getArgs(1).toStringUtf8());
-        System.out.println("chaincodeInput 세번째 : " + chaincodeInput.getArgs(2).toStringUtf8());
-        fabcar.createCar(context, key, key, key, key, key);
-//        key = "CAR69";
-//        fabcar.createCar(context, key, key, key, key, key);
 
+        fabcar.createCar(context, key, key, key, key, key);
         corfu_access.commitTransaction(txParams.signedProp, proposalResponse);
 
+    }
+
+    public ChaincodeShim.ChaincodeMessage createCCMSG(org.sslab.fabric.chaincodeshim.shim.Chaincode.Response result, ChaincodeShim.ChaincodeMessage message, ChaincodeStub stub) {
+        ChaincodeShim.ChaincodeMessage finalResponseMessage;
+        try {
+        if (result.getStatus().getCode() >= org.sslab.fabric.chaincodeshim.shim.Chaincode.Response.Status.INTERNAL_SERVER_ERROR.getCode()) {
+            // Send ERROR with entire result.Message as payload
+            logger.severe(
+                    () -> String.format("[%-8.8s] Invoke failed with error code %d. Sending %s", message.getTxid(), result.getStatus().getCode(), ERROR));
+            finalResponseMessage = ChaincodeMessageFactory.newErrorEventMessage(message.getChannelId(), message.getTxid(), result.getMessage(),
+                    stub.getEvent());
+        } else {
+            // Send COMPLETED with entire result as payload
+            logger.fine(() -> String.format("[%-8.8s] Invoke succeeded. Sending %s", message.getTxid(), COMPLETED));
+            finalResponseMessage = ChaincodeMessageFactory.newCompletedEventMessage(message.getChannelId(), message.getTxid(), result, stub.getEvent());
+        }
+
+    } catch (RuntimeException e) {
+        logger.severe(() -> String.format("[%-8.8s] Invoke failed. Sending %s: %s", message.getTxid(), ERROR, e));
+        finalResponseMessage = ChaincodeMessageFactory.newErrorEventMessage(message.getChannelId(), message.getTxid(), e);
+    }
+
+    // also return for reference
+        return finalResponseMessage;
     }
 
     public ByteString createCCEventBytes(ChaincodeEventPackage.ChaincodeEvent ccevent) {

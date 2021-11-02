@@ -67,6 +67,7 @@ public class InvocationStubImpl implements ChaincodeStub {
     private byte[] binding;
 //    private final String chaincodeId;
     private ChaincodeEvent event;
+    private String chaincodeId;
     CorfuAccess corfu_access;
 
 
@@ -81,8 +82,9 @@ public class InvocationStubImpl implements ChaincodeStub {
         this.channelId = message.getChannelId();
         this.txId = message.getTxid();
         this.handler = handler;
+        this.chaincodeId = message.getChaincodeId();
         final ChaincodeInput input = ChaincodeInput.parseFrom(message.getPayload());
-
+//        this.corfu_access = corfu_access;
 
         this.args = Collections.unmodifiableList(input.getArgsList());
         this.signedProposal = message.getProposal();
@@ -117,13 +119,14 @@ public class InvocationStubImpl implements ChaincodeStub {
 //     * @param handler
      * @throws InvalidProtocolBufferException
      */
-    public InvocationStubImpl(final ChaincodeMessage message)
+    public InvocationStubImpl(final ChaincodeMessage message, CorfuAccess corfu_access)
             throws InvalidProtocolBufferException {
         this.channelId = message.getChannelId();
         this.txId = message.getTxid();
 //        this.handler = handler;
+        this.chaincodeId = message.getChaincodeId();
         final ChaincodeInput input = ChaincodeInput.parseFrom(message.getPayload());
-
+        this.corfu_access = corfu_access;
 
         this.args = Collections.unmodifiableList(input.getArgsList());
         this.signedProposal = message.getProposal();
@@ -235,6 +238,11 @@ public class InvocationStubImpl implements ChaincodeStub {
     @Override
     public String getChannelId() {
         return channelId;
+    }
+
+    @Override
+    public String getChaincodeId() {
+        return chaincodeId;
     }
 
     @Override

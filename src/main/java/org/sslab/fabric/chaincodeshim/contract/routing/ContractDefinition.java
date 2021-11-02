@@ -73,9 +73,11 @@ public interface ContractDefinition {
 
     /**
      * @return The TxFunction to be used for this contract in case of unknown
-     *         request
+     * request
      */
-    TxFunction getUnknownRoute();
+    default TxFunction getUnknownRoute() {
+        return null;
+    }
 
     /**
      * @return Underlying raw annotation

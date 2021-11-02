@@ -81,7 +81,16 @@ public interface ChaincodeStub {
      * @return the channel id
      */
     String getChannelId();
+    /**
+     * Returns the chaincode id for the current proposal.
+     * <p>
+     * This would be the 'chaincode_id' of the transaction proposal except where the
+     * chaincode is calling another on a different channel.
+     *
+     * @return the chaincode id
+     */
 
+    String getChaincodeId();
     /**
      * Locally calls the specified chaincode <code>invoke()</code> using the same
      * transaction context.

@@ -15,6 +15,7 @@ import org.corfudb.runtime.view.AddressSpaceView;
 import org.corfudb.runtime.view.StreamsView;
 import org.corfudb.runtime.view.stream.IStreamView;
 //import org.hyperledger.fabric.protos.corfu.CorfuChaincodeShim;
+import org.hyperledger.fabric.protos.ledger.rwset.kvrwset.KvRwset;
 import org.hyperledger.fabric.protos.peer.ProposalPackage;
 import org.hyperledger.fabric.protos.peer.ProposalResponsePackage;
 import org.sslab.fabric.adapter.AdapterModuleService;
@@ -154,16 +155,6 @@ public class CorfuAccess {
         long appended_add = runtime.getObjectsView().TXEnd();
 
         System.out.println("[corfu-access-interface] {commitTransaction} Corfu runtime is finished");
-        AddressSpaceView addressSpaceView = runtime.getAddressSpaceView();
-
-        ILogData ilogData = addressSpaceView.read(appended_add);
-
-        System.out.println(appended_add +  " log 조사 시작");
-        System.out.println("ilogData: " + ilogData);
-        System.out.println("logdata 사이즈: " + ilogData.getSizeEstimate());
-        System.out.println("logdata txmetadata: " + ilogData.getTransactionMetadata());
-        System.out.println("logdata fabric proposal: " + ilogData.getFabricProposal());
-
     }
 
     public void logSearch() {
@@ -191,7 +182,9 @@ public class CorfuAccess {
         System.out.println("streamsView.get(streamID).next(): " + streamsView.get(streamID).current());
         System.out.println("ilogData의 data: " + logData.getData());
         System.out.println("logData: " + ilogData.getPayload(runtime));
-
     }
+
+
+
 }
 
