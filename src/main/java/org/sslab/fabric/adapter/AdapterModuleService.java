@@ -274,6 +274,8 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
         return unpackedProposal;
     }
 
+//    public UnpackedProposal createProposalResponse(ProposalResponsePackage.Response ccresp, ) {
+
 //    @SneakyThrows
 //    public UnpackedProposal unpackProposal(ProposalPackage.SignedProposal signedProposal) {
 //        ProposalPackage.Proposal proposal;
