@@ -1,5 +1,7 @@
 package org.sslab.fabric.adapter;
 
+import bsp_transaction.BspTransactionOuterClass;
+import bsp_transaction.CorfuConnectBSPGrpc;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.owlike.genson.Genson;
@@ -10,8 +12,6 @@ import org.corfudb.runtime.CorfuRuntime;
 import org.corfudb.runtime.view.stream.IStreamView;
 import org.hyperledger.fabric.protos.common.Common;
 
-
-import org.hyperledger.fabric.protos.corfu.CorfuConnectGrpc;
 import org.hyperledger.fabric.protos.peer.*;
 import org.sslab.fabric.chaincode.fabcar.fabcar;
 import org.sslab.fabric.chaincodeshim.contract.Context;
@@ -28,6 +28,7 @@ import org.sslab.fabric.protoutil.Proputils;
 
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.*;
 import java.util.logging.Logger;
@@ -41,7 +42,7 @@ import static org.sslab.fabric.protoutil.Proputils.toProtoResponse;
  * @author Jeyoung Hwang.capricorn116@postech.ac.kr
  *         created on 2021. 4. 10.
  */
-public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
+public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImplBase{
     Map<UUID, CorfuRuntime> runtimes;
     Map<UUID, IStreamView> streamViews;
     Map<String, Long> lastReadAddrs;
@@ -68,55 +69,47 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
 
     private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
 
+    @SneakyThrows
     @Override
-    public void processProposal(ProposalPackage.SignedProposal signedProposal, StreamObserver<ProposalResponsePackage.Response> responseObserver) {
-        UnpackedProposal up =  unpackProposal(signedProposal);
+    public void processProposal(BspTransactionOuterClass.Proposal proposal, StreamObserver<BspTransactionOuterClass.ProposalResponse> responseObserver) {
+//        UnpackedProposal up =  unpackProposal(proposal);
+        BspTransactionOuterClass.ProposalPayload propPayload = BspTransactionOuterClass.ProposalPayload.parseFrom(proposal.getPayload());
 
         try {
-            ProposalResponsePackage.Response res = processProposalSuccessfullyOrError(up);
+            ProposalResponsePackage.Response res = processProposalSuccessfullyOrError(proposal);
 
             responseObserver.onNext(res);
             responseObserver.onCompleted();
 
-//            System.out.println(up.channelHeader.getChannelId());
-//            UUID streamID = runtime.getStreamID(up.channelHeader.getChannelId());
-//            IStreamView iStreamView = runtime.getStreamsView().get(streamID);
-//            StreamsView streamsView = new StreamsView(runtime);
-//
-//            long logicalAddr = iStreamView.append(pResp.toByteArray());
-//            System.out.println("[orderer-stub] {append} proposal response size: " + pResp.getSerializedSize());
-//            System.out.println("[orderer-stub] {append} logical addr: " + logicalAddr);
-//            System.out.println("[interface] {processProposal} Corfu runtime is finished");
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
     }
 
-    public ProposalResponsePackage.Response processProposalSuccessfullyOrError(UnpackedProposal up) throws InvalidProtocolBufferException {
+    public ProposalResponsePackage.Response processProposalSuccessfullyOrError(BspTransactionOuterClass.Proposal signedProposal) throws InvalidProtocolBufferException {
+        BspTransactionOuterClass.ProposalPayload propPayload = BspTransactionOuterClass.ProposalPayload.parseFrom(signedProposal.getPayload());
+
         TransactionParams txParams =  new TransactionParams(
-                up.channelHeader.getTxId(),
-                up.channelHeader.getChannelId(),
-                up.chaincodeName,
-                up.signedProp,
-                up.proposal,
-                up.proposalHash
+                propPayload.getTxId(),
+                propPayload.getChaincodeId(),
+                signedProposal,
+                propPayload.getChaincodeArgsList() //byte[] 변경 필요
                 );
 
-        ProposalResponsePackage.Response res = executeProposal(txParams, up.chaincodeName, up.input);
+        ProposalResponsePackage.Response res = executeProposal(txParams, propPayload.getChaincodeId(), txParams.chaincodeArgs);
 
         return res;
     }
 
-    public ProposalResponsePackage.Response executeProposal(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) throws InvalidProtocolBufferException {
+    public ProposalResponsePackage.Response executeProposal(TransactionParams txParams, String chaincodeName, List<String> chaincodeArgs) throws InvalidProtocolBufferException {
 
         //fabric chaincode_support.go 의 execute 에서의 선언 copy
         ChaincodeShim.ChaincodeMessage ccMsg = ChaincodeShim.ChaincodeMessage.newBuilder()
                 .setType(ChaincodeShim.ChaincodeMessage.Type.TRANSACTION)
-                .setChannelId(txParams.channelID)
                 .setChaincodeId(txParams.namespaceID)
                 .setTxid(txParams.txID)
-                .setProposal(txParams.signedProp)
-                .setPayload(chaincodeInput.toByteString())
+//                .setProposal(txParams.signedProp)
+                .setPayload(ByteString.copyFrom(chaincodeArgs.toArray().toString().getBytes(StandardCharsets.UTF_8)))
                 .build();
 
             ProposalResponsePackage.Response res = callChaincode(txParams, chaincodeName, ccMsg);
@@ -137,8 +130,8 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
 //        }
         //InvocationTaskManager를 통해 chaincode routing
         //chaincode interaction
-        ChaincodeInvocationTask invocationTask = new ChaincodeInvocationTask(ccMsg, ChaincodeShim.ChaincodeMessage.Type.TRANSACTION, cfc);
-        ChaincodeStub stub = new InvocationStubImpl(ccMsg, corfu_access);
+//        ChaincodeInvocationTask invocationTask = new ChaincodeInvocationTask(ccMsg, ChaincodeShim.ChaincodeMessage.Type.TRANSACTION, cfc);
+        ChaincodeStub stub = new InvocationStubImpl(ccMsg, corfu_access, txParams.signedProp);
         org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp  = cfc.invoke(stub);
 
         byte[] tesmp = ccresp.getPayload();
@@ -229,7 +222,12 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     }
 
     @SneakyThrows
-    public UnpackedProposal unpackProposal(ProposalPackage.SignedProposal signedProposal) {
+    public UnpackedProposal unpackProposal(BspTransactionOuterClass.Proposal signedProposal) {
+        BspTransactionOuterClass.ProposalPayload propPayload;
+
+
+
+
         ProposalPackage.Proposal proposal;
         Common.Header header;
         Common.ChannelHeader channelHeader;
@@ -239,7 +237,8 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
         Chaincode.ChaincodeInvocationSpec chaincodeInvocationSpec;
         ProposalPackage.ChaincodeProposalPayload cpp;
 //        byte[] sp = signedProposal.getProposalBytes().toByteArray();
-        proposal = ProposalPackage.Proposal.parseFrom(signedProposal.getProposalBytes());
+        propPayload = BspTransactionOuterClass.ProposalPayload.parseFrom(signedProposal.getPayload());
+        propPayload.get
         header = Common.Header.parseFrom(proposal.getHeader());
         channelHeader = Common.ChannelHeader.parseFrom(header.getChannelHeader());
         signatureHeader = Common.SignatureHeader.parseFrom(header.getSignatureHeader());

@@ -6,6 +6,7 @@
 
 package org.sslab.fabric.chaincodeshim.shim.impl;
 
+import bsp_transaction.BspTransactionOuterClass;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Timestamp;
@@ -61,6 +62,7 @@ public class InvocationStubImpl implements ChaincodeStub {
     private ChaincodeInvocationTask handler;
     private List<ByteString> args;
     private SignedProposal signedProposal;
+    private BspTransactionOuterClass.Proposal signedProposalforBSP;
     private Instant txTimestamp;
     private ByteString creator;
     private Map<String, ByteString> transientMap;
@@ -119,17 +121,15 @@ public class InvocationStubImpl implements ChaincodeStub {
 //     * @param handler
      * @throws InvalidProtocolBufferException
      */
-    public InvocationStubImpl(final ChaincodeMessage message, CorfuAccess corfu_access)
+    public InvocationStubImpl(final ChaincodeMessage message, CorfuAccess corfu_access, BspTransactionOuterClass.Proposal signedProposal)
             throws InvalidProtocolBufferException {
         this.channelId = message.getChannelId();
         this.txId = message.getTxid();
 //        this.handler = handler;
         this.chaincodeId = message.getChaincodeId();
-        final ChaincodeInput input = ChaincodeInput.parseFrom(message.getPayload());
         this.corfu_access = corfu_access;
-
         this.args = Collections.unmodifiableList(input.getArgsList());
-        this.signedProposal = message.getProposal();
+        this.signedProposalforBSP = signedProposal;
         if (this.signedProposal == null || this.signedProposal.getProposalBytes().isEmpty()) {
             this.creator = null;
             this.txTimestamp = null;
@@ -137,20 +137,12 @@ public class InvocationStubImpl implements ChaincodeStub {
             this.binding = null;
         } else {
             try {
-                final Proposal proposal = Proposal.parseFrom(signedProposal.getProposalBytes());
-                final Header header = Header.parseFrom(proposal.getHeader());
-                final ChannelHeader channelHeader = ChannelHeader.parseFrom(header.getChannelHeader());
-                validateProposalType(channelHeader);
-                final SignatureHeader signatureHeader = SignatureHeader.parseFrom(header.getSignatureHeader());
-                final ChaincodeProposalPayload chaincodeProposalPayload = ChaincodeProposalPayload
-                        .parseFrom(proposal.getPayload());
-                final Timestamp timestamp = channelHeader.getTimestamp();
+                BspTransactionOuterClass.ProposalPayload prpPayload = BspTransactionOuterClass.ProposalPayload.parseFrom(signedProposal.getPayload());
+                final List<String> input = prpPayload.getChaincodeArgsList();
+                final BspTransactionOuterClass.SignatureHeader signatureHeader = BspTransactionOuterClass.SignatureHeader.parseFrom(signedProposal.getSignatureHeader());
 
-                this.txTimestamp = Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos());
                 this.creator = signatureHeader.getCreator();
-                this.transientMap = chaincodeProposalPayload.getTransientMapMap();
-                this.binding = computeBinding(channelHeader, signatureHeader);
-            } catch (InvalidProtocolBufferException | NoSuchAlgorithmException e) {
+            } catch (InvalidProtocolBufferException e) {
                 throw new RuntimeException(e);
             }
         }

@@ -53,6 +53,6 @@ message ResCheck {
 //    string objectname = 3;
 //}
 
-service CorfuConnect {
+service CorfuConnectOg {
     rpc processProposal(SignedProposal) returns (Response);
 }

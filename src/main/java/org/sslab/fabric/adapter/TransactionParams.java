@@ -1,27 +1,32 @@
 package org.sslab.fabric.adapter;
 
+import bsp_transaction.BspTransactionOuterClass;
 import org.hyperledger.fabric.protos.peer.ProposalPackage;
+
+import java.util.List;
 
 public class TransactionParams {
     public String txID;
     public String channelID;
     public String namespaceID;
-    public ProposalPackage.SignedProposal signedProp;
-    public ProposalPackage.Proposal proposal;
+    public String clientID;
+    public BspTransactionOuterClass.Proposal signedProp;
+//    public ProposalPackage.Proposal proposal;
     public byte[] proposalHash;
+    List<String> chaincodeArgs;
 //    HistoryQueryExecutor ledger.HistoryQueryExecutor
 //    CollectionStore      privdata.CollectionStore
     boolean isInitTransaction;
 
 
 
-    public TransactionParams(String txID, String channelID, String namespaceID, ProposalPackage.SignedProposal signedProp,
-            ProposalPackage.Proposal proposal, byte[] proposalHash ) {
+    public TransactionParams(String txID, String namespaceID, BspTransactionOuterClass.Proposal signedProp, List<String> chaincodeArgs) {
         this.txID = txID;
-        this.channelID = channelID;
+//        this.channelID = channelID;
         this.namespaceID = namespaceID;
-        this.proposal = proposal;
+        this.chaincodeArgs = chaincodeArgs;
+//        this.proposal = proposal;
         this.signedProp = signedProp;
-        this.proposalHash = proposalHash;
+//        this.proposalHash = proposalHash;
     }
 }

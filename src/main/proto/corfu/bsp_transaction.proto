@@ -559,7 +559,7 @@ service QueryExecutor {
 }
 
 
-service Aggregator {
+service CorfuConnectBSP {
   rpc RegisterClientWithPolicy (AggregatorSubscribeRequest) returns (stream AggregatorResponse);
   rpc ProcessProposal(Proposal)  returns (ProposalResponse);
 
