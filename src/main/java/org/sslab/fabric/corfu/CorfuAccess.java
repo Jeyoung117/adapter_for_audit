@@ -19,6 +19,7 @@ import org.hyperledger.fabric.protos.ledger.rwset.kvrwset.KvRwset;
 import org.hyperledger.fabric.protos.peer.ProposalPackage;
 import org.hyperledger.fabric.protos.peer.ProposalResponsePackage;
 import org.sslab.fabric.adapter.AdapterModuleService;
+import org.sslab.fabric.adapter.TransactionParams;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -98,7 +99,7 @@ public class CorfuAccess {
 
         Map<String, byte[]> map = runtime.getObjectsView()
                 .build()
-                .setStreamName("mychannel + fabcar")     // stream ID
+                .setStreamName(channelID+chaincodeID)     // stream ID
                 .setTypeToken(new TypeToken<CorfuTable<String, byte[]>>() {
                 })
                 .open();
@@ -120,7 +121,7 @@ public class CorfuAccess {
 
         Map<String, byte[]> map = runtime.getObjectsView()
                 .build()
-                .setStreamName("mychannel + fabcar")     // stream ID
+                .setStreamName(channelID+chaincodeID)     // stream ID
                 .setTypeToken(new TypeToken<CorfuTable<String, byte[]>>() {
                 })
                 .open();
@@ -142,18 +143,19 @@ public class CorfuAccess {
         System.out.println("[corfu-access-interface] {issueSnapshotToken} success");
     }
 
-    public void commitTransaction(ProposalPackage.SignedProposal signedProposal, ProposalResponsePackage.ProposalResponse proposalResponse) {
-        UUID streamID = runtime.getStreamID("mychannel" + "fabcar"); //추후 실제 channel ID로 변
+    public void commitTransaction(TransactionParams txParams, ProposalResponsePackage.ProposalResponse proposalResponse) {
+        UUID streamID = runtime.getStreamID(txParams.channelID+txParams.namespaceID); //추후 실제 channel ID로 변
         System.out.println("UUID: " + streamID);
 
 
         OptimisticTransactionalContext transactionalContext = (OptimisticTransactionalContext) TransactionalContext.getCurrentContext();
         transactionalContext.setTxMetadata(proposalResponse.toByteArray());
-        transactionalContext.setFabricProposal(signedProposal.toByteArray());
+        transactionalContext.setFabricProposal(txParams.signedProp.toByteArray());
         System.out.println("getTxMetadata();: " + transactionalContext.getTxMetadata());
         System.out.println("getFabricProposal();: " + transactionalContext.getFabricProposal());
         long appended_add = runtime.getObjectsView().TXEnd();
 
+        System.out.println("[corfu-access-interface] {commitTransaction} appended_add is:" + appended_add);
         System.out.println("[corfu-access-interface] {commitTransaction} Corfu runtime is finished");
     }
 

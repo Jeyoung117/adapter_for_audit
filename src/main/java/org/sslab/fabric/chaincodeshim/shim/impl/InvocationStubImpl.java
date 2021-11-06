@@ -31,6 +31,7 @@ import org.sslab.fabric.corfu.CorfuAccess;
 import org.sslab.fabric.chaincodeshim.shim.Chaincode.Response;
 import org.sslab.fabric.chaincodeshim.shim.ChaincodeStub;
 import org.sslab.fabric.chaincodeshim.shim.ledger.*;
+import org.sslab.fabric.corfu.Rwset_builder;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -69,6 +70,7 @@ public class InvocationStubImpl implements ChaincodeStub {
     private ChaincodeEvent event;
     private String chaincodeId;
     CorfuAccess corfu_access;
+    Rwset_builder rwset_builder;
 
 
     /**
@@ -252,7 +254,8 @@ public class InvocationStubImpl implements ChaincodeStub {
 
     @Override
     public byte[] getState(final String key) {
-            return corfu_access.getStringState(key, channelId, "fabcar");
+
+        return corfu_access.getStringState(key, channelId, "fabcar");
     }
 
     @Override

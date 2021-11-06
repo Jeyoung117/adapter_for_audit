@@ -6,11 +6,11 @@ import org.hyperledger.fabric.protos.ledger.rwset.kvrwset.KvRwset;
 import java.util.HashMap;
 import java.util.Map;
 
-public class rwset_builder {
+public class Rwset_builder {
     Map<String, KvRwset.KVRead> readMap = new HashMap<String, KvRwset.KVRead>();
     Map<String, KvRwset.KVWrite> writeMap = new HashMap<String, KvRwset.KVWrite>();
 
-    public rwset_builder(String ns) {
+    public Rwset_builder(String ns) {
 
     }
 

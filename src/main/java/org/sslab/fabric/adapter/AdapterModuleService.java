@@ -7,13 +7,14 @@ import io.grpc.stub.StreamObserver;
 import lombok.SneakyThrows;
 import org.corfudb.protocols.wireprotocol.Token;
 import org.corfudb.runtime.CorfuRuntime;
+import org.corfudb.runtime.object.transactions.TransactionalContext;
 import org.corfudb.runtime.view.stream.IStreamView;
 import org.hyperledger.fabric.protos.common.Common;
 
 
 import org.hyperledger.fabric.protos.corfu.CorfuConnectGrpc;
 import org.hyperledger.fabric.protos.peer.*;
-import org.sslab.fabric.chaincode.fabcar.fabcar;
+import org.hyperledger.fabric.sdk.transaction.TransactionContext;
 import org.sslab.fabric.chaincodeshim.contract.Context;
 import org.sslab.fabric.chaincodeshim.contract.ContractRouter;
 import org.sslab.fabric.chaincodeshim.shim.ChaincodeStub;
@@ -21,13 +22,6 @@ import org.sslab.fabric.chaincodeshim.shim.impl.ChaincodeInvocationTask;
 import org.sslab.fabric.chaincodeshim.shim.impl.ChaincodeMessageFactory;
 import org.sslab.fabric.chaincodeshim.shim.impl.InvocationStubImpl;
 import org.sslab.fabric.corfu.CorfuAccess;
-import org.sslab.fabric.protoutil.Proputils;
-
-//import org.sslab.adapter.chaincode.fabcar.FabCar;
-//import org.hyperledger.fabric.sdk.ProposalResponse;
-
-
-import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.util.*;
 import java.util.logging.Logger;
@@ -45,7 +39,6 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
     Map<UUID, CorfuRuntime> runtimes;
     Map<UUID, IStreamView> streamViews;
     Map<String, Long> lastReadAddrs;
-    //tokenMap key: fabric txID, value: access token
     Map<String, Token> tokenMap;
     CorfuRuntime runtime;
     CorfuAccess corfu_access;
@@ -68,28 +61,25 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
 
     private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
 
+    @SneakyThrows
     @Override
     public void processProposal(ProposalPackage.SignedProposal signedProposal, StreamObserver<ProposalResponsePackage.Response> responseObserver) {
         UnpackedProposal up =  unpackProposal(signedProposal);
+        ByteString txConextbytes = signedProposal.getTxcontextBytes();
 
-        try {
+        TransactionContext result = (TransactionContext) genson.deserialize(txConextbytes.toString(), Object.class);
+        System.out.println("txcontext에서 추출한 채널명:" + result.getChannel());
+
+
             ProposalResponsePackage.Response res = processProposalSuccessfullyOrError(up);
 
-            responseObserver.onNext(res);
+            ProposalResponsePackage.Response response = ProposalResponsePackage.Response.newBuilder()
+                                                        .setMessage(res.getMessage())
+                                                        .setPayload(res.getPayload())
+                                                        .setStatus(res.getStatus())
+                                                        .build();
+            responseObserver.onNext(response);
             responseObserver.onCompleted();
-
-//            System.out.println(up.channelHeader.getChannelId());
-//            UUID streamID = runtime.getStreamID(up.channelHeader.getChannelId());
-//            IStreamView iStreamView = runtime.getStreamsView().get(streamID);
-//            StreamsView streamsView = new StreamsView(runtime);
-//
-//            long logicalAddr = iStreamView.append(pResp.toByteArray());
-//            System.out.println("[orderer-stub] {append} proposal response size: " + pResp.getSerializedSize());
-//            System.out.println("[orderer-stub] {append} logical addr: " + logicalAddr);
-//            System.out.println("[interface] {processProposal} Corfu runtime is finished");
-        } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
-        }
     }
 
     public ProposalResponsePackage.Response processProposalSuccessfullyOrError(UnpackedProposal up) throws InvalidProtocolBufferException {
@@ -137,7 +127,7 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
 //        }
         //InvocationTaskManager를 통해 chaincode routing
         //chaincode interaction
-        ChaincodeInvocationTask invocationTask = new ChaincodeInvocationTask(ccMsg, ChaincodeShim.ChaincodeMessage.Type.TRANSACTION, cfc);
+//        ChaincodeInvocationTask invocationTask = new ChaincodeInvocationTask(ccMsg, ChaincodeShim.ChaincodeMessage.Type.TRANSACTION, cfc);
         ChaincodeStub stub = new InvocationStubImpl(ccMsg, corfu_access);
         org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp  = cfc.invoke(stub);
 
@@ -173,7 +163,7 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
                 .setPayload(prpBytes)
                 .setResponse(res)
                 .build();
-        corfu_access.commitTransaction(txParams.signedProp, pResp); //signed proposal 넣어주는 게 맞나?
+        corfu_access.commitTransaction(txParams, pResp); //signed proposal 넣어주는 게 맞나?
 
         return res;
     }
@@ -251,6 +241,7 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
                 .setInput(cpp.getInput())
                 .build();
         byte[] ppBytes = cppNoTransient.toByteArray();
+
 
         // The proposal hash is the hash of the concatenation of:
         // 1) The serialized Channel Header object

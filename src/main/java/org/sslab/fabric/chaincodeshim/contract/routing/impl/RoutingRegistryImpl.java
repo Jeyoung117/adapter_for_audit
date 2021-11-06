@@ -36,7 +36,7 @@ import java.util.*;
 public final class RoutingRegistryImpl implements RoutingRegistry {
     private static Logger logger = Logger.getLogger(RoutingRegistryImpl.class);
 
-    private final static Map<String, ContractDefinition> contracts = new HashMap<>();
+    private final Map<String, ContractDefinition> contracts = new HashMap<>();
 
     /*
      * (non-Javadoc)

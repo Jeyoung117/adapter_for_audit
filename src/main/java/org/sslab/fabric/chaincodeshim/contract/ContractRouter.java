@@ -35,8 +35,8 @@ import java.util.logging.Logger;
 public class ContractRouter extends ChaincodeBase {
     private static Logger logger = Logger.getLogger(ContractRouter.class.getName());
 
-    private static RoutingRegistry registry;
-    private static TypeRegistry typeRegistry;
+    private RoutingRegistry registry;
+    private TypeRegistry typeRegistry;
 
     // Store instances of SerializerInterfaces - identified by the contract
     // annotation (default is JSON)
@@ -148,48 +148,6 @@ public class ContractRouter extends ChaincodeBase {
 //            return ResponseUtils.newErrorResponse(throwable);
 //        }
 //    }
-
-    public Chaincode.Response executeRequest(final InvocationRequest req, final ChaincodeStub stub) {
-        logger.fine(() -> "Routing Request");
-        Chaincode.Response response;
-
-        logger.info("namespace is " + req.getNamespace());
-        String calssPath = "org.sslab.fabric.chaincode." + req.getNamespace() + "." + req.getNamespace();
-        logger.info("calssPath is " + calssPath);
-
-        try {
-            Class<?> testClass = Class.forName(calssPath);
-            Object newObj = testClass.newInstance();
-            Method method = testClass.getDeclaredMethod(req.getMethod());
-
-            List<Object> args = Arrays.asList(req.getArgs().toArray());
-            Context context = new Context(stub);
-            final Object value = method.invoke(newObj, req.getArgs().toArray());
-            logger.info("value:" + value );
-            args.add(0, context); // force context into 1st position, other elements move up
-
-
-            if (value == null) {
-                response = ResponseUtils.newSuccessResponse();
-            } else {
-                response = ResponseUtils.newSuccessResponse();
-            }
-
-        } catch (IllegalAccessException | InstantiationException | NoSuchMethodException e) {
-            final String message = String.format("Could not execute contract method: ");
-            throw new ContractRuntimeException(message, e);
-        } catch (final InvocationTargetException | ClassNotFoundException e) {
-            final Throwable cause = e.getCause();
-
-            if (cause instanceof ChaincodeException) {
-                throw (ChaincodeException) cause;
-            } else {
-                throw new ContractRuntimeException("Error during contract method execution", cause);
-            }
-        }
-
-        return response;
-    }
 
     @Override
     public Response invoke(final ChaincodeStub stub) {
