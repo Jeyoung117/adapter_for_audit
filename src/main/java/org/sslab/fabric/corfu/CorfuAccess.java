@@ -15,6 +15,7 @@ import org.corfudb.runtime.view.AddressSpaceView;
 import org.corfudb.runtime.view.StreamsView;
 import org.corfudb.runtime.view.stream.IStreamView;
 //import org.hyperledger.fabric.protos.corfu.CorfuChaincodeShim;
+import org.hyperledger.fabric.protos.common.Common;
 import org.hyperledger.fabric.protos.ledger.rwset.kvrwset.KvRwset;
 import org.hyperledger.fabric.protos.peer.ProposalPackage;
 import org.hyperledger.fabric.protos.peer.ProposalResponsePackage;
@@ -137,19 +138,18 @@ public class CorfuAccess {
         System.out.println("[corfu-access-interface] {putState} success");
     }
 
-    public void issueSnapshotToken() {
+    public Token issueSnapshotToken() {
         runtime.getObjectsView().TXBegin();
+        Token snapshotTimestamp = TransactionalContext.getCurrentContext().getSnapshotTimestamp();
         System.out.println("[corfu-access-interface] {issueSnapshotToken} success");
+
+        return snapshotTimestamp;
     }
 
-    public void commitTransaction(ProposalPackage.SignedProposal signedProposal, ProposalResponsePackage.ProposalResponse proposalResponse) {
-        UUID streamID = runtime.getStreamID("mychannel" + "fabcar"); //추후 실제 channel ID로 변
-        System.out.println("UUID: " + streamID);
-
-
+    public void commitTransaction(Common.Envelope envelope) {
         OptimisticTransactionalContext transactionalContext = (OptimisticTransactionalContext) TransactionalContext.getCurrentContext();
-        transactionalContext.setTxMetadata(proposalResponse.toByteArray());
-        transactionalContext.setFabricProposal(signedProposal.toByteArray());
+        transactionalContext.setTxMetadata(envelope.toByteArray());
+//        transactionalContext.setFabricProposal(signedProposal.toByteArray());
         System.out.println("getTxMetadata();: " + transactionalContext.getTxMetadata());
         System.out.println("getFabricProposal();: " + transactionalContext.getFabricProposal());
         long appended_add = runtime.getObjectsView().TXEnd();

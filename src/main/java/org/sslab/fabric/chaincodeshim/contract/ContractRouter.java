@@ -102,7 +102,7 @@ public class ContractRouter extends ChaincodeBase {
     private Response processRequest(final ChaincodeStub stub) {
         logger.info(() -> "Got invoke routing request");
         try {
-            if (stub.getStringArgs().size() > 0) {
+            if (stub.getChaincdeArgs().size() > 0) {
                 logger.info(() -> "Got the invoke request for:" + stub.getFunction() + " " + stub.getParameters());
                 final InvocationRequest request = ExecutionFactory.getInstance().createRequest(stub);
                 final TxFunction txFn = getRouting(request);

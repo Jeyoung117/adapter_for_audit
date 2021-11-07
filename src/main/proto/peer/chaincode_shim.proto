@@ -11,6 +11,7 @@ package protos;
 
 import "peer/chaincode_event.proto";
 import "peer/proposal.proto";
+import "corfu/bsp_transaction.proto";
 import "google/protobuf/timestamp.proto";
 
 message ChaincodeMessage {

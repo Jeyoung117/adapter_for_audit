@@ -5,6 +5,7 @@
  */
 package org.sslab.fabric.chaincodeshim.shim;
 
+import bsp_transaction.BspTransactionOuterClass;
 import org.sslab.fabric.chaincodeshim.Logger;
 
 import static org.sslab.fabric.chaincodeshim.shim.Chaincode.Response.Status.INTERNAL_SERVER_ERROR;

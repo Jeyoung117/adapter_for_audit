@@ -11,21 +11,18 @@ public class TransactionParams {
     public String namespaceID;
     public String clientID;
     public BspTransactionOuterClass.Proposal signedProp;
-//    public ProposalPackage.Proposal proposal;
-    public byte[] proposalHash;
+    public BspTransactionOuterClass.ProposalPayload propPayload;
     List<String> chaincodeArgs;
-//    HistoryQueryExecutor ledger.HistoryQueryExecutor
-//    CollectionStore      privdata.CollectionStore
     boolean isInitTransaction;
 
 
 
-    public TransactionParams(String txID, String namespaceID, BspTransactionOuterClass.Proposal signedProp, List<String> chaincodeArgs) {
+    public TransactionParams(String txID, String namespaceID, BspTransactionOuterClass.Proposal signedProp, BspTransactionOuterClass.ProposalPayload propPayload, List<String> chaincodeArgs) {
         this.txID = txID;
 //        this.channelID = channelID;
         this.namespaceID = namespaceID;
         this.chaincodeArgs = chaincodeArgs;
-//        this.proposal = proposal;
+        this.propPayload = propPayload;
         this.signedProp = signedProp;
 //        this.proposalHash = proposalHash;
     }

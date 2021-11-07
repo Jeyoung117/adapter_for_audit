@@ -26,7 +26,7 @@ public class ContractInvocationRequest implements InvocationRequest {
      * @param context
      */
     public ContractInvocationRequest(final ChaincodeStub context) {
-        final String func = context.getStringArgs().size() > 0 ? context.getStringArgs().get(0) : null;
+        final String func = context.getChaincdeArgs().size() > 0 ? context.getChaincdeArgs().get(0) : null;
         logger.info(new StringBuilder().append("in ContractInvocationRequest func is ").append(func).toString());
 //        logger.fine(() -> "Namespace is " + request.getNamespace());
         final String[] funcParts = func.split(":");

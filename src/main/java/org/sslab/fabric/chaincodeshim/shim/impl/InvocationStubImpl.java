@@ -61,6 +61,7 @@ public class InvocationStubImpl implements ChaincodeStub {
     private final String txId;
     private ChaincodeInvocationTask handler;
     private List<ByteString> args;
+    private List<String> chaincdeArgs;
     private SignedProposal signedProposal;
     private BspTransactionOuterClass.Proposal signedProposalforBSP;
     private Instant txTimestamp;
@@ -121,26 +122,26 @@ public class InvocationStubImpl implements ChaincodeStub {
 //     * @param handler
      * @throws InvalidProtocolBufferException
      */
-    public InvocationStubImpl(final ChaincodeMessage message, CorfuAccess corfu_access, BspTransactionOuterClass.Proposal signedProposal)
+    public InvocationStubImpl(final ChaincodeMessage message, CorfuAccess corfu_access)
             throws InvalidProtocolBufferException {
         this.channelId = message.getChannelId();
         this.txId = message.getTxid();
 //        this.handler = handler;
         this.chaincodeId = message.getChaincodeId();
         this.corfu_access = corfu_access;
-        this.args = Collections.unmodifiableList(input.getArgsList());
+
+        BspTransactionOuterClass.Proposal signedProposal = BspTransactionOuterClass.Proposal.parseFrom(message.getPayload());
+        BspTransactionOuterClass.ProposalPayload propPayload = BspTransactionOuterClass.ProposalPayload.parseFrom(signedProposal.getPayload());
+        this.chaincdeArgs = propPayload.getChaincodeArgsList();
         this.signedProposalforBSP = signedProposal;
-        if (this.signedProposal == null || this.signedProposal.getProposalBytes().isEmpty()) {
+        if (this.signedProposalforBSP == null) {
             this.creator = null;
             this.txTimestamp = null;
             this.transientMap = Collections.emptyMap();
             this.binding = null;
         } else {
             try {
-                BspTransactionOuterClass.ProposalPayload prpPayload = BspTransactionOuterClass.ProposalPayload.parseFrom(signedProposal.getPayload());
-                final List<String> input = prpPayload.getChaincodeArgsList();
                 final BspTransactionOuterClass.SignatureHeader signatureHeader = BspTransactionOuterClass.SignatureHeader.parseFrom(signedProposal.getSignatureHeader());
-
                 this.creator = signatureHeader.getCreator();
             } catch (InvalidProtocolBufferException e) {
                 throw new RuntimeException(e);
@@ -191,22 +192,26 @@ public class InvocationStubImpl implements ChaincodeStub {
 
     @Override
     public List<byte[]> getArgs() {
-        return args.stream().map(x -> x.toByteArray()).collect(Collectors.toList());
+        return chaincdeArgs.stream().map(x -> x.getBytes(UTF_8)).collect(Collectors.toList());
     }
 
     @Override
     public List<String> getStringArgs() {
         return args.stream().map(x -> x.toStringUtf8()).collect(Collectors.toList());
     }
+    @Override
+    public List<String> getChaincdeArgs() {
+        return chaincdeArgs;
+    }
 
     @Override
     public String getFunction() {
-        return getStringArgs().size() > 0 ? getStringArgs().get(0) : null;
+        return getChaincdeArgs().size() > 0 ? getChaincdeArgs().get(0) : null;
     }
 
     @Override
     public List<String> getParameters() {
-        return getStringArgs().stream().skip(1).collect(toList());
+        return getChaincdeArgs().stream().skip(1).collect(toList());
     }
 
     @Override

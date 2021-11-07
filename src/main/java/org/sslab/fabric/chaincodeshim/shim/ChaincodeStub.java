@@ -40,6 +40,9 @@ public interface ChaincodeStub {
      */
     List<String> getStringArgs();
 
+    List<String> getChaincdeArgs();
+
+
     /**
      * A convenience method that returns the first argument of the chaincode
      * invocation for use as a function name.
