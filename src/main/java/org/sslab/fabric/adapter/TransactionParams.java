@@ -8,7 +8,7 @@ import java.util.List;
 public class TransactionParams {
     public String txID;
     public String channelID;
-    public String namespaceID;
+    public String chaincodeID;
     public String clientID;
     public BspTransactionOuterClass.Proposal signedProp;
     public BspTransactionOuterClass.ProposalPayload propPayload;
@@ -17,13 +17,12 @@ public class TransactionParams {
 
 
 
-    public TransactionParams(String txID, String namespaceID, BspTransactionOuterClass.Proposal signedProp, BspTransactionOuterClass.ProposalPayload propPayload, List<String> chaincodeArgs) {
+    public TransactionParams(String txID, String chaincodeID, BspTransactionOuterClass.Proposal signedProp, BspTransactionOuterClass.ProposalPayload propPayload, List<String> chaincodeArgs, String channelID) {
         this.txID = txID;
-//        this.channelID = channelID;
-        this.namespaceID = namespaceID;
+        this.chaincodeID = chaincodeID;
         this.chaincodeArgs = chaincodeArgs;
         this.propPayload = propPayload;
         this.signedProp = signedProp;
-//        this.proposalHash = proposalHash;
+        this.channelID = channelID;
     }
 }

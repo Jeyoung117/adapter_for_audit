@@ -7,6 +7,7 @@ package org.sslab.fabric.chaincodeshim.shim;
 
 import bsp_transaction.BspTransactionOuterClass;
 import org.sslab.fabric.chaincodeshim.Logger;
+import org.sslab.fabric.corfu.Rwset_builder;
 
 import static org.sslab.fabric.chaincodeshim.shim.Chaincode.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.sslab.fabric.chaincodeshim.shim.Chaincode.Response.Status.SUCCESS;
@@ -25,6 +26,14 @@ public final class ResponseUtils {
      */
     public static Chaincode.Response newSuccessResponse(final String message, final byte[] payload) {
         return new Chaincode.Response(SUCCESS, message, payload);
+    }
+
+    public static Chaincode.Response newSuccessResponseforBSP(final String message, final byte[] payload, Rwset_builder rwset) {
+        return new Chaincode.Response(SUCCESS, message, payload, rwset);
+    }
+
+    public static Chaincode.Response newSuccessResponseforBSP(Rwset_builder rwset) {
+        return newSuccessResponseforBSP(null, null, rwset);
     }
 
     /**
@@ -48,6 +57,14 @@ public final class ResponseUtils {
      */
     public static Chaincode.Response newSuccessResponse(final byte[] payload) {
         return newSuccessResponse(null, payload);
+    }
+
+    /**
+     * @param payload
+     * @return Chaincode.Response
+     */
+    public static Chaincode.Response newSuccessResponseforBSP(final byte[] payload, Rwset_builder rwset) {
+        return newSuccessResponseforBSP(null, payload, rwset);
     }
 
     /**

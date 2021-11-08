@@ -13,11 +13,13 @@ import org.corfudb.runtime.view.stream.IStreamView;
 import org.hyperledger.fabric.protos.common.Common;
 
 import org.hyperledger.fabric.protos.peer.*;
+import org.sslab.fabric.chaincode_support.ChaincodeSupport;
 import org.sslab.fabric.chaincodeshim.contract.ContractRouter;
 import org.sslab.fabric.chaincodeshim.shim.ChaincodeStub;
 import org.sslab.fabric.chaincodeshim.shim.impl.ChaincodeMessageFactory;
 import org.sslab.fabric.chaincodeshim.shim.impl.InvocationStubImpl;
 import org.sslab.fabric.corfu.CorfuAccess;
+import org.sslab.fabric.corfu.Rwset_builder;
 import org.sslab.fabric.dtype.dtype;
 import org.sslab.fabric.protoutil.TxUtils;
 
@@ -31,7 +33,6 @@ import java.util.logging.Logger;
 import static org.hyperledger.fabric.protos.common.Common.HeaderType.ENDORSER_TRANSACTION;
 import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.COMPLETED;
 import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.ERROR;
-import static org.sslab.fabric.dtype.dtype.TxType.BSPSentinelValue_BSPTX;
 import static org.sslab.fabric.protoutil.Proputils.toProtoResponse;
 //
 
@@ -71,45 +72,56 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
     public void processProposal(BspTransactionOuterClass.Proposal proposal, StreamObserver<BspTransactionOuterClass.SubmitResponse> responseObserver) {
 //        UnpackedProposal up =  unpackProposal(proposal);
         BspTransactionOuterClass.ProposalPayload propPayload = BspTransactionOuterClass.ProposalPayload.parseFrom(proposal.getPayload());
+        if(proposal == null) {
+            BspTransactionOuterClass.SubmitResponse res = BspTransactionOuterClass.SubmitResponse.newBuilder()
+                    .setStatus(500)
+                    .setMessage("proposal is null")
+                    .build();
+            responseObserver.onNext(res);
+            responseObserver.onCompleted();
+        }
 
-        System.out.println(propPayload.getTxId());
-        System.out.println(propPayload.getChaincodeId());
-        System.out.println(propPayload.getClientId());
-        System.out.println(propPayload.getChaincodeArgs(0));
+        if(propPayload == null) {
+            BspTransactionOuterClass.SubmitResponse res = BspTransactionOuterClass.SubmitResponse.newBuilder()
+                    .setStatus(500)
+                    .setMessage("propPayload is null")
+                    .build();
+            responseObserver.onNext(res);
+            responseObserver.onCompleted();
+        }
 
-//        try {
-        BspTransactionOuterClass.SubmitResponse res = processProposalSuccessfullyOrError(proposal);
+        //debugging용 출력, propPayload contents 확인용
+        logger.info(String.format("Receive Tx from Client %s transaction %s", propPayload.getClientId(), propPayload.getTxId()));
+
+
+        BspTransactionOuterClass.SubmitResponse res = processProposalSuccessfullyOrError(proposal, propPayload);
 
             responseObserver.onNext(res);
             responseObserver.onCompleted();
-//
-//        } catch (InvalidProtocolBufferException e) {
-//            e.printStackTrace();
-//        }
     }
 
-    public BspTransactionOuterClass.SubmitResponse processProposalSuccessfullyOrError(BspTransactionOuterClass.Proposal signedProposal) throws InvalidProtocolBufferException {
-        BspTransactionOuterClass.ProposalPayload propPayload = BspTransactionOuterClass.ProposalPayload.parseFrom(signedProposal.getPayload());
+    public BspTransactionOuterClass.SubmitResponse processProposalSuccessfullyOrError(BspTransactionOuterClass.Proposal signedProposal, BspTransactionOuterClass.ProposalPayload propPayload) throws InvalidProtocolBufferException {
 
         TransactionParams txParams =  new TransactionParams(
                 propPayload.getTxId(),
                 propPayload.getChaincodeId(),
                 signedProposal,
                 propPayload,
-                propPayload.getChaincodeArgsList()
+                propPayload.getChaincodeArgsList(),
+                "mychannel"
                 );
 
-        BspTransactionOuterClass.SubmitResponse res = executeProposal(txParams, propPayload.getChaincodeId(), txParams.chaincodeArgs);
+        BspTransactionOuterClass.SubmitResponse res = executeProposal(txParams, propPayload.getChaincodeId());
 
         return res;
     }
 
-    public BspTransactionOuterClass.SubmitResponse executeProposal(TransactionParams txParams, String chaincodeName, List<String> chaincodeArgs) throws InvalidProtocolBufferException {
+    public BspTransactionOuterClass.SubmitResponse executeProposal(TransactionParams txParams, String chaincodeName) throws InvalidProtocolBufferException {
 
         //fabric chaincode_support.go 의 execute 에서의 선언 copy
         ChaincodeShim.ChaincodeMessage ccMsg = ChaincodeShim.ChaincodeMessage.newBuilder()
                 .setType(ChaincodeShim.ChaincodeMessage.Type.TRANSACTION)
-                .setChaincodeId(txParams.namespaceID)
+                .setChaincodeId(txParams.chaincodeID)
                 .setTxid(txParams.txID)
                 .setPayload(txParams.signedProp.toByteString())
                 .build();
@@ -121,35 +133,42 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
 
     public BspTransactionOuterClass.SubmitResponse callChaincode(TransactionParams txParams, String chaincodeName, ChaincodeShim.ChaincodeMessage ccMsg) throws InvalidProtocolBufferException {
         Token snapshotTimestamp = corfu_access.issueSnapshotToken();
+        ChaincodeSupport chaincodeSupport = new ChaincodeSupport();
+        long seq = snapshotTimestamp.getSequence();
+        ChaincodeStub stub = new InvocationStubImpl(ccMsg, corfu_access, seq);
 
-        //InvocationTaskManager를 통해 chaincode routing
-//        ChaincodeInvocationTask invocationTask = new ChaincodeInvocationTask(ccMsg, ChaincodeShim.ChaincodeMessage.Type.TRANSACTION, cfc);
-        ChaincodeStub stub = new InvocationStubImpl(ccMsg, corfu_access);
-        org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp  = cfc.invoke(stub);
+        org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp =  chaincodeSupport.Execute(txParams, chaincodeName, stub, cfc);
 
         if(ccresp.getStatus() != org.sslab.fabric.chaincodeshim.shim.Chaincode.Response.Status.SUCCESS) {
-
-
+            //chaincode execution fail error
         }
-        long seq = snapshotTimestamp.getSequence();
+        Rwset_builder rwset = ccresp.getRwset();
+        //writeset이 null 즉, query 일 시 바로 return
+        if(ccresp.getRwset().getWriteSet().isEmpty()) {
+            BspTransactionOuterClass.SubmitResponse res = toProtoResponse(ccresp);
+            return res;
+        }
         BspTransactionOuterClass.BspTransactionType txLocalityType = BspTransactionOuterClass.BspTransactionType.IntraTx;
-//            BspTransactionOuterClass.Version version = BspTransactionOuterClass.Version.newBuilder()
-//                    .setBlockNumber(snapshotTimestamp.getSequence())
-//                    .setTxOffset(0)
-//                    .build();
+            BspTransactionOuterClass.Version version = BspTransactionOuterClass.Version.newBuilder()
+                    .setBlockNumber(snapshotTimestamp.getSequence())  //문제되면 couter로 변경
+                    .setTxOffset(0)
+                    .build();
+
         String regionID = "edgechain0";
-        ByteString bspTxBytes = buildBspTX(txLocalityType, txParams.signedProp, txParams.propPayload, seq, regionID, "mychannel"); //chainID 추후 채널 config 통해 수정 필요
+        ByteString bspTxBytes = buildBspTX(txLocalityType, txParams.signedProp, txParams.propPayload, seq, regionID, "mychannel", rwset); //chainID 추후 채널 config 통해 수정 필요
 
         Common.Envelope env = createEnvFromBSPType(55555, seq, txParams.txID, "mychannel", bspTxBytes);
 
         ByteString txEventBytes = buildTxEvent(txParams.propPayload, seq);
-        BspTransactionOuterClass.ProposalResponse resp = BspTransactionOuterClass.ProposalResponse.newBuilder()
-                .setPayload(txEventBytes)
-                .setSignature(txParams.signedProp.getSignature())
-                .setSignatureHeader(txParams.signedProp.getSignatureHeader())
-                .build();
 
+        //bsp에서는 client에게 proposal response를 return 나는 response
+//        BspTransactionOuterClass.ProposalResponse resp = BspTransactionOuterClass.ProposalResponse.newBuilder()
+//                .setPayload(txEventBytes)
+//                .setSignature(txParams.signedProp.getSignature())
+//                .setSignatureHeader(txParams.signedProp.getSignatureHeader())
+//                .build();
 
+        //response에서 받은 값 확인
         byte[] tesmp = ccresp.getPayload();
         String tesmp1 = new String(tesmp);
         Object result = genson.deserialize(tesmp1, Object.class);
@@ -163,35 +182,22 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
         */
 
         BspTransactionOuterClass.SubmitResponse res = toProtoResponse(ccresp);
-//        processChaincodeExecutionResult(txParams.namespaceID, txParams.txID, ccMessage);
-//        ByteString prpBytes = getBytesProposalResponsePayload(txParams.proposalHash, res, cceventBytes, cceventBytes, ccID);
-        System.out.println("getChaincodeEvent:" + ccMessage.getChaincodeEvent());
-
-        System.out.println("전달받은 channelID: " + txParams.channelID);
-        System.out.println("전달받은 chaincodeName: " + chaincodeName);
-
-//        ProposalResponsePackage.ProposalResponse pResp = ProposalResponsePackage.ProposalResponse
-//                .newBuilder()
-//                .setVersion(1)
-//                .setPayload(prpBytes)
-//                .setResponse(res)
-//                .build();
-        corfu_access.commitTransaction(env); //signed proposal 넣어주는 게 맞나?
+        corfu_access.commitTransaction(env); //
 
         return res;
     }
 
-    public ByteString buildBspTX(BspTransactionOuterClass.BspTransactionType txLocalityType, BspTransactionOuterClass.Proposal prop, BspTransactionOuterClass.ProposalPayload propPayload, long seq, String regionID, String chainID) {
+    public ByteString buildBspTX(BspTransactionOuterClass.BspTransactionType txLocalityType, BspTransactionOuterClass.Proposal prop, BspTransactionOuterClass.ProposalPayload propPayload, long seq, String regionID, String chainID, Rwset_builder rwset) {
         ByteString clientProposal = prop.toByteString();
         BspTransactionOuterClass.TxInput input = BspTransactionOuterClass.TxInput.newBuilder()
                 .setChaincodeId(propPayload.getChaincodeId())
                 .setChaincodeVersion("v1.0")
                 .addAllChaincodeArgs(propPayload.getChaincodeArgsList())
-                .addAllReads()
+                .addAllReads(rwset.getReadSet())
                 .build();
 
         BspTransactionOuterClass.TxOutput output = BspTransactionOuterClass.TxOutput.newBuilder()
-                .addAllWrites()
+                .addAllWrites(rwset.getWriteSet())
                 .build();
 
         BspTransactionOuterClass.BspTransaction bspTx = BspTransactionOuterClass.BspTransaction.newBuilder()
@@ -232,27 +238,18 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
         return txEventBytes;
     }
 
-    public Common.Envelope persist(int msgType, long seq, String TxID, String ChainID, ByteString payload ) {
-
-        Common.Envelope env = createEnvFromBSPType(msgType, seq, TxID, ChainID, payload);
-
-        return env;
-    }
-
     public Common.Envelope createEnvFromBSPType(int msgType, long seq, String TxID, String ChainID, ByteString payload) {
         TxUtils txUtils = new TxUtils();
         TransactionPackage.Transaction dataMsg = getPayloadInsideTransaction(payload);
-        Common.Envelope env = txUtils.CreateSignedEnvelopeWithTLSBindingWithTxID(ENDORSER_TRANSACTION, ChainID, signer, dataMsg, msgType, seq, null, TxID)
+        Common.Envelope env = txUtils.CreateSignedEnvelopeWithTLSBindingWithTxID(ENDORSER_TRANSACTION, ChainID, signer, dataMsg, msgType, seq, null, TxID);
 
         return env;
     }
+
     public TransactionPackage.Transaction getPayloadInsideTransaction(ByteString bspTxBytes) {
         TransactionPackage.TransactionAction act = TransactionPackage.TransactionAction.newBuilder()
                 .setPayload(bspTxBytes)
                 .build();
-
-//        ArrayList<TransactionPackage.TransactionAction> acts = new ArrayList();
-//        acts.add(act);
 
         TransactionPackage.Transaction transaction = TransactionPackage.Transaction.newBuilder()
                 .setActions(0, act)
@@ -312,107 +309,6 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
         ByteString prpBytes = prp.toByteString();
         return prpBytes;
     }
-
-
-//    @SneakyThrows
-//    public UnpackedProposal unpackProposal(BspTransactionOuterClass.Proposal signedProposal) {
-//        BspTransactionOuterClass.ProposalPayload propPayload;
-//
-//
-//
-//
-//        ProposalPackage.Proposal proposal;
-//        Common.Header header;
-//        Common.ChannelHeader channelHeader;
-//        Common.SignatureHeader signatureHeader;
-//        ProposalPackage.ChaincodeHeaderExtension chaincodeHdrExt;
-//        ProposalPackage.ChaincodeProposalPayload payload;
-//        Chaincode.ChaincodeInvocationSpec chaincodeInvocationSpec;
-//        ProposalPackage.ChaincodeProposalPayload cpp;
-////        byte[] sp = signedProposal.getProposalBytes().toByteArray();
-//        propPayload = BspTransactionOuterClass.ProposalPayload.parseFrom(signedProposal.getPayload());
-//        propPayload.get
-//        header = Common.Header.parseFrom(proposal.getHeader());
-//        channelHeader = Common.ChannelHeader.parseFrom(header.getChannelHeader());
-//        signatureHeader = Common.SignatureHeader.parseFrom(header.getSignatureHeader());
-//        chaincodeHdrExt = ProposalPackage.ChaincodeHeaderExtension.parseFrom(channelHeader.getExtension());
-//        payload = ProposalPackage.ChaincodeProposalPayload.parseFrom(proposal.getPayload());
-//        chaincodeInvocationSpec = Chaincode.ChaincodeInvocationSpec.parseFrom(payload.getInput());
-//        cpp =  ProposalPackage.ChaincodeProposalPayload.parseFrom(proposal.getPayload());
-//        ProposalPackage.ChaincodeProposalPayload cppNoTransient =  ProposalPackage.ChaincodeProposalPayload.newBuilder()
-//                .setInput(cpp.getInput())
-//                .build();
-//        byte[] ppBytes = cppNoTransient.toByteArray();
-//
-//        // The proposal hash is the hash of the concatenation of:
-//        // 1) The serialized Channel Header object
-//        // 2) The serialized Signature Header object
-//        // 3) The hash of the part of the chaincode proposal payload that will go to the tx
-//        // (ie, the parts without the transient data)
-//        MessageDigest propHash = MessageDigest.getInstance("SHA-256");
-//        byte[] total = new byte[header.getChannelHeader().toByteArray().length + header.getSignatureHeader().toByteArray().length + ppBytes.length];
-//        System.arraycopy(header.getChannelHeader().toByteArray(),0,total,0,header.getChannelHeader().toByteArray().length);
-//        System.arraycopy(header.getSignatureHeader().toByteArray(),0,total, header.getChannelHeader().toByteArray().length, header.getSignatureHeader().toByteArray().length);
-//        System.arraycopy(ppBytes,0, total, header.getSignatureHeader().toByteArray().length, ppBytes.length);
-//
-////        propHash.update(total);
-////        propHash.update(header.getSignatureHeader().toByteArray());
-////        propHash.update(ppBytes);
-//
-//        UnpackedProposal unpackedProposal = new UnpackedProposal(chaincodeHdrExt.getChaincodeId().getName(), channelHeader,
-//                chaincodeInvocationSpec.getChaincodeSpec().getInput(),
-//                proposal, signatureHeader, signedProposal, propHash.digest(total));
-//
-//        return unpackedProposal;
-//    }
-
-//    public UnpackedProposal createProposalResponse(ProposalResponsePackage.Response ccresp, ) {
-
-//    @SneakyThrows
-//    public UnpackedProposal unpackProposal(ProposalPackage.SignedProposal signedProposal) {
-//        ProposalPackage.Proposal proposal;
-//        Common.Header header;
-//        Common.ChannelHeader channelHeader;
-//        Common.SignatureHeader signatureHeader;
-//        ProposalPackage.ChaincodeHeaderExtension chaincodeHdrExt;
-//        ProposalPackage.ChaincodeProposalPayload payload;
-//        Chaincode.ChaincodeInvocationSpec chaincodeInvocationSpec;
-//        ProposalPackage.ChaincodeProposalPayload cpp;
-////        byte[] sp = signedProposal.getProposalBytes().toByteArray();
-//        proposal = ProposalPackage.Proposal.parseFrom(signedProposal.getProposalBytes());
-//        header = Common.Header.parseFrom(proposal.getHeader());
-//        channelHeader = Common.ChannelHeader.parseFrom(header.getChannelHeader());
-//        signatureHeader = Common.SignatureHeader.parseFrom(header.getSignatureHeader());
-//        chaincodeHdrExt = ProposalPackage.ChaincodeHeaderExtension.parseFrom(channelHeader.getExtension());
-//        payload = ProposalPackage.ChaincodeProposalPayload.parseFrom(proposal.getPayload());
-//        chaincodeInvocationSpec = Chaincode.ChaincodeInvocationSpec.parseFrom(payload.getInput());
-//        cpp =  ProposalPackage.ChaincodeProposalPayload.parseFrom(proposal.getPayload());
-//        ProposalPackage.ChaincodeProposalPayload cppNoTransient =  ProposalPackage.ChaincodeProposalPayload.newBuilder()
-//                .setInput(cpp.getInput())
-//                .build();
-//        byte[] ppBytes = cppNoTransient.toByteArray();
-//
-//        // The proposal hash is the hash of the concatenation of:
-//        // 1) The serialized Channel Header object
-//        // 2) The serialized Signature Header object
-//        // 3) The hash of the part of the chaincode proposal payload that will go to the tx
-//        // (ie, the parts without the transient data)
-//        MessageDigest propHash = MessageDigest.getInstance("SHA-256");
-//        byte[] total = new byte[header.getChannelHeader().toByteArray().length + header.getSignatureHeader().toByteArray().length + ppBytes.length];
-//        System.arraycopy(header.getChannelHeader().toByteArray(),0,total,0,header.getChannelHeader().toByteArray().length);
-//        System.arraycopy(header.getSignatureHeader().toByteArray(),0,total, header.getChannelHeader().toByteArray().length, header.getSignatureHeader().toByteArray().length);
-//        System.arraycopy(ppBytes,0, total, header.getSignatureHeader().toByteArray().length, ppBytes.length);
-//
-////        propHash.update(total);
-////        propHash.update(header.getSignatureHeader().toByteArray());
-////        propHash.update(ppBytes);
-//
-//        UnpackedProposal unpackedProposal = new UnpackedProposal(chaincodeHdrExt.getChaincodeId().getName(), channelHeader,
-//                chaincodeInvocationSpec.getChaincodeSpec().getInput(),
-//                proposal, signatureHeader, signedProposal, propHash.digest(total));
-//
-//        return unpackedProposal;
-//    }
 }
 
 

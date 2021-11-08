@@ -10,6 +10,7 @@ import bsp_transaction.BspTransactionOuterClass;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Timestamp;
+import org.corfudb.protocols.wireprotocol.Token;
 import org.hyperledger.fabric.protos.common.Common.ChannelHeader;
 import org.hyperledger.fabric.protos.common.Common.Header;
 import org.hyperledger.fabric.protos.common.Common.HeaderType;
@@ -32,6 +33,7 @@ import org.sslab.fabric.corfu.CorfuAccess;
 import org.sslab.fabric.chaincodeshim.shim.Chaincode.Response;
 import org.sslab.fabric.chaincodeshim.shim.ChaincodeStub;
 import org.sslab.fabric.chaincodeshim.shim.ledger.*;
+import org.sslab.fabric.corfu.Rwset_builder;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -72,7 +74,8 @@ public class InvocationStubImpl implements ChaincodeStub {
     private ChaincodeEvent event;
     private String chaincodeId;
     CorfuAccess corfu_access;
-
+    long sequence;
+    Rwset_builder rwset = new Rwset_builder();
 
     /**
      *
@@ -122,14 +125,14 @@ public class InvocationStubImpl implements ChaincodeStub {
 //     * @param handler
      * @throws InvalidProtocolBufferException
      */
-    public InvocationStubImpl(final ChaincodeMessage message, CorfuAccess corfu_access)
+    public InvocationStubImpl(final ChaincodeMessage message, CorfuAccess corfu_access, long sequence)
             throws InvalidProtocolBufferException {
         this.channelId = message.getChannelId();
         this.txId = message.getTxid();
 //        this.handler = handler;
         this.chaincodeId = message.getChaincodeId();
         this.corfu_access = corfu_access;
-
+        this.sequence = sequence;
         BspTransactionOuterClass.Proposal signedProposal = BspTransactionOuterClass.Proposal.parseFrom(message.getPayload());
         BspTransactionOuterClass.ProposalPayload propPayload = BspTransactionOuterClass.ProposalPayload.parseFrom(signedProposal.getPayload());
         this.chaincdeArgs = propPayload.getChaincodeArgsList();
@@ -196,6 +199,11 @@ public class InvocationStubImpl implements ChaincodeStub {
     }
 
     @Override
+    public Rwset_builder getRWset() {
+        return this.rwset;
+    }
+
+    @Override
     public List<String> getStringArgs() {
         return args.stream().map(x -> x.toStringUtf8()).collect(Collectors.toList());
     }
@@ -249,7 +257,9 @@ public class InvocationStubImpl implements ChaincodeStub {
 
     @Override
     public byte[] getState(final String key) {
-            return corfu_access.getStringState(key, channelId, "fabcar");
+        byte[] value = corfu_access.getStringState(key, channelId, "fabcar");
+        rwset.AddToReadSet(key, value, sequence);
+            return value;
     }
 
     @Override
@@ -278,9 +288,7 @@ public class InvocationStubImpl implements ChaincodeStub {
 
     @Override
     public void putState(final String key, final byte[] value) {
-//        validateKey(key);
-//        this.handler.invoke(
-//                ChaincodeMessageFactory.newPutStateEventMessage(channelId, txId, "", key, ByteString.copyFrom(value)));
+        rwset.AddToWriteSet(key, value, sequence);
         corfu_access.putStringState(key, channelId, "fabcar", value);
     }
 

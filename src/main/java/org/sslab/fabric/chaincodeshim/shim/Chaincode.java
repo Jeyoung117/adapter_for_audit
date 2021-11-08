@@ -6,6 +6,8 @@
 
 package org.sslab.fabric.chaincodeshim.shim;
 
+import org.sslab.fabric.corfu.Rwset_builder;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,11 +46,19 @@ public interface Chaincode {
         private final String message;
         private byte[] payload;
         private String payload1;
+        Rwset_builder rwset;
 
         public Response(final Status status, final String message, final byte[] payload) {
             this.statusCode = status.getCode();
             this.message = message;
             this.payload = payload;
+//            this.rwset = rwset;
+        }
+        public Response(final Status status, final String message, final byte[] payload, Rwset_builder rwset) {
+            this.statusCode = status.getCode();
+            this.message = message;
+            this.payload = payload;
+            this.rwset = rwset;
         }
         public Response(final Status status, final String message, final String payload) {
             this.statusCode = status.getCode();
@@ -60,6 +70,7 @@ public interface Chaincode {
             this.statusCode = statusCode;
             this.message = message;
             this.payload = payload;
+            this.rwset = rwset;
         }
 
         public Status getStatus() {
@@ -76,6 +87,9 @@ public interface Chaincode {
 
         public String getMessage() {
             return message;
+        }
+        public Rwset_builder getRwset() {
+            return rwset;
         }
 
         public byte[] getPayload() {

@@ -67,12 +67,13 @@ public class ContractExecutionService implements ExecutionService {
             contractObject.beforeTransaction(context);
             final Object value = rd.getMethod().invoke(contractObject, args.toArray());
             contractObject.afterTransaction(context, value);
+            System.out.println("rwset 제대로 반환 하나?"  + context.getStub().getRWset());
 
-            String tesmp = genson.serialize(value);
+            String valueString = genson.serialize(value);
             if (value == null) {
-                response = ResponseUtils.newSuccessResponse();
+                response = ResponseUtils.newSuccessResponseforBSP(context.getStub().getRWset());
             } else {
-                response = ResponseUtils.newSuccessResponse(tesmp.getBytes(StandardCharsets.UTF_8));
+                response = ResponseUtils.newSuccessResponseforBSP(valueString.getBytes(StandardCharsets.UTF_8), context.getStub().getRWset());
             }
 
         } catch (IllegalAccessException | InstantiationException | NoSuchMethodException e) {

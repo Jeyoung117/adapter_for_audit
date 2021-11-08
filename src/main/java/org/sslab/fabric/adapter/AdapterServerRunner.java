@@ -36,22 +36,22 @@ public class AdapterServerRunner {
 
         cfc = new ContractRouter(args);
         cfc.findAllContracts();
-        try {
-            enrollAdmin.EnrollAdm();
-            registerUser.RegistAdapterModule();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            enrollAdmin.EnrollAdm();
+//            registerUser.RegistAdapterModule();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
-        Path walletPath = Paths.get("wallet");
-        Wallet wallet = Wallets.newFileSystemWallet(walletPath);
-
-        Path networkConfigPath = Paths.get("..", "..", "test-network", "organizations", "peerOrganizations", "org1.example.com", "connection-org1.yaml");
-
-        Gateway.Builder builder = Gateway.createBuilder();
-        builder.identity(wallet, "Chaincode_Adapter1").networkConfig(networkConfigPath).discovery(true);
-        Gateway gateway = builder.connect();
-        Network network = gateway.getNetwork("mychannel");
+//        Path walletPath = Paths.get("wallet");
+//        Wallet wallet = Wallets.newFileSystemWallet(walletPath);
+//
+//        Path networkConfigPath = Paths.get("..", "..", "test-network", "organizations", "peerOrganizations", "org1.example.com", "connection-org1.yaml");
+//
+//        Gateway.Builder builder = Gateway.createBuilder();
+//        builder.identity(wallet, "Chaincode_Adapter1").networkConfig(networkConfigPath).discovery(true);
+//        Gateway gateway = builder.connect();
+//        Network network = gateway.getNetwork("mychannel");
 
 
         logger.info(cfc.getRoutingRegistry().toString());

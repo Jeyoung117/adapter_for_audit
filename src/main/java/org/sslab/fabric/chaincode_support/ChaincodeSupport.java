@@ -2,26 +2,32 @@ package org.sslab.fabric.chaincode_support;
 
 import org.hyperledger.fabric.protos.peer.Chaincode;
 import org.hyperledger.fabric.protos.peer.ChaincodeShim;
+import org.hyperledger.fabric.sdk.ChaincodeResponse;
 import org.sslab.fabric.adapter.TransactionParams;
 import org.sslab.fabric.chaincodeshim.contract.ContractRouter;
+import org.sslab.fabric.chaincodeshim.shim.ChaincodeStub;
+import org.sslab.fabric.chaincodeshim.shim.impl.InvocationStubImpl;
+import org.sslab.fabric.corfu.Rwset_builder;
 
 import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.INIT;
 
-public class chaincodeSupport {
+public class ChaincodeSupport {
     // Execute invokes chaincode and returns the original response.
-    public void Execute(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) {
-//        ProposalResponsePackage.Response resp =
-                Invoke(txParams, chaincodeName, chaincodeInput);
+    public org.sslab.fabric.chaincodeshim.shim.Chaincode.Response Execute(TransactionParams txParams, String chaincodeName, ChaincodeStub stub, ContractRouter cfc) {
+        org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp = Invoke(txParams, chaincodeName, stub, cfc);
 
-    // processChaincodeExecutionResult(txParams.txID); 추후 추가
-//        return resp; //추후 return 값 변경
+        Rwset_builder rwSet = ccresp.getRwset();
+
+        // processChaincodeExecutionResult(txParams.txID); 추후 추가
+        return ccresp;
     }
 
 
     // invoke will invoke chaincode and return the message containing the response.
     // The chaincode will be launched if it is not already running.
-    public void Invoke(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) {
-        execute("test", INIT, txParams, chaincodeName, chaincodeInput);
+    public org.sslab.fabric.chaincodeshim.shim.Chaincode.Response Invoke(TransactionParams txParams, String chaincodeName, ChaincodeStub stub, ContractRouter cfc) {
+        org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp  = cfc.invoke(stub);
+        return ccresp;
     }
 
     public void processChaincodeExecutionResult(String ccName, String txid, ChaincodeShim.ChaincodeMessage resp) {

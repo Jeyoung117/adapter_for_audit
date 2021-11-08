@@ -10,6 +10,7 @@ import org.hyperledger.fabric.protos.peer.ChaincodeEventPackage.ChaincodeEvent;
 import org.hyperledger.fabric.protos.peer.ProposalPackage.SignedProposal;
 import org.sslab.fabric.chaincodeshim.shim.Chaincode.Response;
 import org.sslab.fabric.chaincodeshim.shim.ledger.*;
+import org.sslab.fabric.corfu.Rwset_builder;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -74,6 +75,16 @@ public interface ChaincodeStub {
      * @return the transaction id
      */
     String getTxId();
+
+    /**
+     * Returns rw-set for the current chaincode invocation request.
+     * <p>
+     * The transaction id uniquely identifies the transaction within the scope of
+     * the channel.
+     *
+     * @return the transaction id
+     */
+    Rwset_builder getRWset();
 
     /**
      * Returns the channel id for the current proposal.
