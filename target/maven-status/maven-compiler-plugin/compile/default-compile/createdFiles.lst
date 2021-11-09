@@ -75,6 +75,7 @@ org/sslab/fabric/corfu/CorfuAccess$2.class
 org/hyperledger/fabric/protos/peer/ChaincodeShim$StateMetadataResult$1.class
 org/sslab/fabric/chaincodeshim/contract/execution/ExecutionService.class
 org/hyperledger/fabric/protos/peer/lifecycle/ChaincodeDefinition$ChaincodeValidationInfo.class
+org/sslab/fabric/protoutil/CommonUtils.class
 org/hyperledger/fabric/protos/msp/MspConfigPackage$FabricOUIdentifier$1.class
 org/hyperledger/fabric/protos/orderer/etcdraft/Metadata$ClusterMetadata$Builder.class
 org/hyperledger/fabric/protos/ledger/rwset/Rwset$TxPvtReadWriteSetOrBuilder.class
@@ -86,6 +87,7 @@ org/hyperledger/fabric/protos/ledger/queryresult/KvQueryResult$1.class
 org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$CheckCommitReadinessArgs$Builder.class
 org/sslab/fabric/chaincodeshim/contract/routing/TxFunction$Routing.class
 bsp_transaction/BspTransactionOuterClass$Policy$1.class
+org/sslab/fabric/protoutil/TxUtils.class
 org/sslab/fabric/adapter/AdapterServerRunner.class
 bsp_transaction/DeploySmartContractGrpc.class
 org/hyperledger/fabric/protos/common/Common$HeaderType$1.class
@@ -184,6 +186,7 @@ org/hyperledger/fabric/protos/gossip/Message$DataUpdate$1.class
 bsp_transaction/BspTransactionOuterClass$HeartbeatTransactionOrBuilder.class
 org/hyperledger/fabric/protos/corfu/CorfuConnectOgGrpc$MethodHandlers.class
 org/hyperledger/fabric/protos/orderer/ClusterGrpc.class
+org/sslab/fabric/chaincode/smallbank/Account.class
 org/hyperledger/fabric/protos/peer/Chaincode$ChaincodeDeploymentSpecOrBuilder.class
 org/hyperledger/fabric/protos/peer/ChaincodeShim$DelState$1.class
 bsp_transaction/BspTransactionOuterClass$PolicyOrBuilder.class
@@ -207,6 +210,7 @@ org/hyperledger/fabric/protos/peer/Resources$ConfigTreeOrBuilder.class
 org/hyperledger/fabric/protos/gossip/Message$PvtDataDigest$Builder.class
 org/hyperledger/fabric/protos/peer/Chaincode$LifecycleEventOrBuilder.class
 org/hyperledger/fabric/protos/orderer/etcdraft/Configuration$ConfigMetadataOrBuilder.class
+org/sslab/fabric/MSP/RegisterUser$1$1.class
 org/hyperledger/fabric/protos/common/MspPrincipal$MSPRole$MSPRoleType$1.class
 bsp_transaction/BspTransactionOuterClass$ProposalBatch.class
 org/hyperledger/fabric/protos/discovery/Protocol$ChaincodeCall$1.class
@@ -323,6 +327,7 @@ bsp_transaction/BspTransactionOuterClass$MigrateRequestPayload$Builder.class
 org/hyperledger/fabric/protos/orderer/Configuration.class
 org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$QueryChaincodeDefinitionsArgsOrBuilder.class
 org/hyperledger/fabric/protos/ledger/rwset/Rwset$NsPvtReadWriteSet$1.class
+org/sslab/fabric/chaincode/smallbank/smallbank$SmallBankErrors.class
 bsp_transaction/BspTransactionOuterClass$InitializeRequest$1.class
 org/hyperledger/fabric/protos/common/Configtx$ConfigGroupSchema$GroupsDefaultEntryHolder.class
 org/hyperledger/fabric/protos/common/Configtx$ConfigEnvelope.class
@@ -464,6 +469,7 @@ org/hyperledger/fabric/protos/orderer/Configuration$1.class
 org/hyperledger/fabric/protos/peer/ChaincodeShim$ChaincodeMessage$Type.class
 org/hyperledger/fabric/protos/peer/ProposalPackage$1.class
 org/hyperledger/fabric/protos/orderer/etcdraft/Metadata$BlockMetadataOrBuilder.class
+org/sslab/fabric/MSP/RegisterUser.class
 org/hyperledger/fabric/protos/gossip/Message$LeadershipMessage$Builder.class
 bsp_transaction/BspTransactionOuterClass$DeliverRequest$1.class
 bsp_transaction/BspTransactionOuterClass$ProposalResponseBatch$1.class
@@ -890,6 +896,7 @@ bsp_transaction/BspTransactionOuterClass$ReadPolicy$Builder.class
 org/hyperledger/fabric/protos/orderer/Kafka$KafkaMessageRegularOrBuilder.class
 bsp_transaction/BspTransactionOuterClass$OrderingMethod$1.class
 org/sslab/fabric/chaincodeshim/shim/impl/InvocationTaskManager$1.class
+org/sslab/fabric/chaincode/smallbank/smallbank.class
 org/hyperledger/fabric/protos/peer/ChaincodeShim$PutStateOrBuilder.class
 org/hyperledger/fabric/protos/idemix/Idemix$ECP2$1.class
 org/hyperledger/fabric/protos/idemix/Idemix$NonRevocationProof$1.class
@@ -1005,6 +1012,7 @@ org/hyperledger/fabric/protos/common/Policies$SignaturePolicyEnvelopeOrBuilder.c
 org/hyperledger/fabric/protos/msp/MspConfigPackage$KeyInfo$1.class
 org/hyperledger/fabric/protos/peer/Collection$CollectionConfig$Builder.class
 org/hyperledger/fabric/protos/peer/Collection$CollectionPolicyConfig$PayloadCase.class
+org/sslab/fabric/MSP/EnrollAdmin.class
 bsp_transaction/BspTransactionOuterClass$WaitForEventResponseOrBuilder.class
 org/hyperledger/fabric/protos/common/Configtx$ConfigEnvelope$1.class
 org/hyperledger/fabric/protos/peer/Chaincode$ChaincodeInvocationSpec$1.class
@@ -1033,6 +1041,7 @@ bsp_transaction/BspTransactionOuterClass$BuildParameterOfIndexBasedOrdering$1.cl
 bsp_transaction/BspTransactionOuterClass$AggregatorResponse$1.class
 org/hyperledger/fabric/protos/common/MspPrincipal$CombinedPrincipal$Builder.class
 org/hyperledger/fabric/protos/common/Configtx$ConfigGroupSchema$ValuesDefaultEntryHolder.class
+org/sslab/fabric/MSP/RegisterUser$1.class
 org/sslab/fabric/chaincodeshim/contract/routing/impl/PropertyDefinitionImpl.class
 org/hyperledger/fabric/protos/peer/ChaincodeSupportGrpc$1.class
 org/hyperledger/fabric/protos/peer/Resources$VSCCArgs$1.class
@@ -1083,6 +1092,7 @@ org/hyperledger/fabric/protos/idemix/Idemix$1.class
 org/hyperledger/fabric/protos/gossip/Message$MembershipResponse$1.class
 org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$QueryInstalledChaincodeResult$Chaincode$Builder.class
 org/hyperledger/fabric/protos/peer/Chaincode$ChaincodeInputOrBuilder.class
+org/sslab/fabric/corfu/Rwset_builder.class
 org/hyperledger/fabric/protos/orderer/Kafka$KafkaMessageConnect$1.class
 org/sslab/fabric/chaincodeshim/contract/routing/impl/TxFunctionImpl.class
 org/hyperledger/fabric/protos/peer/ChaincodeGrpc$ChaincodeFutureStub.class
@@ -1250,10 +1260,12 @@ org/hyperledger/fabric/protos/idemix/Idemix$IssuerKeyOrBuilder.class
 org/hyperledger/fabric/protos/peer/EventsPackage$1.class
 org/hyperledger/fabric/protos/common/Ledger.class
 org/hyperledger/fabric/protos/ledger/queryresult/KvQueryResult$KVOrBuilder.class
+org/sslab/fabric/dtype/dtype.class
 org/hyperledger/fabric/protos/peer/DeliverGrpc$DeliverImplBase.class
 org/hyperledger/fabric/protos/peer/lifecycle/ChaincodeDefinition$ChaincodeValidationInfoOrBuilder.class
 org/hyperledger/fabric/protos/peer/EventsPackage$DeliverResponseOrBuilder.class
 org/hyperledger/fabric/protos/discovery/Protocol$LocalPeerQueryOrBuilder.class
+org/sslab/fabric/chaincode_support/ChaincodeSupport.class
 org/hyperledger/fabric/protos/orderer/Kafka$KafkaMetadata$Builder.class
 org/hyperledger/fabric/protos/peer/Chaincode$ChaincodeSpec$Type$1.class
 org/hyperledger/fabric/protos/ledger/rwset/kvrwset/KvRwset$KVReadHash.class
@@ -1348,7 +1360,6 @@ bsp_transaction/BspTransactionOuterClass$WorkerMessage$Builder.class
 org/hyperledger/fabric/protos/peer/ChaincodeShim$QueryMetadata$Builder.class
 org/hyperledger/fabric/protos/peer/ProposalPackage$ProposalOrBuilder.class
 org/hyperledger/fabric/protos/discovery/DiscoveryGrpc$1.class
-org/sslab/fabric/corfu/rwset_builder.class
 org/hyperledger/fabric/protos/peer/EndorserGrpc$EndorserImplBase.class
 org/hyperledger/fabric/protos/common/Common$BlockData$1.class
 org/hyperledger/fabric/protos/idemix/Idemix$IssuerPublicKey$1.class
@@ -1386,6 +1397,7 @@ org/hyperledger/fabric/protos/common/MspPrincipal$CombinedPrincipalOrBuilder.cla
 org/sslab/fabric/chaincodeshim/contract/routing/impl/ParameterDefinitionImpl.class
 bsp_transaction/CorfuConnectBSPGrpc$CorfuConnectBSPImplBase.class
 org/hyperledger/fabric/protos/peer/ChaincodeShim$PutStateMetadata$Builder.class
+org/sslab/fabric/dtype/dtype$TxType.class
 org/hyperledger/fabric/protos/gossip/Message$GossipMessage$Builder.class
 org/hyperledger/fabric/protos/gossip/Message$RemotePvtDataRequestOrBuilder.class
 bsp_transaction/BspTransactionOuterClass$BspTransaction$Builder.class
@@ -1597,7 +1609,6 @@ org/hyperledger/fabric/protos/gossip/Message$DataMessage$Builder.class
 bsp_transaction/BspTransactionOuterClass$ActiveExecutors.class
 org/hyperledger/fabric/protos/peer/ProposalResponsePackage$ProposalResponsePayloadOrBuilder.class
 org/hyperledger/fabric/protos/ledger/rwset/Rwset.class
-org/sslab/fabric/chaincode_support/chaincodeSupport.class
 bsp_transaction/BspTransactionOuterClass$MCResponse.class
 org/hyperledger/fabric/protos/peer/ProposalPackage.class
 org/hyperledger/fabric/protos/common/MspPrincipal$MSPIdentityAnonymityOrBuilder.class

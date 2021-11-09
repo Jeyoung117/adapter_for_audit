@@ -100,6 +100,34 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
             responseObserver.onCompleted();
     }
 
+//    @Override
+//    public void query(BspTransactionOuterClass.QueryRequest proposal, StreamObserver<BspTransactionOuterClass.QueryResponse> responseObserver) {
+//
+//        List<String> args = new ArrayList<String>();
+//        args.add(proposal.getKey());
+//        TransactionParams txParams =  new TransactionParams(
+//                proposal.getChannelID(),
+//                proposal.getChaincodeID(),
+//                args
+//        );
+//
+//
+//        Token snapshotTimestamp = corfu_access.issueSnapshotToken();
+//        ChaincodeSupport chaincodeSupport = new ChaincodeSupport();
+//        long seq = snapshotTimestamp.getSequence();
+//        ChaincodeStub stub = new InvocationStubImpl(txParams, corfu_access, seq);
+//        org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp =  chaincodeSupport.Execute(txParams, proposal.getChaincodeID(), stub, cfc);
+//        //debugging용 출력, propPayload contents 확인용
+//        logger.info(String.format("Receive Query Tx chaincode %s key %s", proposal.getChaincodeID(), proposal.getKey()));
+//
+//
+//        BspTransactionOuterClass.SubmitResponse res = processProposalSuccessfullyOrError(proposal, propPayload);
+//
+//        responseObserver.onNext(res);
+//        responseObserver.onCompleted();
+//    }
+
+
     public BspTransactionOuterClass.SubmitResponse processProposalSuccessfullyOrError(BspTransactionOuterClass.Proposal signedProposal, BspTransactionOuterClass.ProposalPayload propPayload) throws InvalidProtocolBufferException {
 
         TransactionParams txParams =  new TransactionParams(

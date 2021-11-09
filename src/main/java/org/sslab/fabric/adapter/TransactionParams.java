@@ -12,11 +12,10 @@ public class TransactionParams {
     public String clientID;
     public BspTransactionOuterClass.Proposal signedProp;
     public BspTransactionOuterClass.ProposalPayload propPayload;
-    List<String> chaincodeArgs;
+    public List<String> chaincodeArgs;
     boolean isInitTransaction;
 
-
-
+    //for write transaction
     public TransactionParams(String txID, String chaincodeID, BspTransactionOuterClass.Proposal signedProp, BspTransactionOuterClass.ProposalPayload propPayload, List<String> chaincodeArgs, String channelID) {
         this.txID = txID;
         this.chaincodeID = chaincodeID;
@@ -24,5 +23,12 @@ public class TransactionParams {
         this.propPayload = propPayload;
         this.signedProp = signedProp;
         this.channelID = channelID;
+    }
+
+    //for query transaction
+    public TransactionParams(String channelID, String chaincodeID, List<String> chaincodeArgs) {
+        this.channelID = channelID;
+        this.chaincodeID = chaincodeID;
+        this.chaincodeArgs = chaincodeArgs;
     }
 }
