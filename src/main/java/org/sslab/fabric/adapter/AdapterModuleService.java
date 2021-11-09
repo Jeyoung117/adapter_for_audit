@@ -73,10 +73,34 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
 //        UnpackedProposal up =  unpackProposal(proposal);
         BspTransactionOuterClass.ProposalPayload propPayload = BspTransactionOuterClass.ProposalPayload.parseFrom(proposal.getPayload());
 
+
         BspTransactionOuterClass.SubmitResponse res = processProposalSuccessfullyOrError(proposal, propPayload);
 
-            responseObserver.onNext(res);
-            responseObserver.onCompleted();
+        responseObserver.onNext(res);
+        responseObserver.onCompleted();
+    }
+
+    @SneakyThrows
+    @Override
+    public void processProposalforBench(BspTransactionOuterClass.ProposalforBench proposal, StreamObserver<BspTransactionOuterClass.SubmitResponse> responseObserver) {
+//        UnpackedProposal up =  unpackProposal(proposal);
+//        System.out.println(proposal.getClientId());
+        TransactionParams txParams =  new TransactionParams(
+                proposal.getTxId(),
+                "mychannel",
+                proposal.getChaincodeId(),
+                proposal.getChaincodeArgsList()
+        );
+
+        BspTransactionOuterClass.SubmitResponse res = executeProposal(txParams, proposal.getChaincodeId());
+
+//        BspTransactionOuterClass.SubmitResponse res = BspTransactionOuterClass.SubmitResponse.newBuilder()
+//                        .setMessage("SUCCESS")
+//                        .build();
+
+
+        responseObserver.onNext(res);
+        responseObserver.onCompleted();
     }
 
 //    @Override
@@ -126,11 +150,18 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
     public BspTransactionOuterClass.SubmitResponse executeProposal(TransactionParams txParams, String chaincodeName) throws InvalidProtocolBufferException {
 
         //fabric chaincode_support.go 의 execute 에서의 선언 copy
+//        ChaincodeShim.ChaincodeMessage ccMsg = ChaincodeShim.ChaincodeMessage.newBuilder()
+//                .setType(ChaincodeShim.ChaincodeMessage.Type.TRANSACTION)
+//                .setChaincodeId(txParams.chaincodeID)
+//                .setTxid(txParams.txID)
+//                .setPayload(txParams.signedProp.toByteString())
+//                .build();
+
         ChaincodeShim.ChaincodeMessage ccMsg = ChaincodeShim.ChaincodeMessage.newBuilder()
                 .setType(ChaincodeShim.ChaincodeMessage.Type.TRANSACTION)
                 .setChaincodeId(txParams.chaincodeID)
                 .setTxid(txParams.txID)
-                .setPayload(txParams.signedProp.toByteString())
+//                .setPayload(txParams.signedProp.toByteString())
                 .build();
 
         BspTransactionOuterClass.SubmitResponse res = callChaincode(txParams, chaincodeName, ccMsg);
@@ -142,38 +173,39 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
         Token snapshotTimestamp = corfu_access.issueSnapshotToken();
         ChaincodeSupport chaincodeSupport = new ChaincodeSupport();
         long seq = snapshotTimestamp.getSequence();
-        ChaincodeStub stub = new InvocationStubImpl(ccMsg, corfu_access, seq);
+//        ChaincodeStub stub = new InvocationStubImpl(ccMsg, corfu_access, seq);
+                ChaincodeStub stub = new InvocationStubImpl(txParams, corfu_access, seq);
 
         org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp =  chaincodeSupport.Execute(txParams, chaincodeName, stub, cfc);
 
         Rwset_builder rwset = ccresp.getRwset();
         //writeset이 null 즉, query 일 시 바로 return
-        if(ccresp.getRwset().getWriteSet().isEmpty()) {
+        if(ccresp.getRwset() == null) {
             BspTransactionOuterClass.SubmitResponse res = toProtoResponse(ccresp);
             corfu_access.commitTransaction();
             return res;
         }
-        BspTransactionOuterClass.BspTransactionType txLocalityType = BspTransactionOuterClass.BspTransactionType.IntraTx;
-            BspTransactionOuterClass.Version version = BspTransactionOuterClass.Version.newBuilder()
-                    .setBlockNumber(snapshotTimestamp.getSequence())  //문제되면 couter로 변경
-                    .setTxOffset(0)
-                    .build();
-
-        String regionID = "edgechain0";
-        ByteString bspTxBytes = buildBspTX(txLocalityType, txParams.signedProp, txParams.propPayload, seq, regionID, "mychannel", rwset); //chainID 추후 채널 config 통해 수정 필요
-
-//        Common.Envelope env = createEnvFromBSPType(55555, seq, txParams.txID, "mychannel", bspTxBytes);
-
-        ByteString txEventBytes = buildTxEvent(txParams.propPayload, seq);
+//        BspTransactionOuterClass.BspTransactionType txLocalityType = BspTransactionOuterClass.BspTransactionType.IntraTx;
+//            BspTransactionOuterClass.Version version = BspTransactionOuterClass.Version.newBuilder()
+//                    .setBlockNumber(snapshotTimestamp.getSequence())  //문제되면 couter로 변경
+//                    .setTxOffset(0)
+//                    .build();
+//
+//        String regionID = "edgechain0";
+//        ByteString bspTxBytes = buildBspTX(txLocalityType, txParams.signedProp, txParams.propPayload, seq, regionID, "mychannel", rwset); //chainID 추후 채널 config 통해 수정 필요
+//
+////        Common.Envelope env = createEnvFromBSPType(55555, seq, txParams.txID, "mychannel", bspTxBytes);
+//
+//        ByteString txEventBytes = buildTxEvent(txParams.propPayload, seq);
 
         //response에서 받은 값 확인
-        byte[] tesmp = ccresp.getPayload();
-        String tesmp1 = new String(tesmp);
-        Object result = genson.deserialize(tesmp1, Object.class);
+//        byte[] tesmp = ccresp.getPayload();
+//        String tesmp1 = new String(tesmp);
+//        Object result = genson.deserialize(tesmp1, Object.class);
 //        System.out.println("return value: " + result);
 
-        ChaincodeShim.ChaincodeMessage ccMessage = createCCMSG(ccresp, ccMsg, stub);
-        ByteString cceventBytes = createCCEventBytes(ccMessage.getChaincodeEvent());
+//        ChaincodeShim.ChaincodeMessage ccMessage = createCCMSG(ccresp, ccMsg, stub);
+//        ByteString cceventBytes = createCCEventBytes(ccMessage.getChaincodeEvent());
 
         /*
         체인코드 simulation result 만들어 주는 코딩

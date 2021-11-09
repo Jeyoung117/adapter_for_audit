@@ -47,7 +47,6 @@ public class SerializerRegistryImpl {
      */
     public SerializerInterface getSerializer(final String name, final Serializer.TARGET target) {
         final String key = name + ":" + target;
-        logger.info(String.valueOf(contents));
         return contents.get(key);
     }
 

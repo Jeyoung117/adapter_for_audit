@@ -120,12 +120,12 @@ public class InvocationStubImpl implements ChaincodeStub {
             }
         }
     }
-    /**
-     *
-     * @param message
-//     * @param handler
-     * @throws InvalidProtocolBufferException
-     */
+//    /**
+//     *
+//     * @param message
+////     * @param handler
+//     * @throws InvalidProtocolBufferException
+//     */
     public InvocationStubImpl(final ChaincodeMessage message, CorfuAccess corfu_access, long sequence)
             throws InvalidProtocolBufferException {
         this.channelId = message.getChannelId();
@@ -153,19 +153,20 @@ public class InvocationStubImpl implements ChaincodeStub {
         }
     }
 
-//    public InvocationStubImpl(TransactionParams txParams, CorfuAccess corfu_access, long sequence) {
-//        this.channelId = txParams.channelID;
-//        this.chaincodeId = txParams.chaincodeID;
-//        this.corfu_access = corfu_access;
-//        this.sequence = sequence;
-//        this.chaincdeArgs = txParams.chaincodeArgs;
-//        if (this.signedProposalforBSP == null) {
-//            this.creator = null;
-//            this.txTimestamp = null;
-//            this.transientMap = Collections.emptyMap();
-//            this.binding = null;
-//        }
-//    }
+    public InvocationStubImpl(TransactionParams txParams, CorfuAccess corfu_access, long sequence) {
+        this.txId = txParams.txID;
+        this.channelId = txParams.channelID;
+        this.chaincodeId = txParams.chaincodeID;
+        this.corfu_access = corfu_access;
+        this.sequence = sequence;
+        this.chaincdeArgs = txParams.chaincodeArgs;
+        if (this.signedProposalforBSP == null) {
+            this.creator = null;
+            this.txTimestamp = null;
+            this.transientMap = Collections.emptyMap();
+            this.binding = null;
+        }
+    }
 
     /**
      *this version 2 InvocationStubImpl is for using chaincodeMessage as a argument. So in benchmark, use below InvocationStubImpl version 2

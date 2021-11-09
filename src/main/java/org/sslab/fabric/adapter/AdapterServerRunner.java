@@ -29,8 +29,8 @@ public class AdapterServerRunner {
     static RegisterUser registerUser;
     private static Logger logger = Logger.getLogger(AdapterServerRunner.class.getName());
     public static void main(String[] args) throws IOException, InterruptedException {
-//        runtime = getRuntimeAndConnect("141.223.121.251:12011");
-        runtime = getRuntimeAndConnect("141.223.121.139:12011");
+        runtime = getRuntimeAndConnect("141.223.121.251:12011");
+//        runtime = getRuntimeAndConnect("141.223.121.139:12011");
         corfu_access = new CorfuAccess();
         final int port = 54323;
 

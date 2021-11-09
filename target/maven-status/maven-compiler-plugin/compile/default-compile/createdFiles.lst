@@ -226,6 +226,7 @@ org/hyperledger/fabric/protos/common/MspPrincipal$MSPPrincipalOrBuilder.class
 org/hyperledger/fabric/protos/common/Common$MetadataSignature$1.class
 org/hyperledger/fabric/protos/peer/SignedCcDepSpec$SignedChaincodeDeploymentSpecOrBuilder.class
 org/hyperledger/fabric/protos/orderer/Configuration$BatchTimeoutOrBuilder.class
+bsp_transaction/BspTransactionOuterClass$ProposalforBench$1.class
 org/hyperledger/fabric/protos/msp/MspConfigPackage$SigningIdentityInfo$1.class
 bsp_transaction/BspTransactionOuterClass$TxOutput$Builder.class
 org/hyperledger/fabric/protos/peer/lifecycle/Db$StateDataOrBuilder.class
@@ -467,6 +468,7 @@ org/sslab/fabric/chaincodeshim/shim/ledger/CompositeKey.class
 org/hyperledger/fabric/protos/orderer/Configuration$BatchSize$Builder.class
 org/hyperledger/fabric/protos/orderer/Configuration$1.class
 org/hyperledger/fabric/protos/peer/ChaincodeShim$ChaincodeMessage$Type.class
+bsp_transaction/BspTransactionOuterClass$ProposalforBenchOrBuilder.class
 org/hyperledger/fabric/protos/peer/ProposalPackage$1.class
 org/hyperledger/fabric/protos/orderer/etcdraft/Metadata$BlockMetadataOrBuilder.class
 org/sslab/fabric/MSP/RegisterUser.class
@@ -653,6 +655,7 @@ org/hyperledger/fabric/protos/common/Common$Payload$Builder.class
 org/hyperledger/fabric/protos/gossip/Message$DataDigestOrBuilder.class
 org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$CommitChaincodeDefinitionArgs.class
 bsp_transaction/BspTransactionOuterClass$QueryRequest$Builder.class
+bsp_transaction/BspTransactionOuterClass$ProposalforBench.class
 org/hyperledger/fabric/protos/common/Common$MetadataOrBuilder.class
 org/hyperledger/fabric/protos/orderer/Ab$SeekPosition.class
 org/hyperledger/fabric/protos/peer/ChaincodeShim$1.class
@@ -1546,6 +1549,7 @@ org/hyperledger/fabric/protos/peer/EventsPackage$BlockAndPrivateDataOrBuilder.cl
 bsp_transaction/BspTransactionOuterClass$BFTEventByTxOrBuilder.class
 org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$ApproveChaincodeDefinitionForMyOrgArgs$1.class
 bsp_transaction/BspTransactionOuterClass$MainchainBlockDeliverResponse.class
+bsp_transaction/BspTransactionOuterClass$ProposalforBench$Builder.class
 org/hyperledger/fabric/protos/peer/ChaincodeEventPackage$ChaincodeEvent$Builder.class
 org/hyperledger/fabric/protos/peer/lifecycle/Lifecycle$QueryInstalledChaincodeResultOrBuilder.class
 bsp_transaction/BspTransactionOuterClass$WaitForEventRequest$Builder.class

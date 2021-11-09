@@ -199,6 +199,17 @@ message Proposal {
   /* bytes payload = 7; */
 }
 
+// TxRequest by client to BSP
+message ProposalforBench {
+  string clientId = 1;
+  string txId = 2;
+  string chaincodeId = 3;
+  repeated string chaincodeArgs = 4;
+  bytes creator = 5; // serializedIdentity
+  bytes nonce = 6;
+  bytes signature = 7;
+}
+
 message ProposalBatch {
   repeated Proposal Batches = 1;
 }
@@ -579,6 +590,7 @@ service QueryExecutor {
 service CorfuConnectBSP {
   rpc RegisterClientWithPolicy (AggregatorSubscribeRequest) returns (stream AggregatorResponse);
   rpc ProcessProposal(Proposal)  returns (SubmitResponse);
+  rpc ProcessProposalforBench(ProposalforBench)  returns (SubmitResponse);
   rpc Query(QueryRequest) returns (QueryResponse);
 
   rpc SubmitTransaction(SmartContractArgs) returns (WaitForEventResponse);

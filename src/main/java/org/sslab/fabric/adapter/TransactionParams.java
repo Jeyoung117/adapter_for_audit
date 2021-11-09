@@ -26,7 +26,8 @@ public class TransactionParams {
     }
 
     //for query transaction
-    public TransactionParams(String channelID, String chaincodeID, List<String> chaincodeArgs) {
+    public TransactionParams(String txID, String channelID, String chaincodeID, List<String> chaincodeArgs) {
+        this.txID = txID;
         this.channelID = channelID;
         this.chaincodeID = chaincodeID;
         this.chaincodeArgs = chaincodeArgs;
