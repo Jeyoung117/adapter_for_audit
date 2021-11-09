@@ -55,8 +55,6 @@ public class CorfuAccess {
 
     //local method call 전용 getstringstate
     public byte[] getStringState(String objectKey, String channelID, String chaincodeID) {
-        System.out.println("chaincodeID:" + chaincodeID);
-
         Map<String, byte[]> map = runtime.getObjectsView()
                 .build()
                 .setStreamName(chaincodeID)     // stream ID
@@ -66,10 +64,10 @@ public class CorfuAccess {
 
         byte[] value = map.get(objectKey);
         if (value == null) {
-            System.out.println("[corfu-access-interface] {getState} null!!!!");
+//            System.out.println("[corfu-access-interface] {getState} null!!!!");
             return null;
         } else {
-            System.out.println("[corfu-access-interface] {getState} success");
+//            System.out.println("[corfu-access-interface] {getState} success");
         }
         return value;
     }
@@ -84,13 +82,13 @@ public class CorfuAccess {
                 .open();
 
         map.put(objectKey, data);
-        System.out.println("[corfu-access-interface] {putState} success");
+//        System.out.println("[corfu-access-interface] {putState} success");
     }
 
     public Token issueSnapshotToken() {
         runtime.getObjectsView().TXBegin();
         Token snapshotTimestamp = TransactionalContext.getCurrentContext().getSnapshotTimestamp();
-        System.out.println("[corfu-access-interface] {issueSnapshotToken} success");
+//        System.out.println("[corfu-access-interface] {issueSnapshotToken} success");
 
         return snapshotTimestamp;
     }
@@ -102,7 +100,7 @@ public class CorfuAccess {
         transactionalContext.setTxMetadata(test_env.getBytes(StandardCharsets.UTF_8));
         transactionalContext.setFabricProposal(test_env.getBytes(StandardCharsets.UTF_8));
         long appended_add = runtime.getObjectsView().TXEnd();
-        System.out.println("[corfu-access-interface] {commitTransaction} Corfu runtime is finished, appended address is " + appended_add);
+//        System.out.println("[corfu-access-interface] {commitTransaction} Corfu runtime is finished, appended address is " + appended_add);
     }
 
     public void logSearch() {

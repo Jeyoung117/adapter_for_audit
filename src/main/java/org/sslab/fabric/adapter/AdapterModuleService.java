@@ -72,27 +72,6 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
     public void processProposal(BspTransactionOuterClass.Proposal proposal, StreamObserver<BspTransactionOuterClass.SubmitResponse> responseObserver) {
 //        UnpackedProposal up =  unpackProposal(proposal);
         BspTransactionOuterClass.ProposalPayload propPayload = BspTransactionOuterClass.ProposalPayload.parseFrom(proposal.getPayload());
-        if(proposal == null) {
-            BspTransactionOuterClass.SubmitResponse res = BspTransactionOuterClass.SubmitResponse.newBuilder()
-                    .setStatus(500)
-                    .setMessage("proposal is null")
-                    .build();
-            responseObserver.onNext(res);
-            responseObserver.onCompleted();
-        }
-
-        if(propPayload == null) {
-            BspTransactionOuterClass.SubmitResponse res = BspTransactionOuterClass.SubmitResponse.newBuilder()
-                    .setStatus(500)
-                    .setMessage("propPayload is null")
-                    .build();
-            responseObserver.onNext(res);
-            responseObserver.onCompleted();
-        }
-
-        //debugging용 출력, propPayload contents 확인용
-        logger.info(String.format("Receive Tx from Client %s transaction %s", propPayload.getClientId(), propPayload.getTxId()));
-
 
         BspTransactionOuterClass.SubmitResponse res = processProposalSuccessfullyOrError(proposal, propPayload);
 
@@ -167,9 +146,6 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
 
         org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp =  chaincodeSupport.Execute(txParams, chaincodeName, stub, cfc);
 
-        if(ccresp.getStatus() != org.sslab.fabric.chaincodeshim.shim.Chaincode.Response.Status.SUCCESS) {
-            //chaincode execution fail error
-        }
         Rwset_builder rwset = ccresp.getRwset();
         //writeset이 null 즉, query 일 시 바로 return
         if(ccresp.getRwset().getWriteSet().isEmpty()) {
@@ -194,7 +170,7 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
         byte[] tesmp = ccresp.getPayload();
         String tesmp1 = new String(tesmp);
         Object result = genson.deserialize(tesmp1, Object.class);
-        System.out.println("return value: " + result);
+//        System.out.println("return value: " + result);
 
         ChaincodeShim.ChaincodeMessage ccMessage = createCCMSG(ccresp, ccMsg, stub);
         ByteString cceventBytes = createCCEventBytes(ccMessage.getChaincodeEvent());

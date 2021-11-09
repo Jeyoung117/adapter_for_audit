@@ -49,7 +49,7 @@ public class ContractExecutionService implements ExecutionService {
      */
     @Override
     public Chaincode.Response executeRequest(final TxFunction txFn, final InvocationRequest req, final ChaincodeStub stub) {
-        logger.info(() -> "Routing Request " + txFn);
+//        logger.info(() -> "Routing Request " + txFn);
         final TxFunction.Routing rd = txFn.getRouting();
         Chaincode.Response response;
 
@@ -67,7 +67,6 @@ public class ContractExecutionService implements ExecutionService {
             contractObject.beforeTransaction(context);
             final Object value = rd.getMethod().invoke(contractObject, args.toArray());
             contractObject.afterTransaction(context, value);
-            System.out.println("rwset 제대로 반환 하나?"  + context.getStub().getRWset());
 
             String valueString = genson.serialize(value);
             if (value == null) {
