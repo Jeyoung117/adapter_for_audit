@@ -128,7 +128,7 @@ public final class RoutingRegistryImpl implements RoutingRegistry {
     @Override
     public ContractDefinition getContract(final String namespace) {
         logger.info("namespace is " + namespace);
-        final ContractDefinition contract = contracts.get("fabcar");
+        final ContractDefinition contract = contracts.get(namespace);
         logger.info("contract is " + contracts);
 
         if (contract == null) {

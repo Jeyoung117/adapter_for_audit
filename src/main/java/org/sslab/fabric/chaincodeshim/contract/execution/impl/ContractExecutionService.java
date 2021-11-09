@@ -60,7 +60,7 @@ public class ContractExecutionService implements ExecutionService {
 
             final List<Object> args = new ArrayList<>(stubArgs.length + 1); // allow for context as the first argument
             for (int i = 0; i < stubArgs.length; i++) {
-                args.add(i, stubArgs[0]);
+                args.add(i, stubArgs[i]);
             }
             args.add(0, context); // force context into 1st position, other elements move up
 

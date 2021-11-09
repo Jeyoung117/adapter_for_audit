@@ -110,16 +110,16 @@ public final class fabcar implements ContractInterface {
                          final String color, final String owner) {
         ChaincodeStub stub = ctx.getStub();
 
-//        String carState = stub.getStringState(key);
+        String carState = stub.getStringState(key);
 
-//        if (!carState.isEmpty()) {
-//            String errorMessage = String.format("Car %s already exists", key);
-//            System.out.println(errorMessage);
-//            throw new ChaincodeException(errorMessage, FabCarErrors.CAR_ALREADY_EXISTS.toString());
-//        }
+        if (!carState.isEmpty()) {
+            String errorMessage = String.format("Car %s already exists", key);
+            System.out.println(errorMessage);
+            throw new ChaincodeException(errorMessage, FabCarErrors.CAR_ALREADY_EXISTS.toString());
+        }
 
         Car car = new Car(make, model, color, owner);
-        String carState = genson.serialize(car);
+        carState = genson.serialize(car);
         stub.putStringState(key, carState);
 
         return car;

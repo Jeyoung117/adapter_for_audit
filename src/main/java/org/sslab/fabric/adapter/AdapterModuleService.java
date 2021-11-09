@@ -146,6 +146,7 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
         //writeset이 null 즉, query 일 시 바로 return
         if(ccresp.getRwset().getWriteSet().isEmpty()) {
             BspTransactionOuterClass.SubmitResponse res = toProtoResponse(ccresp);
+            corfu_access.commitTransaction();
             return res;
         }
         BspTransactionOuterClass.BspTransactionType txLocalityType = BspTransactionOuterClass.BspTransactionType.IntraTx;
@@ -157,16 +158,9 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
         String regionID = "edgechain0";
         ByteString bspTxBytes = buildBspTX(txLocalityType, txParams.signedProp, txParams.propPayload, seq, regionID, "mychannel", rwset); //chainID 추후 채널 config 통해 수정 필요
 
-        Common.Envelope env = createEnvFromBSPType(55555, seq, txParams.txID, "mychannel", bspTxBytes);
+//        Common.Envelope env = createEnvFromBSPType(55555, seq, txParams.txID, "mychannel", bspTxBytes);
 
         ByteString txEventBytes = buildTxEvent(txParams.propPayload, seq);
-
-        //bsp에서는 client에게 proposal response를 return 나는 response
-//        BspTransactionOuterClass.ProposalResponse resp = BspTransactionOuterClass.ProposalResponse.newBuilder()
-//                .setPayload(txEventBytes)
-//                .setSignature(txParams.signedProp.getSignature())
-//                .setSignatureHeader(txParams.signedProp.getSignatureHeader())
-//                .build();
 
         //response에서 받은 값 확인
         byte[] tesmp = ccresp.getPayload();
@@ -182,7 +176,7 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
         */
 
         BspTransactionOuterClass.SubmitResponse res = toProtoResponse(ccresp);
-        corfu_access.commitTransaction(env); //
+        corfu_access.commitTransaction(); //
 
         return res;
     }
@@ -238,13 +232,13 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
         return txEventBytes;
     }
 
-    public Common.Envelope createEnvFromBSPType(int msgType, long seq, String TxID, String ChainID, ByteString payload) {
-        TxUtils txUtils = new TxUtils();
-        TransactionPackage.Transaction dataMsg = getPayloadInsideTransaction(payload);
-        Common.Envelope env = txUtils.CreateSignedEnvelopeWithTLSBindingWithTxID(ENDORSER_TRANSACTION, ChainID, signer, dataMsg, msgType, seq, null, TxID);
-
-        return env;
-    }
+//    public Common.Envelope createEnvFromBSPType(int msgType, long seq, String TxID, String ChainID, ByteString payload) {
+//        TxUtils txUtils = new TxUtils();
+//        TransactionPackage.Transaction dataMsg = getPayloadInsideTransaction(payload);
+//        Common.Envelope env = txUtils.CreateSignedEnvelopeWithTLSBindingWithTxID(ENDORSER_TRANSACTION, ChainID, null, dataMsg, msgType, seq, null, TxID);
+//
+//        return env;
+//    }
 
     public TransactionPackage.Transaction getPayloadInsideTransaction(ByteString bspTxBytes) {
         TransactionPackage.TransactionAction act = TransactionPackage.TransactionAction.newBuilder()

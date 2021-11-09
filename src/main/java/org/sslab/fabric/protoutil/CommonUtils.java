@@ -26,13 +26,13 @@ public class CommonUtils {
 
     }
 
-    public Common.SignatureHeader makeSignatureHeader(SigningIdentity signingIdentity) {
-        Identities.SerializedIdentity creator = signingIdentity.createSerializedIdentity();
-        Common.SignatureHeader.newBuilder()
-                .setCreator(creator)
-                .setNonce(0)
-                .build();
-    }
+//    public Common.SignatureHeader makeSignatureHeader(SigningIdentity signingIdentity) {
+//        Identities.SerializedIdentity creator = signingIdentity.createSerializedIdentity();
+//        Common.SignatureHeader.newBuilder()
+//                .setCreator(creator)
+//                .setNonce(0)
+//                .build();
+//    }
 
     public ByteString marshal(Message pb) {
         ByteString data = pb.toByteString();

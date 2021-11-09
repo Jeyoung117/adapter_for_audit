@@ -9,24 +9,24 @@ import org.hyperledger.fabric.protos.common.Common;
 public class TxUtils {
     CommonUtils commonUtils = new CommonUtils();
 
-    public Common.Envelope CreateSignedEnvelopeWithTLSBindingWithTxID(Common.HeaderType txType, String channelID, Signer signer, Message dataMsg, int msgVersion, long seq, byte[] tlsCertHash, String txid) {
-        Common.ChannelHeader payloadChannelHeader = commonUtils.makeChannelHeader(txType, msgVersion, channelID, seq, tlsCertHash, txid);
-        Common.SignatureHeader payloadSignatureHeader;
-
-        payloadSignatureHeader = commonUtils.makeSignatureHeader();
-        ByteString data = dataMsg.toByteString();
-        Common.Payload payload = Common.Payload.newBuilder()
-                .setHeader(commonUtils.makePayloadHeader(payloadChannelHeader, payloadSignatureHeader))
-                .setData(data)
-                .build();
-
-        ByteString paylBytes =  commonUtils.marshal(payload);
-
-        Common.Envelope env = Common.Envelope.newBuilder()
-                .setPayload(paylBytes)
-                .setSignature()
-                .build();
-        return  env;
-
-    }
+//    public Common.Envelope CreateSignedEnvelopeWithTLSBindingWithTxID(Common.HeaderType txType, String channelID, Signer signer, Message dataMsg, int msgVersion, long seq, byte[] tlsCertHash, String txid) {
+//        Common.ChannelHeader payloadChannelHeader = commonUtils.makeChannelHeader(txType, msgVersion, channelID, seq, tlsCertHash, txid);
+//        Common.SignatureHeader payloadSignatureHeader;
+//
+//        payloadSignatureHeader = commonUtils.makeSignatureHeader();
+//        ByteString data = dataMsg.toByteString();
+//        Common.Payload payload = Common.Payload.newBuilder()
+//                .setHeader(commonUtils.makePayloadHeader(payloadChannelHeader, payloadSignatureHeader))
+//                .setData(data)
+//                .build();
+//
+//        ByteString paylBytes =  commonUtils.marshal(payload);
+//
+//        Common.Envelope env = Common.Envelope.newBuilder()
+//                .setPayload(paylBytes)
+//                .setSignature()
+//                .build();
+//        return  env;
+//
+//    }
 }

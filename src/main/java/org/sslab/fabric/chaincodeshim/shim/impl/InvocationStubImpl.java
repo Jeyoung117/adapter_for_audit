@@ -257,7 +257,8 @@ public class InvocationStubImpl implements ChaincodeStub {
 
     @Override
     public byte[] getState(final String key) {
-        byte[] value = corfu_access.getStringState(key, channelId, "fabcar");
+        byte[] value = corfu_access.getStringState(key, channelId, chaincodeId);
+        if (value == null) return null;
         rwset.AddToReadSet(key, value, sequence);
             return value;
     }
@@ -289,7 +290,7 @@ public class InvocationStubImpl implements ChaincodeStub {
     @Override
     public void putState(final String key, final byte[] value) {
         rwset.AddToWriteSet(key, value, sequence);
-        corfu_access.putStringState(key, channelId, "fabcar", value);
+        corfu_access.putStringState(key, channelId, chaincodeId, value);
     }
 
     @Override
