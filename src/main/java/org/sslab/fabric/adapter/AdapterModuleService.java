@@ -5,6 +5,8 @@ import bsp_transaction.CorfuConnectBSPGrpc;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.owlike.genson.Genson;
+import io.grpc.Context;
+import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import lombok.SneakyThrows;
 import org.corfudb.protocols.wireprotocol.Token;
@@ -27,9 +29,11 @@ import org.sslab.fabric.protoutil.TxUtils;
 //import org.hyperledger.fabric.sdk.ProposalResponse;
 
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Logger;
 
+import static io.netty.util.internal.SocketUtils.accept;
 import static org.hyperledger.fabric.protos.common.Common.HeaderType.ENDORSER_TRANSACTION;
 import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.COMPLETED;
 import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.Type.ERROR;
@@ -83,24 +87,54 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
     @SneakyThrows
     @Override
     public void processProposalforBench(BspTransactionOuterClass.ProposalforBench proposal, StreamObserver<BspTransactionOuterClass.SubmitResponse> responseObserver) {
-//        UnpackedProposal up =  unpackProposal(proposal);
-//        System.out.println(proposal.getClientId());
         TransactionParams txParams =  new TransactionParams(
                 proposal.getTxId(),
                 "mychannel",
                 proposal.getChaincodeId(),
                 proposal.getChaincodeArgsList()
         );
+//        BspTransactionOuterClass.SubmitResponse res = executeProposal(txParams, proposal.getChaincodeId());
 
-        BspTransactionOuterClass.SubmitResponse res = executeProposal(txParams, proposal.getChaincodeId());
+//        while(!Context.current().isCancelled()){ // THIS LINE CHANGED
+//            if(res!=null && !res.isInitialized()){
+//                responseObserver.onNext(res);
+//                responseObserver.onCompleted();
+//            }else{
+//                break;
+//            }
+//        }
 
-//        BspTransactionOuterClass.SubmitResponse res = BspTransactionOuterClass.SubmitResponse.newBuilder()
-//                        .setMessage("SUCCESS")
-//                        .build();
+        corfu_access.issueSnapshotToken();
+        System.out.println(txParams.chaincodeArgs.get(1));
+        String submitTest = "submitTest";
+        System.out.println("while의 밖에서 벌어지는 일");
+        corfu_access.putStringState(txParams.chaincodeArgs.get(1), "mychannel", txParams.chaincodeID, submitTest.getBytes(StandardCharsets.UTF_8));
+        corfu_access.commitTransaction();
 
-
+        BspTransactionOuterClass.SubmitResponse res = BspTransactionOuterClass.SubmitResponse.newBuilder()
+                .setStatus(200)
+                .build();
+        Context.CancellableContext withCancellation = Context.current().withCancellation();
+//        while(!Context.current().isCancelled()){ // THIS LINE CHANGED
+//            if(res!=null && !res.getDefaultInstanceForType().isInitialized()){
+//                responseObserver.onNext(res);
+//
+//                corfu_access.issueSnapshotToken();
+//                System.out.println(txParams.chaincodeArgs.get(1));
+//                submitTest = "submitTest";
+//                System.out.println("while의 if 안에서 벌어지는 일");
+//                corfu_access.putStringState(txParams.chaincodeArgs.get(1), "mychannel", txParams.chaincodeID, submitTest.getBytes(StandardCharsets.UTF_8));
+//                corfu_access.commitTransaction();
+//            }else{
+//                System.out.println("while의 else 안에서 벌어지는 일");
+//                withCancellation.cancel(null);
+//                break;
+//            }
+//        }
+        clientCallStreamObserver.cancel()
         responseObserver.onNext(res);
         responseObserver.onCompleted();
+        withCancellation.cancel(null);
     }
 
 //    @Override
