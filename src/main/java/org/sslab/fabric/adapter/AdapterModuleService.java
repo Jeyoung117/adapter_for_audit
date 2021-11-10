@@ -1,5 +1,8 @@
 package org.sslab.fabric.adapter;
 
+import bsp_transaction.BspTransactionOuterClass;
+import bsp_transaction.CorfuConnectBSPGrpc;
+import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.grpc.stub.StreamObserver;
 import lombok.SneakyThrows;
@@ -35,7 +38,7 @@ import java.util.logging.Logger;
  * @author Jeyoung Hwang.capricorn116@postech.ac.kr
  *         created on 2021. 4. 10.
  */
-public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
+public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImplBase{
     Map<UUID, CorfuRuntime> runtimes;
     Map<UUID, IStreamView> streamViews;
     Map<String, Long> lastReadAddrs;
@@ -59,78 +62,43 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
 
     @SneakyThrows
     @Override
-    public void processProposal(Sharedlog.ReqCheck request, StreamObserver<Sharedlog.ResCheck> responseObserver) {
-//        UnpackedProposal up =  unpackProposal(proposal);
-//        String result = processProposalSuccessfullyOrError(up);
+    public void processProposalforBench(BspTransactionOuterClass.ProposalforBench proposal, StreamObserver<BspTransactionOuterClass.SubmitResponse> responseObserver) {
 
-//        System.out.println("received channel name: " + request.getChannelID());
-//        System.out.println("received chaincode name: " + request.getChaincodeID());
-//        System.out.println("received key : " + request.getKey());
-
-        executeProposal(request.getChannelID(), request.getChaincodeID(), request.getKey());
-//        corfu_access.getStringState(request.getKey(), request.getChannelID(),request.getChaincodeID());
-//        corfu_access.putStringState(request.getKey(), request.getChannelID(),request.getChaincodeID(),request.getChaincodeID().getBytes());
-        Sharedlog.ResCheck response = Sharedlog.ResCheck
-                .newBuilder()
-                .setCheckresult(1)
-                .build();
+        TransactionParams txParams =  new TransactionParams(
+                proposal.getTxId(),
+                "mychannel",
+                proposal.getChaincodeId(),
+                proposal.getChaincodeArgsList()
+        );
+        BspTransactionOuterClass.SubmitResponse response = executeProposal(txParams.channelID, txParams.chaincodeID, txParams.chaincodeArgs);
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
 
-    @SneakyThrows
-    @Override
-    public void processProposalWrite(Sharedlog.SubmitCheck request, StreamObserver<Sharedlog.ResCheck> responseObserver) {
-//        UnpackedProposal up =  unpackProposal(proposal);
-//        String result = processProposalSuccessfullyOrError(up);
+//    @SneakyThrows
+//    @Override
+//    public void processProposalWrite(Sharedlog.SubmitCheck request, StreamObserver<Sharedlog.ResCheck> responseObserver) {
+////        UnpackedProposal up =  unpackProposal(proposal);
+////        String result = processProposalSuccessfullyOrError(up);
+//
+////        System.out.println("received channel name: " + request.getChannelID());
+////        System.out.println("received chaincode name: " + request.getChaincodeID());
+////        System.out.println("received key : " + request.getKey());
+//
+//        executeProposal(request.getChannelID(), request.getChaincodeID(), request.getKey());
+////        corfu_access.getStringState(request.getKey(), request.getChannelID(),request.getChaincodeID());
+////        corfu_access.putStringState(request.getKey(), request.getChannelID(),request.getChaincodeID(),request.getChaincodeID().getBytes());
+//        Sharedlog.ResCheck response = Sharedlog.ResCheck
+//                .newBuilder()
+//                .setCheckresult(1)
+//                .build();
+//
+//        responseObserver.onNext(response);
+//        responseObserver.onCompleted();
+//    }
 
-//        System.out.println("received channel name: " + request.getChannelID());
-//        System.out.println("received chaincode name: " + request.getChaincodeID());
-//        System.out.println("received key : " + request.getKey());
 
-        executeProposal(request.getChannelID(), request.getChaincodeID(), request.getKey());
-//        corfu_access.getStringState(request.getKey(), request.getChannelID(),request.getChaincodeID());
-//        corfu_access.putStringState(request.getKey(), request.getChannelID(),request.getChaincodeID(),request.getChaincodeID().getBytes());
-        Sharedlog.ResCheck response = Sharedlog.ResCheck
-                .newBuilder()
-                .setCheckresult(1)
-                .build();
-
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
-    }
-
-    @SneakyThrows
-    public UnpackedProposal unpackProposal(ProposalPackage.SignedProposal signedProposal) {
-        ProposalPackage.Proposal proposal;
-        Common.Header header;
-        Common.ChannelHeader channelHeader;
-        Common.SignatureHeader signatureHeader;
-        ProposalPackage.ChaincodeHeaderExtension chaincodeHdrExt;
-        ProposalPackage.ChaincodeProposalPayload payload;
-        Chaincode.ChaincodeInvocationSpec chaincodeInvocationSpec;
-
-//        byte[] sp = signedProposal.getProposalBytes().toByteArray();
-//        pr = ProposalPackage.Proposal.parseFrom(proposal);
-        proposal = ProposalPackage.SignedProposal.parseFrom(signedProposal);
-
-        header = Common.Header.parseFrom(proposal.getHeader());
-
-        channelHeader = Common.ChannelHeader.parseFrom(header.getChannelHeader());
-
-        signatureHeader = Common.SignatureHeader.parseFrom(header.getSignatureHeader());
-
-        chaincodeHdrExt = ProposalPackage.ChaincodeHeaderExtension.parseFrom(channelHeader.getExtension());
-
-        payload = ProposalPackage.ChaincodeProposalPayload.parseFrom(proposal.getPayload());
-
-        chaincodeInvocationSpec = Chaincode.ChaincodeInvocationSpec.parseFrom(payload.getInput());
-
-        UnpackedProposal unpackedProposal = new UnpackedProposal(chaincodeHdrExt.getChaincodeId().getName().toString(), channelHeader, chaincodeInvocationSpec.getChaincodeSpec().getInput(),
-                proposal, signatureHeader);
-        return unpackedProposal;
-    }
 
 //    public String processProposalSuccessfullyOrError(UnpackedProposal up) throws InvalidProtocolBufferException {
 //        TransactionParams txParams =  new TransactionParams(
@@ -164,19 +132,22 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
 //
 //    }
 
-    public void executeProposal(String channelID, String chaincodeId, String key) {
+    public BspTransactionOuterClass.SubmitResponse executeProposal(String channelID, String chaincodeId, List<String> chaincodeArgs) {
         try {
-            callChaincode(channelID, chaincodeId, key);
+            BspTransactionOuterClass.SubmitResponse res =  callChaincode(channelID, chaincodeId, chaincodeArgs);
+            return res;
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
-
-//        System.out.println(car);
+        BspTransactionOuterClass.SubmitResponse resError = BspTransactionOuterClass.SubmitResponse.newBuilder()
+                .setStatus(500)
+                .build();
+        return resError;
     }
 
 
-    public void callChaincode(String channelID, String chaincodeId, String key) throws InvalidProtocolBufferException {
-        corfu_access.issueSnapshotToken();
+    public BspTransactionOuterClass.SubmitResponse callChaincode(String channelID, String chaincodeId, List<String> chaincodeArgs) throws InvalidProtocolBufferException {
+        Token snToken = corfu_access.issueSnapshotToken();
         FabCar fabcar = new FabCar();
         InvocationStubImpl invocationStub = null;
         try {
@@ -185,14 +156,57 @@ public class AdapterModuleService extends CorfuConnectGrpc.CorfuConnectImplBase{
             e.printStackTrace();
         }
         Context context = new Context(invocationStub);
-        fabcar.queryCar(context, key);
+        Car car = fabcar.createCar(context, chaincodeArgs.get(1), chaincodeArgs.get(2), chaincodeArgs.get(3), chaincodeArgs.get(4), chaincodeArgs.get(5));
         corfu_access.commitTransaction();
+        if (car.toString() != null) {
+            BspTransactionOuterClass.SubmitResponse res = BspTransactionOuterClass.SubmitResponse.newBuilder()
+                    .setStatus(200)
+                    .setPayload(ByteString.copyFrom(car.toString().getBytes(StandardCharsets.UTF_8)))
+                    .build();
+            return res;
+        } else {
+            BspTransactionOuterClass.SubmitResponse resError = BspTransactionOuterClass.SubmitResponse.newBuilder()
+                    .setStatus(500)
+                    .build();
+            return resError;
+        }
     }
 
 //    public void callChaincode(TransactionParams txParams, String chaincodeName, Chaincode.ChaincodeInput chaincodeInput) throws InvalidProtocolBufferException {
 //        FabCar fabcar = new FabCar();
 //        System.out.println(chaincodeInput);
 //        System.out.println(chaincodeInput.toString());
+//    }
+
+    //    @SneakyThrows
+//    public UnpackedProposal unpackProposal(ProposalPackage.SignedProposal signedProposal) {
+//        ProposalPackage.Proposal proposal;
+//        Common.Header header;
+//        Common.ChannelHeader channelHeader;
+//        Common.SignatureHeader signatureHeader;
+//        ProposalPackage.ChaincodeHeaderExtension chaincodeHdrExt;
+//        ProposalPackage.ChaincodeProposalPayload payload;
+//        Chaincode.ChaincodeInvocationSpec chaincodeInvocationSpec;
+//
+////        byte[] sp = signedProposal.getProposalBytes().toByteArray();
+////        pr = ProposalPackage.Proposal.parseFrom(proposal);
+//        proposal = ProposalPackage.SignedProposal.parseFrom(signedProposal);
+//
+//        header = Common.Header.parseFrom(proposal.getHeader());
+//
+//        channelHeader = Common.ChannelHeader.parseFrom(header.getChannelHeader());
+//
+//        signatureHeader = Common.SignatureHeader.parseFrom(header.getSignatureHeader());
+//
+//        chaincodeHdrExt = ProposalPackage.ChaincodeHeaderExtension.parseFrom(channelHeader.getExtension());
+//
+//        payload = ProposalPackage.ChaincodeProposalPayload.parseFrom(proposal.getPayload());
+//
+//        chaincodeInvocationSpec = Chaincode.ChaincodeInvocationSpec.parseFrom(payload.getInput());
+//
+//        UnpackedProposal unpackedProposal = new UnpackedProposal(chaincodeHdrExt.getChaincodeId().getName().toString(), channelHeader, chaincodeInvocationSpec.getChaincodeSpec().getInput(),
+//                proposal, signatureHeader);
+//        return unpackedProposal;
 //    }
 
 }
