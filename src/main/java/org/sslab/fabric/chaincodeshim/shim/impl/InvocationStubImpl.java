@@ -153,11 +153,11 @@ public class InvocationStubImpl implements ChaincodeStub {
         }
     }
 
-    public InvocationStubImpl(TransactionParams txParams, CorfuAccess corfu_access, long sequence) {
+    public InvocationStubImpl(TransactionParams txParams, long sequence) {
         this.txId = txParams.txID;
         this.channelId = txParams.channelID;
         this.chaincodeId = txParams.chaincodeID;
-        this.corfu_access = corfu_access;
+        this.corfu_access = txParams.corfu_access;
         this.sequence = sequence;
         this.chaincdeArgs = txParams.chaincodeArgs;
         if (this.signedProposalforBSP == null) {

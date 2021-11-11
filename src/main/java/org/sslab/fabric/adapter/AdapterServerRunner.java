@@ -32,7 +32,7 @@ public class AdapterServerRunner {
         runtime = getRuntimeAndConnect("141.223.121.251:12011");
 //        runtime = getRuntimeAndConnect("141.223.121.139:12011");
         corfu_access = new CorfuAccess();
-        final int port = 54323;
+        final int port = 54321;
 
         cfc = new ContractRouter(args);
         cfc.findAllContracts();

@@ -6,6 +6,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.owlike.genson.Genson;
 import io.grpc.Context;
+import io.grpc.Status;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import lombok.SneakyThrows;
@@ -87,34 +88,27 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
     @SneakyThrows
     @Override
     public void processProposalforBench(BspTransactionOuterClass.ProposalforBench proposal, StreamObserver<BspTransactionOuterClass.SubmitResponse> responseObserver) {
+//        CorfuAccess corfuAccess = new CorfuAccess();
         TransactionParams txParams =  new TransactionParams(
                 proposal.getTxId(),
                 "mychannel",
                 proposal.getChaincodeId(),
-                proposal.getChaincodeArgsList()
+                proposal.getChaincodeArgsList(),
+                corfu_access
         );
-//        BspTransactionOuterClass.SubmitResponse res = executeProposal(txParams, proposal.getChaincodeId());
+        BspTransactionOuterClass.SubmitResponse res = executeProposal(txParams, proposal.getChaincodeId());
 
-//        while(!Context.current().isCancelled()){ // THIS LINE CHANGED
-//            if(res!=null && !res.isInitialized()){
-//                responseObserver.onNext(res);
-//                responseObserver.onCompleted();
-//            }else{
-//                break;
-//            }
-//        }
-
-        corfu_access.issueSnapshotToken();
-        System.out.println(txParams.chaincodeArgs.get(1));
-        String submitTest = "submitTest";
-        System.out.println("while의 밖에서 벌어지는 일");
-        corfu_access.putStringState(txParams.chaincodeArgs.get(1), "mychannel", txParams.chaincodeID, submitTest.getBytes(StandardCharsets.UTF_8));
-        corfu_access.commitTransaction();
-
-        BspTransactionOuterClass.SubmitResponse res = BspTransactionOuterClass.SubmitResponse.newBuilder()
-                .setStatus(200)
-                .build();
-        Context.CancellableContext withCancellation = Context.current().withCancellation();
+//        corfu_access.issueSnapshotToken();
+//        System.out.println(txParams.chaincodeArgs.get(1));
+//        String submitTest = "submitTest";
+////        System.out.println("while의 밖에서 벌어지는 일");
+//        corfu_access.putStringState(txParams.chaincodeArgs.get(1), "mychannel", txParams.chaincodeID, submitTest.getBytes(StandardCharsets.UTF_8));
+//        corfu_access.commitTransaction();
+////
+//        BspTransactionOuterClass.SubmitResponse res = BspTransactionOuterClass.SubmitResponse.newBuilder()
+//                .setStatus(200)
+//                .build();
+//        Context.CancellableContext withCancellation = Context.current().withCancellation();
 //        while(!Context.current().isCancelled()){ // THIS LINE CHANGED
 //            if(res!=null && !res.getDefaultInstanceForType().isInitialized()){
 //                responseObserver.onNext(res);
@@ -131,10 +125,15 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
 //                break;
 //            }
 //        }
-        clientCallStreamObserver.cancel()
+        if (Context.current().isCancelled()) {
+            responseObserver.onError(Status.CANCELLED.withDescription("Cancelled by client").asRuntimeException());
+            Context.CancellableContext withCancellation = Context.current().withCancellation();
+            withCancellation.cancel(null);
+            return;
+        }
         responseObserver.onNext(res);
         responseObserver.onCompleted();
-        withCancellation.cancel(null);
+//        withCancellation.cancel(null);
     }
 
 //    @Override
@@ -167,13 +166,15 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
 
     public BspTransactionOuterClass.SubmitResponse processProposalSuccessfullyOrError(BspTransactionOuterClass.Proposal signedProposal, BspTransactionOuterClass.ProposalPayload propPayload) throws InvalidProtocolBufferException {
 
+        CorfuAccess corfuAccess = new CorfuAccess();
         TransactionParams txParams =  new TransactionParams(
                 propPayload.getTxId(),
                 propPayload.getChaincodeId(),
                 signedProposal,
                 propPayload,
                 propPayload.getChaincodeArgsList(),
-                "mychannel"
+                "mychannel",
+                corfuAccess
                 );
 
         BspTransactionOuterClass.SubmitResponse res = executeProposal(txParams, propPayload.getChaincodeId());
@@ -182,14 +183,6 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
     }
 
     public BspTransactionOuterClass.SubmitResponse executeProposal(TransactionParams txParams, String chaincodeName) throws InvalidProtocolBufferException {
-
-        //fabric chaincode_support.go 의 execute 에서의 선언 copy
-//        ChaincodeShim.ChaincodeMessage ccMsg = ChaincodeShim.ChaincodeMessage.newBuilder()
-//                .setType(ChaincodeShim.ChaincodeMessage.Type.TRANSACTION)
-//                .setChaincodeId(txParams.chaincodeID)
-//                .setTxid(txParams.txID)
-//                .setPayload(txParams.signedProp.toByteString())
-//                .build();
 
         ChaincodeShim.ChaincodeMessage ccMsg = ChaincodeShim.ChaincodeMessage.newBuilder()
                 .setType(ChaincodeShim.ChaincodeMessage.Type.TRANSACTION)
@@ -204,19 +197,20 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
     }
 
     public BspTransactionOuterClass.SubmitResponse callChaincode(TransactionParams txParams, String chaincodeName, ChaincodeShim.ChaincodeMessage ccMsg) throws InvalidProtocolBufferException {
-        Token snapshotTimestamp = corfu_access.issueSnapshotToken();
+        Token snapshotTimestamp = txParams.corfu_access.issueSnapshotToken();
         ChaincodeSupport chaincodeSupport = new ChaincodeSupport();
         long seq = snapshotTimestamp.getSequence();
 //        ChaincodeStub stub = new InvocationStubImpl(ccMsg, corfu_access, seq);
-                ChaincodeStub stub = new InvocationStubImpl(txParams, corfu_access, seq);
+                ChaincodeStub stub = new InvocationStubImpl(txParams, seq);
 
         org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp =  chaincodeSupport.Execute(txParams, chaincodeName, stub, cfc);
 
         Rwset_builder rwset = ccresp.getRwset();
+//        System.out.println("rwset의 read" + rwset.getReadSet());
         //writeset이 null 즉, query 일 시 바로 return
         if(ccresp.getRwset() == null) {
             BspTransactionOuterClass.SubmitResponse res = toProtoResponse(ccresp);
-            corfu_access.commitTransaction();
+            txParams.corfu_access.commitTransaction();
             return res;
         }
 //        BspTransactionOuterClass.BspTransactionType txLocalityType = BspTransactionOuterClass.BspTransactionType.IntraTx;
@@ -246,7 +240,7 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
         */
 
         BspTransactionOuterClass.SubmitResponse res = toProtoResponse(ccresp);
-        corfu_access.commitTransaction(); //
+        txParams.corfu_access.commitTransaction(); //
 
         return res;
     }
