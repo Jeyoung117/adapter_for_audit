@@ -28,6 +28,7 @@
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/Chaincode.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/annotation/Contact.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/peer/Query.java
+/home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/MSP/Signer.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/ext/sbe/impl/StateBasedEndorsementFactory.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/routing/impl/SerializerRegistryImpl.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/metrics/impl/NullProvider.java
@@ -74,6 +75,7 @@
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/ledger/rwset/kvrwset/KvRwset.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/ledger/rwset/Rwset.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/ext/sbe/StateBasedEndorsement.java
+/home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/MSP/UserInfo.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/impl/KeyModificationImpl.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/corfu/ResCheckOrBuilder.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/common/MspPrincipal.java
@@ -132,6 +134,7 @@
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/contract/annotation/Contract.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/ext/sbe/impl/StateBasedEndorsementImpl.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/peer/lifecycle/ChaincodeDefinition.java
+/home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/MSP/User.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/src/main/java/org/sslab/fabric/chaincodeshim/shim/impl/ChaincodeInvocationTask.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/target/generated-sources/protobuf/java/org/hyperledger/fabric/protos/peer/Resources.java
 /home/hwang/project/github.com/adapter_modules/adapter_module_v1.5/target/generated-sources/protobuf/grpc-java/org/hyperledger/fabric/protos/peer/EndorserGrpc.java

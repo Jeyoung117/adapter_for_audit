@@ -7,9 +7,9 @@ import org.hyperledger.fabric.protos.common.Common;
 import org.hyperledger.fabric.protos.msp.Identities;
 import org.hyperledger.fabric.sdk.Channel;
 import org.hyperledger.fabric.sdk.identity.SigningIdentity;
+import org.sslab.fabric.MSP.Signer;
 
 public class CommonUtils {
-    private SigningIdentity signingIdentity;
     public Common.ChannelHeader makeChannelHeader(Common.HeaderType headerType, int version, String chainID ,long epoch, byte[] tlsCertHash, String txID) {
         return Common.ChannelHeader.newBuilder()
                 .setType(headerType.getNumber())
@@ -20,19 +20,19 @@ public class CommonUtils {
                         .build())
                 .setChannelId(chainID)
                 .setEpoch(epoch)
-                .setTlsCertHash(ByteString.copyFrom(tlsCertHash))
+//                .setTlsCertHash(ByteString.copyFrom(tlsCertHash))
                 .setTxId(txID)
                 .build();
 
     }
 
-//    public Common.SignatureHeader makeSignatureHeader(SigningIdentity signingIdentity) {
-//        Identities.SerializedIdentity creator = signingIdentity.createSerializedIdentity();
-//        Common.SignatureHeader.newBuilder()
-//                .setCreator(creator)
-//                .setNonce(0)
-//                .build();
-//    }
+    public Common.SignatureHeader makeSignatureHeader(Signer signer) {
+
+        return Common.SignatureHeader.newBuilder()
+                .setCreator(signer.getIdentity().toByteString())
+                .setNonce(signer.getNonce()) //signer가 static이면 값 안 변하는 거 아닌지?
+                .build();
+    }
 
     public ByteString marshal(Message pb) {
         ByteString data = pb.toByteString();

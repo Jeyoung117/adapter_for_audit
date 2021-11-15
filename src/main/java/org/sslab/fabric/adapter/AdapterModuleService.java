@@ -13,6 +13,10 @@ import org.corfudb.runtime.view.stream.IStreamView;
 import org.hyperledger.fabric.protos.common.Common;
 
 import org.hyperledger.fabric.protos.peer.*;
+import org.hyperledger.fabric.sdk.Channel;
+import org.hyperledger.fabric.sdk.exception.CryptoException;
+import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
+import org.sslab.fabric.MSP.Signer;
 import org.sslab.fabric.chaincode_support.ChaincodeSupport;
 import org.sslab.fabric.chaincodeshim.contract.ContractRouter;
 import org.sslab.fabric.chaincodeshim.shim.ChaincodeStub;
@@ -22,6 +26,7 @@ import org.sslab.fabric.corfu.CorfuAccess;
 import org.sslab.fabric.corfu.Rwset_builder;
 import org.sslab.fabric.dtype.dtype;
 import org.sslab.fabric.protoutil.TxUtils;
+//import org.sslab.fabric.protoutil.TxUtils;
 
 //import org.sslab.adapter.chaincode.fabcar.FabCar;
 //import org.hyperledger.fabric.sdk.ProposalResponse;
@@ -50,19 +55,21 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
     CorfuAccess corfu_access;
     private final Genson genson = new Genson();
     ContractRouter cfc;
+    Channel channel;
+    Signer signer;
 //    private ProposalPackage.Proposal proposal;
 
 
-    public AdapterModuleService(CorfuAccess corfu_access, CorfuRuntime runtime, ContractRouter cfc) {
+    public AdapterModuleService(CorfuAccess corfu_access, ContractRouter cfc, Signer signer) {
         streamViews = new HashMap<UUID, IStreamView>();
         runtimes = new HashMap<UUID, CorfuRuntime>();
-        this.runtime = runtime;
 //        runtime = new CorfuRuntime(runtimeAddr[0]).connect();
         lastReadAddrs = new HashMap<String, Long>();
         System.out.println("Init AdapterModuleService");
         tokenMap = new HashMap<String, Token>();
         this.corfu_access = corfu_access;
         this.cfc = cfc;
+        this.signer = signer;
     }
 
     private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
@@ -133,54 +140,47 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
                 .setPayload(txParams.signedProp.toByteString())
                 .build();
 
-        BspTransactionOuterClass.SubmitResponse res = callChaincode(txParams, chaincodeName, ccMsg);
+        BspTransactionOuterClass.SubmitResponse res = callChaincode(txParams, ccMsg);
 
             return res;
     }
 
-    public BspTransactionOuterClass.SubmitResponse callChaincode(TransactionParams txParams, String chaincodeName, ChaincodeShim.ChaincodeMessage ccMsg) throws InvalidProtocolBufferException {
+    public BspTransactionOuterClass.SubmitResponse callChaincode(TransactionParams txParams, ChaincodeShim.ChaincodeMessage ccMsg) throws InvalidProtocolBufferException {
         Token snapshotTimestamp = corfu_access.issueSnapshotToken();
         ChaincodeSupport chaincodeSupport = new ChaincodeSupport();
         long seq = snapshotTimestamp.getSequence();
         ChaincodeStub stub = new InvocationStubImpl(ccMsg, corfu_access, seq);
 
-        org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp =  chaincodeSupport.Execute(txParams, chaincodeName, stub, cfc);
+        org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp =  chaincodeSupport.Execute(stub, cfc);
 
         Rwset_builder rwset = ccresp.getRwset();
+
         //writeset이 null 즉, query 일 시 바로 return
-        if(ccresp.getRwset().getWriteSet().isEmpty()) {
+        if(rwset.getWriteSet().isEmpty()) {
             BspTransactionOuterClass.SubmitResponse res = toProtoResponse(ccresp);
-            corfu_access.commitTransaction();
+//            corfu_access.commitTransaction();
             return res;
         }
         BspTransactionOuterClass.BspTransactionType txLocalityType = BspTransactionOuterClass.BspTransactionType.IntraTx;
-            BspTransactionOuterClass.Version version = BspTransactionOuterClass.Version.newBuilder()
+        BspTransactionOuterClass.Version version = BspTransactionOuterClass.Version.newBuilder()
                     .setBlockNumber(snapshotTimestamp.getSequence())  //문제되면 couter로 변경
                     .setTxOffset(0)
                     .build();
-
-        String regionID = "edgechain0";
-        ByteString bspTxBytes = buildBspTX(txLocalityType, txParams.signedProp, txParams.propPayload, seq, regionID, "mychannel", rwset); //chainID 추후 채널 config 통해 수정 필요
-
-//        Common.Envelope env = createEnvFromBSPType(55555, seq, txParams.txID, "mychannel", bspTxBytes);
-
-        ByteString txEventBytes = buildTxEvent(txParams.propPayload, seq);
-
         //response에서 받은 값 확인
         byte[] tesmp = ccresp.getPayload();
         String tesmp1 = new String(tesmp);
         Object result = genson.deserialize(tesmp1, Object.class);
 //        System.out.println("return value: " + result);
 
-        ChaincodeShim.ChaincodeMessage ccMessage = createCCMSG(ccresp, ccMsg, stub);
-        ByteString cceventBytes = createCCEventBytes(ccMessage.getChaincodeEvent());
+//        ChaincodeShim.ChaincodeMessage ccMessage = createCCMSG(ccresp, ccMsg, stub);
+//        ByteString cceventBytes = createCCEventBytes(ccMessage.getChaincodeEvent());
 
-        /*
-        체인코드 simulation result 만들어 주는 코딩
-        */
-
+        String regionID = "edgechain0";
+        ByteString bspTxBytes = buildBspTX(txLocalityType, txParams.signedProp, txParams.propPayload, seq, regionID, "mychannel", rwset); //chainID 추후 채널 config 통해 수정 필요
+        Common.Envelope env = createEnvFromBSPType(55555, seq, txParams.txID, "mychannel", signer, bspTxBytes);
+        ByteString txEventBytes = buildTxEvent(txParams.propPayload, seq);
         BspTransactionOuterClass.SubmitResponse res = toProtoResponse(ccresp);
-        corfu_access.commitTransaction(); //
+        corfu_access.commitTransaction(env);
 
         return res;
     }
@@ -236,13 +236,20 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
         return txEventBytes;
     }
 
-//    public Common.Envelope createEnvFromBSPType(int msgType, long seq, String TxID, String ChainID, ByteString payload) {
-//        TxUtils txUtils = new TxUtils();
-//        TransactionPackage.Transaction dataMsg = getPayloadInsideTransaction(payload);
-//        Common.Envelope env = txUtils.CreateSignedEnvelopeWithTLSBindingWithTxID(ENDORSER_TRANSACTION, ChainID, null, dataMsg, msgType, seq, null, TxID);
-//
-//        return env;
-//    }
+    public Common.Envelope createEnvFromBSPType(int msgType, long seq, String TxID, String ChainID, Signer signer, ByteString payload) {
+        TxUtils txUtils = new TxUtils();
+        TransactionPackage.Transaction dataMsg = getPayloadInsideTransaction(payload);
+        Common.Envelope env = null;
+        try {
+            env = txUtils.CreateSignedEnvelopeWithTLSBindingWithTxID(ENDORSER_TRANSACTION, ChainID, signer, dataMsg, msgType, seq, null, TxID);
+        } catch (InvalidArgumentException e) {
+            e.printStackTrace();
+        } catch (CryptoException e) {
+            e.printStackTrace();
+        }
+
+        return env;
+    }
 
     public TransactionPackage.Transaction getPayloadInsideTransaction(ByteString bspTxBytes) {
         TransactionPackage.TransactionAction act = TransactionPackage.TransactionAction.newBuilder()

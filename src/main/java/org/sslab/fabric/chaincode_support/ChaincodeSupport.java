@@ -13,8 +13,8 @@ import static org.hyperledger.fabric.protos.peer.ChaincodeShim.ChaincodeMessage.
 
 public class ChaincodeSupport {
     // Execute invokes chaincode and returns the original response.
-    public org.sslab.fabric.chaincodeshim.shim.Chaincode.Response Execute(TransactionParams txParams, String chaincodeName, ChaincodeStub stub, ContractRouter cfc) {
-        org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp = Invoke(txParams, chaincodeName, stub, cfc);
+    public org.sslab.fabric.chaincodeshim.shim.Chaincode.Response Execute(ChaincodeStub stub, ContractRouter cfc) {
+        org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp = Invoke(stub, cfc);
 
         Rwset_builder rwSet = ccresp.getRwset();
 
@@ -25,7 +25,7 @@ public class ChaincodeSupport {
 
     // invoke will invoke chaincode and return the message containing the response.
     // The chaincode will be launched if it is not already running.
-    public org.sslab.fabric.chaincodeshim.shim.Chaincode.Response Invoke(TransactionParams txParams, String chaincodeName, ChaincodeStub stub, ContractRouter cfc) {
+    public org.sslab.fabric.chaincodeshim.shim.Chaincode.Response Invoke(ChaincodeStub stub, ContractRouter cfc) {
         org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp  = cfc.invoke(stub);
         return ccresp;
     }

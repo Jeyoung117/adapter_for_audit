@@ -50,14 +50,14 @@ public class CorfuAccess {
         CorfuRuntime corfuRuntime = new CorfuRuntime(configurationString).connect();
         return corfuRuntime;
     }
-    static CorfuRuntime runtime =  getRuntimeAndConnect("141.223.121.139:12011");
+    static CorfuRuntime runtime =  getRuntimeAndConnect("141.223.121.251:12011");
     private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
 
     //local method call 전용 getstringstate
     public byte[] getStringState(String objectKey, String channelID, String chaincodeID) {
         Map<String, byte[]> map = runtime.getObjectsView()
                 .build()
-                .setStreamName(chaincodeID)     // stream ID
+                .setStreamName(chaincodeID+objectKey)     // stream ID
                 .setTypeToken(new TypeToken<CorfuTable<String, byte[]>>() {
                 })
                 .open();
@@ -76,7 +76,7 @@ public class CorfuAccess {
     public void putStringState(String objectKey, String channelID, String chaincodeID, byte[] data) {
         Map<String, byte[]> map = runtime.getObjectsView()
                 .build()
-                .setStreamName(chaincodeID)     // stream ID
+                .setStreamName(chaincodeID+objectKey)     // stream ID
                 .setTypeToken(new TypeToken<CorfuTable<String, byte[]>>() {
                 })
                 .open();
@@ -93,12 +93,11 @@ public class CorfuAccess {
         return snapshotTimestamp;
     }
 
-    public void commitTransaction() {
+    public void commitTransaction(Common.Envelope env) {
         OptimisticTransactionalContext transactionalContext = (OptimisticTransactionalContext) TransactionalContext.getCurrentContext();
 //        transactionalContext.setTxMetadata(envelope.toByteArray());
         String test_env = "test_env";
-        transactionalContext.setTxMetadata(test_env.getBytes(StandardCharsets.UTF_8));
-        transactionalContext.setFabricProposal(test_env.getBytes(StandardCharsets.UTF_8));
+        transactionalContext.setTxEnvelope(env.toByteArray());
         long appended_add = runtime.getObjectsView().TXEnd();
 //        System.out.println("[corfu-access-interface] {commitTransaction} Corfu runtime is finished, appended address is " + appended_add);
     }
