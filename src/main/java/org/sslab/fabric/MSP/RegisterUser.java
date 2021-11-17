@@ -28,7 +28,10 @@ public class RegisterUser {
 		// Create a CA client for interacting with the CA.
 		Properties props = new Properties();
 		props.put("pemFile",
-				"../../hyperledger/fabric-testnets/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem");
+				//bsp edgechain 경로
+//				"../../../edgechain/bsp_210817_base/organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem");
+		//fabric test network 경로
+			"../../hyperledger/fabric-testnets/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem");
 		props.put("allowAllHostNames", "true");
 		HFCAClient caClient = HFCAClient.createNewInstance("https://localhost:7054", props);
 		CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
@@ -38,8 +41,8 @@ public class RegisterUser {
 		Wallet wallet = Wallets.newFileSystemWallet(Paths.get("wallet"));
 
 		// Check to see if we've already enrolled the user.
-		if (wallet.get("ChaincodeAdapter2") != null) {
-			System.out.println("An identity for the user \"ChaincodeAdapter2\" already exists in the wallet");
+		if (wallet.get("woochang2") != null) {
+			System.out.println("An identity for the user \"woochang2\" already exists in the wallet");
 			return;
 		}
 
@@ -94,14 +97,14 @@ public class RegisterUser {
 		};
 
 		// Register the user, enroll the user, and import the new identity into the wallet.
-		RegistrationRequest registrationRequest = new RegistrationRequest("ChaincodeAdapter2");
+		RegistrationRequest registrationRequest = new RegistrationRequest("woochang2");
 		registrationRequest.setAffiliation("org1.department1");
-		registrationRequest.setEnrollmentID("ChaincodeAdapter2");
+		registrationRequest.setEnrollmentID("woochang2");
 		String enrollmentSecret = caClient.register(registrationRequest, admin);
-		Enrollment enrollment = caClient.enroll("ChaincodeAdapter2", enrollmentSecret);
+		Enrollment enrollment = caClient.enroll("woochang2", enrollmentSecret);
 		Identity user = Identities.newX509Identity("Org1MSP", enrollment);
-		wallet.put("ChaincodeAdapter2", user);
-		System.out.println("Successfully enrolled user \"ChaincodeAdapter2\" and imported it into the wallet");
+		wallet.put("woochang2", user);
+		System.out.println("Successfully enrolled user \"woochang2\" and imported it into the wallet");
 	}
 
 }

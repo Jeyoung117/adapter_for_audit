@@ -49,11 +49,12 @@ public class AdapterServerRunner {
         Path walletPath = Paths.get("wallet");
         Wallet wallet = Wallets.newFileSystemWallet(walletPath);
 
+        //fabric test network 경로
         Path networkConfigPath = Paths.get("..", "..", "hyperledger", "fabric-testnets", "fabric-samples", "test-network", "organizations", "peerOrganizations", "org1.example.com", "connection-org1.json");
+//        Path networkConfigPath = Paths.get("..", "..",  "..", "edgechain", "bsp_210817_base", "organizations", "peerOrganizations", "org1.example.com", "connection-org1.json");
 
         Gateway.Builder builder = Gateway.createBuilder();
-        builder.identity(wallet, "ChaincodeAdapter2").networkConfig(networkConfigPath).discovery(true);
-
+        builder.identity(wallet, "woochang2").networkConfig(networkConfigPath).discovery(true);
         Gateway gateway = builder.connect();
         NetworkImpl network = (NetworkImpl) gateway.getNetwork("mychannel");
 

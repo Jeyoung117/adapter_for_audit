@@ -1,0 +1,18 @@
+{"version":1,"mspId":"Org1MSP","type":"X.509","credentials":{"certificate":"-----BEGIN CERTIFICATE-----\nMIICpjCCAk2gAwIBAgIUbmdAc/peYJtTiOfjmBaUJI9hd2QwCgYIKoZIzj0EAwIw
+                                                                                                         cDELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMQ8wDQYDVQQH
+                                                                                                         EwZEdXJoYW0xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHDAaBgNVBAMTE2Nh
+                                                                                                         Lm9yZzEuZXhhbXBsZS5jb20wHhcNMjEwNjAyMTIzNDAwWhcNMjIwNjAyMTIzOTAw
+                                                                                                         WjBgMQswCQYDVQQGEwJVUzEXMBUGA1UECBMOTm9ydGggQ2Fyb2xpbmExFDASBgNV
+                                                                                                         BAoTC0h5cGVybGVkZ2VyMQ4wDAYDVQQLEwVhZG1pbjESMBAGA1UEAxMJb3JnMWFk
+                                                                                                         bWluMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEtZ4hQGFgIy/M7hzNBAS+Wr0u
+                                                                                                         ATA3F8CdMAJ7yL93ONYtMVsAuVOHtnMUnPMHNvyqvMU3P1IkXCj4khQnD0S3P6OB
+                                                                                                         1DCB0TAOBgNVHQ8BAf8EBAMCB4AwDAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQUoWov
+                                                                                                         jq/ptMOmwEeHhT5t4zOH7CgwHwYDVR0jBBgwFoAUx3rJjwy0zos7nw9bppYuozaa
+                                                                                                         oa0wFAYDVR0RBA0wC4IJYnNwLWRldmVsMFsGCCoDBAUGBwgBBE97ImF0dHJzIjp7
+                                                                                                         ImhmLkFmZmlsaWF0aW9uIjoiIiwiaGYuRW5yb2xsbWVudElEIjoib3JnMWFkbWlu
+                                                                                                         IiwiaGYuVHlwZSI6ImFkbWluIn19MAoGCCqGSM49BAMCA0cAMEQCICMcIODFyXji
+                                                                                                         eDqsw9G3/ugwJlzi8igpXzW+gMvhuRs2AiB/uSIBLfeKY6WNuV4BDo2o8nXi9PRo
+                                                                                                         TKPVdecQx6m2Ng==
+                                                                                                         cdD6ipw=\n-----END CERTIFICATE-----\n","privateKey":"-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgTG2WH8TdFxFVlDkQ
+                                                                                                                                                                                           Fn9H4QmlaQlDviNWr8l1AyRZbMKhRANCAAS1niFAYWAjL8zuHM0EBL5avS4BMDcX
+                                                                                                                                                                                           wJ0wAnvIv3c41i0xWwC5U4e2cxSc8wc2/Kq8xTc/UiRcKPiSFCcPRLc/\n-----END PRIVATE KEY-----\n"}}

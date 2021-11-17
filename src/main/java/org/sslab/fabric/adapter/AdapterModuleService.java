@@ -82,8 +82,8 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
 
         BspTransactionOuterClass.SubmitResponse res = processProposalSuccessfullyOrError(proposal, propPayload);
 
-            responseObserver.onNext(res);
-            responseObserver.onCompleted();
+        responseObserver.onNext(res);
+        responseObserver.onCompleted();
     }
 
 //    @Override
@@ -149,6 +149,7 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
         Token snapshotTimestamp = corfu_access.issueSnapshotToken();
         ChaincodeSupport chaincodeSupport = new ChaincodeSupport();
         long seq = snapshotTimestamp.getSequence();
+        System.out.println(seq);
         ChaincodeStub stub = new InvocationStubImpl(ccMsg, corfu_access, seq);
 
         org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp =  chaincodeSupport.Execute(stub, cfc);
@@ -178,7 +179,7 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
         String regionID = "edgechain0";
         ByteString bspTxBytes = buildBspTX(txLocalityType, txParams.signedProp, txParams.propPayload, seq, regionID, "mychannel", rwset); //chainID 추후 채널 config 통해 수정 필요
         Common.Envelope env = createEnvFromBSPType(55555, seq, txParams.txID, "mychannel", signer, bspTxBytes);
-        ByteString txEventBytes = buildTxEvent(txParams.propPayload, seq);
+//        ByteString txEventBytes = buildTxEvent(txParams.propPayload, seq);
         BspTransactionOuterClass.SubmitResponse res = toProtoResponse(ccresp);
         corfu_access.commitTransaction(env);
 
@@ -239,25 +240,28 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
     public Common.Envelope createEnvFromBSPType(int msgType, long seq, String TxID, String ChainID, Signer signer, ByteString payload) {
         TxUtils txUtils = new TxUtils();
         TransactionPackage.Transaction dataMsg = getPayloadInsideTransaction(payload);
-        Common.Envelope env = null;
+        Common.Envelope env;
         try {
             env = txUtils.CreateSignedEnvelopeWithTLSBindingWithTxID(ENDORSER_TRANSACTION, ChainID, signer, dataMsg, msgType, seq, null, TxID);
+            return env;
         } catch (InvalidArgumentException e) {
             e.printStackTrace();
         } catch (CryptoException e) {
             e.printStackTrace();
         }
 
-        return env;
+        return null;
     }
 
     public TransactionPackage.Transaction getPayloadInsideTransaction(ByteString bspTxBytes) {
         TransactionPackage.TransactionAction act = TransactionPackage.TransactionAction.newBuilder()
                 .setPayload(bspTxBytes)
                 .build();
+        ArrayList<TransactionPackage.TransactionAction> arrayList = new ArrayList<>();
+        arrayList.add(0, act);
 
         TransactionPackage.Transaction transaction = TransactionPackage.Transaction.newBuilder()
-                .setActions(0, act)
+                .addActions(act)
                 .build();
         return transaction;
 
