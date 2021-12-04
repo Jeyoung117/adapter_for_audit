@@ -45,7 +45,7 @@ public class CorfuAccess {
         CorfuRuntime corfuRuntime = new CorfuRuntime(configurationString).connect();
         return corfuRuntime;
     }
-    static CorfuRuntime runtime =  getRuntimeAndConnect("141.223.121.251:12011");
+    static CorfuRuntime runtime =  getRuntimeAndConnect("141.223.181.51:13011");
     private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
 
     //local method call 전용 getstringstate
@@ -89,10 +89,10 @@ public class CorfuAccess {
     }
 
     public void commitTransaction() {
-//        OptimisticTransactionalContext transactionalContext = (OptimisticTransactionalContext) TransactionalContext.getCurrentContext();
+        OptimisticTransactionalContext transactionalContext = (OptimisticTransactionalContext) TransactionalContext.getCurrentContext();
 //        transactionalContext.setTxMetadata(envelope.toByteArray());
-//        String test_env = "test_env";
-//        transactionalContext.setTxMetadata(test_env.getBytes(StandardCharsets.UTF_8));
+        String test_env = "test_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_envtest_env";
+        transactionalContext.setTxEnvelope(test_env.getBytes(StandardCharsets.UTF_8));
 //        transactionalContext.setFabricProposal(test_env.getBytes(StandardCharsets.UTF_8));
         long appended_add = runtime.getObjectsView().TXEnd();
 //        System.out.println("[corfu-access-interface] {commitTransaction} Corfu runtime is finished, appended address is " + appended_add);

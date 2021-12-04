@@ -29,10 +29,10 @@ public class AdapterServerRunner {
     static RegisterUser registerUser;
     private static Logger logger = Logger.getLogger(AdapterServerRunner.class.getName());
     public static void main(String[] args) throws IOException, InterruptedException {
-        runtime = getRuntimeAndConnect("141.223.121.251:12011");
+        runtime = getRuntimeAndConnect("141.223.181.51:13011");
 //        runtime = getRuntimeAndConnect("141.223.121.139:12011");
         corfu_access = new CorfuAccess();
-        final int port = 54321;
+        final int port = 54323;
 
         cfc = new ContractRouter(args);
         cfc.findAllContracts();
