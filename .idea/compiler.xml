@@ -7,9 +7,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="adapter-module-v1.5" />
         <module name="adapter_module_v1.5" />
         <module name="adapter_module" />
+        <module name="adapter-module-v1.5" />
+        <module name="adapter-module" />
       </profile>
     </annotationProcessing>
   </component>
