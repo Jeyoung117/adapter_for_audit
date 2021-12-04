@@ -31,7 +31,7 @@ public class RegisterUser {
 				//bsp edgechain 경로
 //				"../../../edgechain/bsp_210817_base/organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem");
 		//fabric test network 경로
-			"../../hyperledger/fabric-testnets/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem");
+			"../hyperledger/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem");
 		props.put("allowAllHostNames", "true");
 		HFCAClient caClient = HFCAClient.createNewInstance("https://localhost:7054", props);
 		CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();

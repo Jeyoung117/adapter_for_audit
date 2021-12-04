@@ -50,7 +50,7 @@ public class CorfuAccess {
         CorfuRuntime corfuRuntime = new CorfuRuntime(configurationString).connect();
         return corfuRuntime;
     }
-    static CorfuRuntime runtime =  getRuntimeAndConnect("141.223.121.251:12011");
+    static CorfuRuntime runtime =  getRuntimeAndConnect("141.223.181.51:13011");
     private final Logger logger = Logger.getLogger(AdapterModuleService.class.getName());
 
     //local method call 전용 getstringstate

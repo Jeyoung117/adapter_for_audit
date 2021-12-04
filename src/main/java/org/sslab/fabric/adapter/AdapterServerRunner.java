@@ -39,18 +39,18 @@ public class AdapterServerRunner {
 
         cfc = new ContractRouter(args);
         cfc.findAllContracts();
-        try {
-            enrollAdmin.EnrollAdm();
-            registerUser.RegistAdapterModule();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            enrollAdmin.EnrollAdm();
+//            registerUser.RegistAdapterModule();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         Path walletPath = Paths.get("wallet");
         Wallet wallet = Wallets.newFileSystemWallet(walletPath);
 
         //fabric test network 경로
-        Path networkConfigPath = Paths.get("..", "..", "hyperledger", "fabric-testnets", "fabric-samples", "test-network", "organizations", "peerOrganizations", "org1.example.com", "connection-org1.json");
+        Path networkConfigPath = Paths.get("..", "hyperledger", "fabric-samples", "test-network", "organizations", "peerOrganizations", "org1.example.com", "connection-org1.json");
 //        Path networkConfigPath = Paths.get("..", "..",  "..", "edgechain", "bsp_210817_base", "organizations", "peerOrganizations", "org1.example.com", "connection-org1.json");
 
         Gateway.Builder builder = Gateway.createBuilder();
