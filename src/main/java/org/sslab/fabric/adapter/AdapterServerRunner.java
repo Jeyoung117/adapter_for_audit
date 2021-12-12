@@ -29,8 +29,6 @@ public class AdapterServerRunner {
     static RegisterUser registerUser;
     private static Logger logger = Logger.getLogger(AdapterServerRunner.class.getName());
     public static void main(String[] args) throws IOException, InterruptedException {
-        runtime = getRuntimeAndConnect("141.223.181.51:13011");
-//        runtime = getRuntimeAndConnect("141.223.121.139:12011");
         corfu_access = new CorfuAccess();
         final int port = 54323;
 
@@ -56,7 +54,7 @@ public class AdapterServerRunner {
 
         logger.info(cfc.getRoutingRegistry().toString());
 
-        final BindableService adapterService = new AdapterModuleService(corfu_access, runtime, cfc);
+        final BindableService adapterService = new AdapterModuleService(corfu_access, cfc);
 
         AdapterServer server = new AdapterServer(port, adapterService);
 

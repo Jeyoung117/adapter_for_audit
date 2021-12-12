@@ -1,10 +1,12 @@
 package org.sslab.fabric.adapter;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
 import java.io.IOException;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
 
 /**
@@ -19,9 +21,20 @@ public class AdapterServer {
     private final Server server;
 
     public AdapterServer(int port, BindableService service) throws IOException {
+//        ExecutorService executor = new ThreadPoolExecutor(129, Integer.MAX_VALUE,
+//                60L, TimeUnit.SECONDS,
+//                new SynchronousQueue<Runnable>(),
+//                new ThreadFactoryBuilder()
+//                        .setDaemon(true)
+//                        .setNameFormat("Glowroot-IT-Harness-GRPC-Executor-%d")
+//                        .build());
+
+        ExecutorService executor = Executors.newFixedThreadPool(129);
+
         this.port = port;
         this.server = ServerBuilder.forPort(port)
                 .addService(service)
+                .executor(executor)
                 .build();
     }
 

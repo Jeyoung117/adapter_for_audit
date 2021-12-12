@@ -51,17 +51,17 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
     Map<String, Long> lastReadAddrs;
     //tokenMap key: fabric txID, value: access token
     Map<String, Token> tokenMap;
-    CorfuRuntime runtime;
+//    CorfuRuntime runtime;
     CorfuAccess corfu_access;
     private final Genson genson = new Genson();
     ContractRouter cfc;
 //    private ProposalPackage.Proposal proposal;
 
 
-    public AdapterModuleService(CorfuAccess corfu_access, CorfuRuntime runtime, ContractRouter cfc) {
+    public AdapterModuleService(CorfuAccess corfu_access, ContractRouter cfc) {
         streamViews = new HashMap<UUID, IStreamView>();
         runtimes = new HashMap<UUID, CorfuRuntime>();
-        this.runtime = runtime;
+//        this.runtime = runtime;
 //        runtime = new CorfuRuntime(runtimeAddr[0]).connect();
         lastReadAddrs = new HashMap<String, Long>();
         System.out.println("Init AdapterModuleService");
@@ -88,7 +88,6 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
     @SneakyThrows
     @Override
     public void processProposalforBench(BspTransactionOuterClass.ProposalforBench proposal, StreamObserver<BspTransactionOuterClass.SubmitResponse> responseObserver) {
-//        CorfuAccess corfuAccess = new CorfuAccess();
         TransactionParams txParams =  new TransactionParams(
                 proposal.getTxId(),
                 "mychannel",
@@ -200,44 +199,17 @@ public class AdapterModuleService extends CorfuConnectBSPGrpc.CorfuConnectBSPImp
         Token snapshotTimestamp = txParams.corfu_access.issueSnapshotToken();
         ChaincodeSupport chaincodeSupport = new ChaincodeSupport();
         long seq = snapshotTimestamp.getSequence();
-//        ChaincodeStub stub = new InvocationStubImpl(ccMsg, corfu_access, seq);
-                ChaincodeStub stub = new InvocationStubImpl(txParams, seq);
+        ChaincodeStub stub = new InvocationStubImpl(txParams, seq);
 
         org.sslab.fabric.chaincodeshim.shim.Chaincode.Response ccresp =  chaincodeSupport.Execute(txParams, chaincodeName, stub, cfc);
 
         Rwset_builder rwset = ccresp.getRwset();
-//        System.out.println("rwset의 read" + rwset.getReadSet());
         //writeset이 null 즉, query 일 시 바로 return
         if(ccresp.getRwset() == null) {
             BspTransactionOuterClass.SubmitResponse res = toProtoResponse(ccresp);
             txParams.corfu_access.commitTransaction();
             return res;
         }
-//        BspTransactionOuterClass.BspTransactionType txLocalityType = BspTransactionOuterClass.BspTransactionType.IntraTx;
-//            BspTransactionOuterClass.Version version = BspTransactionOuterClass.Version.newBuilder()
-//                    .setBlockNumber(snapshotTimestamp.getSequence())  //문제되면 couter로 변경
-//                    .setTxOffset(0)
-//                    .build();
-//
-//        String regionID = "edgechain0";
-//        ByteString bspTxBytes = buildBspTX(txLocalityType, txParams.signedProp, txParams.propPayload, seq, regionID, "mychannel", rwset); //chainID 추후 채널 config 통해 수정 필요
-//
-////        Common.Envelope env = createEnvFromBSPType(55555, seq, txParams.txID, "mychannel", bspTxBytes);
-//
-//        ByteString txEventBytes = buildTxEvent(txParams.propPayload, seq);
-
-        //response에서 받은 값 확인
-//        byte[] tesmp = ccresp.getPayload();
-//        String tesmp1 = new String(tesmp);
-//        Object result = genson.deserialize(tesmp1, Object.class);
-//        System.out.println("return value: " + result);
-
-//        ChaincodeShim.ChaincodeMessage ccMessage = createCCMSG(ccresp, ccMsg, stub);
-//        ByteString cceventBytes = createCCEventBytes(ccMessage.getChaincodeEvent());
-
-        /*
-        체인코드 simulation result 만들어 주는 코딩
-        */
 
         BspTransactionOuterClass.SubmitResponse res = toProtoResponse(ccresp);
         txParams.corfu_access.commitTransaction(); //
